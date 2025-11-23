@@ -1,0 +1,40 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Maintenance Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Maintenance Dashboard</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body text-center">
+                                    <h4>3</h4>
+                                    <p>Open Issues</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h4>15</h4>
+                                    <p>Resolved This Week</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{% url 'maintenance:issue_list' %}" class="btn btn-primary">View All Issues</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

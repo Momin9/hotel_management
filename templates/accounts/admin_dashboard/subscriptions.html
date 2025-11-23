@@ -1,0 +1,375 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Subscription Management - Super Admin{% endblock %}
+
+{% block page_title %}Subscription Management{% endblock %}
+{% block page_subtitle %}Manage subscription plans, pricing, and features{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Subscription Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-layer-group text-white"></i>
+            </div>
+            <div class="text-2xl font-bold text-blue-600 mb-1">{{ subscription_plans.count }}</div>
+            <div class="text-blue-700 font-medium">Total Plans</div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-check-circle text-white"></i>
+            </div>
+            <div class="text-2xl font-bold text-green-600 mb-1">
+                {% for plan in subscription_plans %}{% if plan.is_active %}{{ forloop.counter }}{% endif %}{% endfor %}
+            </div>
+            <div class="text-green-700 font-medium">Active Plans</div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-users text-white"></i>
+            </div>
+            <div class="text-2xl font-bold text-purple-600 mb-1">0</div>
+            <div class="text-purple-700 font-medium">Subscribers</div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-dollar-sign text-white"></i>
+            </div>
+            <div class="text-2xl font-bold text-gold-600 mb-1">$0</div>
+            <div class="text-gold-700 font-medium">Monthly Revenue</div>
+        </div>
+    </div>
+
+    <!-- Subscription Plans -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-luxury-800 flex items-center">
+                <i class="fas fa-crown text-royal-500 mr-3"></i>
+                Subscription Plans
+            </h3>
+            <button onclick="createPlan()" class="px-6 py-2 bg-royal-600 text-white rounded-xl hover:bg-royal-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Create Plan
+            </button>
+        </div>
+        
+        {% if subscription_plans %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for plan in subscription_plans %}
+            <div class="relative overflow-hidden rounded-2xl border-2 {% if plan.is_active %}border-royal-300{% else %}border-gray-300{% endif %} hover:border-royal-400 transition-all duration-300 hover-lift">
+                {% if not plan.is_active %}
+                <div class="absolute top-4 right-4 z-10">
+                    <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Inactive</span>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="text-center mb-6">
+                        <h4 class="text-xl font-bold text-luxury-800 mb-2">{{ plan.name }}</h4>
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-royal-600">${{ plan.price }}</span>
+                            <span class="text-luxury-600">/ {{ plan.billing_cycle }}</span>
+                        </div>
+                        {% if plan.description %}
+                        <p class="text-luxury-600 text-sm">{{ plan.description }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-luxury-600">Max Hotels:</span>
+                            <span class="font-semibold text-luxury-900">{{ plan.max_hotels }}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-luxury-600">Max Rooms:</span>
+                            <span class="font-semibold text-luxury-900">{{ plan.max_rooms }}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-luxury-600">Billing Cycle:</span>
+                            <span class="font-semibold text-luxury-900">{{ plan.get_billing_cycle_display }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if plan.features %}
+                    <div class="mb-6">
+                        <h5 class="text-sm font-semibold text-luxury-800 mb-2">Features:</h5>
+                        <div class="space-y-1">
+                            {% for feature, enabled in plan.features.items %}
+                            {% if enabled %}
+                            <div class="flex items-center text-xs text-luxury-600">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                {{ feature|title }}
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex space-x-2">
+                        <button onclick="editPlan('{{ plan.id }}')" 
+                                class="flex-1 bg-royal-600 text-white py-2 rounded-xl font-semibold hover:bg-royal-700 transition-colors">
+                            <i class="fas fa-edit mr-1"></i>Edit
+                        </button>
+                        {% if plan.is_active %}
+                        <button onclick="deactivatePlan('{{ plan.id }}')" 
+                                class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                        {% else %}
+                        <button onclick="activatePlan('{{ plan.id }}')" 
+                                class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-crown text-luxury-400 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-luxury-900 mb-2">No subscription plans</h3>
+            <p class="text-luxury-500 mb-4">Create your first subscription plan to get started.</p>
+            <button onclick="createPlan()" class="px-6 py-2 bg-royal-600 text-white rounded-xl hover:bg-royal-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Create Plan
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Subscription Analytics -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-chart-line text-blue-500 mr-3"></i>
+            Subscription Analytics
+        </h3>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Revenue Chart Placeholder -->
+            <div class="bg-luxury-50 rounded-2xl p-6 text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-chart-bar text-blue-500 text-xl"></i>
+                </div>
+                <h4 class="text-lg font-semibold text-luxury-800 mb-2">Revenue Trends</h4>
+                <p class="text-luxury-600">Revenue analytics will be displayed here</p>
+            </div>
+            
+            <!-- Subscription Distribution -->
+            <div class="bg-luxury-50 rounded-2xl p-6 text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-pie-chart text-purple-500 text-xl"></i>
+                </div>
+                <h4 class="text-lg font-semibold text-luxury-800 mb-2">Plan Distribution</h4>
+                <p class="text-luxury-600">Subscription distribution will be displayed here</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit Plan Modal -->
+<div id="planModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-3xl w-full luxury-shadow max-h-screen overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="planModalTitle" class="text-2xl font-bold text-luxury-800">Create Subscription Plan</h3>
+                <button onclick="closePlanModal()" class="text-luxury-400 hover:text-luxury-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="planForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Basic Information -->
+                    <div class="md:col-span-2">
+                        <h4 class="text-lg font-semibold text-luxury-800 mb-4">Basic Information</h4>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Plan Name</label>
+                        <input type="text" id="planName" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Price</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2 text-luxury-500">$</span>
+                            <input type="number" id="planPrice" step="0.01" class="w-full pl-8 pr-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500" required>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Billing Cycle</label>
+                        <select id="billingCycle" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500" required>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                        <select id="planStatus" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Description</label>
+                        <textarea id="planDescription" rows="3" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500"></textarea>
+                    </div>
+                    
+                    <!-- Limits -->
+                    <div class="md:col-span-2">
+                        <h4 class="text-lg font-semibold text-luxury-800 mb-4 mt-6">Limits</h4>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Max Hotels</label>
+                        <input type="number" id="maxHotels" min="1" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Max Rooms</label>
+                        <input type="number" id="maxRooms" min="1" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500" required>
+                    </div>
+                    
+                    <!-- Features -->
+                    <div class="md:col-span-2">
+                        <h4 class="text-lg font-semibold text-luxury-800 mb-4 mt-6">Features</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="featureReservations" class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <span class="ml-3 text-luxury-700">Online Reservations</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="featureReports" class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <span class="ml-3 text-luxury-700">Advanced Reports</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="featureAPI" class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <span class="ml-3 text-luxury-700">API Access</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="featureSupport" class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <span class="ml-3 text-luxury-700">Priority Support</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="featureIntegrations" class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <span class="ml-3 text-luxury-700">Third-party Integrations</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="featureCustomization" class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <span class="ml-3 text-luxury-700">Custom Branding</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 mt-8">
+                    <button type="button" onclick="closePlanModal()" 
+                            class="px-6 py-2 border border-luxury-300 text-luxury-700 rounded-xl hover:bg-luxury-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-royal-600 text-white rounded-xl hover:bg-royal-700 transition-colors">
+                        <span id="planSubmitText">Create Plan</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+
+<script>
+let currentPlanId = null;
+let isEditMode = false;
+
+function createPlan() {
+    isEditMode = false;
+    currentPlanId = null;
+    document.getElementById('planModalTitle').textContent = 'Create Subscription Plan';
+    document.getElementById('planSubmitText').textContent = 'Create Plan';
+    document.getElementById('planForm').reset();
+    document.getElementById('planModal').classList.remove('hidden');
+}
+
+function editPlan(planId) {
+    isEditMode = true;
+    currentPlanId = planId;
+    document.getElementById('planModalTitle').textContent = 'Edit Subscription Plan';
+    document.getElementById('planSubmitText').textContent = 'Save Changes';
+    // Here you would typically fetch the plan data and populate the form
+    document.getElementById('planModal').classList.remove('hidden');
+}
+
+function closePlanModal() {
+    document.getElementById('planModal').classList.add('hidden');
+    currentPlanId = null;
+    isEditMode = false;
+}
+
+function activatePlan(planId) {
+    if (confirm('Are you sure you want to activate this plan?')) {
+        // Implement activation logic
+        console.log('Activating plan:', planId);
+    }
+}
+
+function deactivatePlan(planId) {
+    if (confirm('Are you sure you want to deactivate this plan?')) {
+        // Implement deactivation logic
+        console.log('Deactivating plan:', planId);
+    }
+}
+
+document.getElementById('planForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('planName').value,
+        price: document.getElementById('planPrice').value,
+        billing_cycle: document.getElementById('billingCycle').value,
+        is_active: document.getElementById('planStatus').value === 'true',
+        description: document.getElementById('planDescription').value,
+        max_hotels: document.getElementById('maxHotels').value,
+        max_rooms: document.getElementById('maxRooms').value,
+        features: {
+            online_reservations: document.getElementById('featureReservations').checked,
+            advanced_reports: document.getElementById('featureReports').checked,
+            api_access: document.getElementById('featureAPI').checked,
+            priority_support: document.getElementById('featureSupport').checked,
+            integrations: document.getElementById('featureIntegrations').checked,
+            custom_branding: document.getElementById('featureCustomization').checked,
+        }
+    };
+    
+    if (isEditMode && currentPlanId) {
+        // Implement edit logic
+        console.log('Editing plan:', currentPlanId, formData);
+    } else {
+        // Implement create logic
+        console.log('Creating new plan:', formData);
+    }
+    
+    closePlanModal();
+});
+</script>
+{% endblock %}

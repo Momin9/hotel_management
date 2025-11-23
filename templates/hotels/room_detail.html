@@ -1,0 +1,125 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Room {{ room.room_number }} - {{ hotel.name }}{% endblock %}
+{% block page_title %}Room {{ room.room_number }}{% endblock %}
+{% block page_subtitle %}{{ hotel.name }} - Room Details{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <!-- Room Profile Card -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-6">
+                <div class="w-20 h-20 bg-gradient-to-r from-royal-400 to-royal-600 rounded-2xl flex items-center justify-center text-white">
+                    <i class="fas fa-bed text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-luxury-900">Room {{ room.room_number }}</h2>
+                    <p class="text-luxury-600 text-lg">{{ room.type }} • {{ room.category }}</p>
+                    <p class="text-luxury-500">{{ hotel.name }}</p>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <a href="{% url 'hotels:room_edit' hotel.hotel_id room.room_id %}" 
+                   class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Room</span>
+                </a>
+                <a href="{% url 'hotels:room_list' hotel.hotel_id %}" 
+                   class="bg-luxury-200 text-luxury-700 px-6 py-3 rounded-xl hover:bg-luxury-300 transition-colors">
+                    Back to Rooms
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Room Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-info-circle mr-3 text-royal-500"></i>
+                    Room Information
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Room Number:</span>
+                        <span class="font-medium text-luxury-900">{{ room.room_number }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Type:</span>
+                        <span class="font-medium text-luxury-900">{{ room.type }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Category:</span>
+                        <span class="font-medium text-luxury-900">{{ room.category }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Bed Type:</span>
+                        <span class="font-medium text-luxury-900">{{ room.bed }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Price per Night:</span>
+                        <span class="font-bold text-gold-600">${{ room.price }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Status Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-3 text-royal-500"></i>
+                    Status & Availability
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Current Status:</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium {% if room.status == 'Available' %}bg-green-100 text-green-800{% elif room.status == 'Occupied' %}bg-red-100 text-red-800{% elif room.status == 'Cleaning' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ room.status }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Created:</span>
+                        <span class="font-medium text-luxury-900">{{ room.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-lg font-semibold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-bolt mr-3 text-royal-500"></i>
+            Quick Actions
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="#" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-calendar-check text-2xl text-blue-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">Make Reservation</p>
+                <p class="text-sm text-luxury-600">Book this room</p>
+            </a>
+            
+            <a href="#" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-broom text-2xl text-green-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">Housekeeping</p>
+                <p class="text-sm text-luxury-600">Schedule cleaning</p>
+            </a>
+            
+            <a href="#" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-tools text-2xl text-orange-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">Maintenance</p>
+                <p class="text-sm text-luxury-600">Report issues</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

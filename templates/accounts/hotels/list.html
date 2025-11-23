@@ -1,0 +1,152 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Hotels{% endblock %}
+{% block page_title %}Hotels{% endblock %}
+{% block page_subtitle %}Manage hotels and their details{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-luxury-900">All Hotels ({{ hotels.count }})</h2>
+            <p class="text-luxury-600">Create and manage hotels</p>
+        </div>
+        <a href="{% url 'accounts:hotel_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
+            <i class="fas fa-plus mr-2"></i>
+            Create New Hotel
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-luxury-600 text-sm font-medium">Total Hotels</p>
+                    <p class="text-2xl font-bold text-luxury-900">{{ total_hotels }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-building text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-luxury-600 text-sm font-medium">Active Hotels</p>
+                    <p class="text-2xl font-bold text-green-600">{{ active_hotels }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-luxury-600 text-sm font-medium">Inactive Hotels</p>
+                    <p class="text-2xl font-bold text-red-600">{{ inactive_hotels }}</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'accounts:hotel_list' %}" class="px-4 py-2 rounded-xl font-medium transition-colors {% if not status_filter %}bg-royal-600 text-white{% else %}bg-luxury-100 text-luxury-700 hover:bg-luxury-200{% endif %}">
+                <i class="fas fa-list mr-2"></i>All Hotels
+            </a>
+            <a href="{% url 'accounts:hotel_list' %}?status=active" class="px-4 py-2 rounded-xl font-medium transition-colors {% if status_filter == 'active' %}bg-green-600 text-white{% else %}bg-luxury-100 text-luxury-700 hover:bg-luxury-200{% endif %}">
+                <i class="fas fa-check-circle mr-2"></i>Active Only
+            </a>
+            <a href="{% url 'accounts:hotel_list' %}?status=inactive" class="px-4 py-2 rounded-xl font-medium transition-colors {% if status_filter == 'inactive' %}bg-red-600 text-white{% else %}bg-luxury-100 text-luxury-700 hover:bg-luxury-200{% endif %}">
+                <i class="fas fa-times-circle mr-2"></i>Inactive Only
+            </a>
+        </div>
+    </div>
+
+    <!-- Hotels Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for hotel in hotels %}
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift border {% if hotel.is_active %}border-green-200{% else %}border-red-200{% endif %}">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-royal-400 to-royal-600 rounded-xl flex items-center justify-center text-white">
+                        <i class="fas fa-building text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-luxury-900">{{ hotel.name }}</h3>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium {% if hotel.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {% if hotel.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <a href="{% url 'accounts:hotel_edit' hotel.hotel_id %}" class="text-royal-600 hover:text-royal-700 p-2 rounded-lg hover:bg-royal-50">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'accounts:hotel_delete' hotel.hotel_id %}" class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50" onclick="return confirm('Are you sure?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <p class="text-sm text-luxury-600">Address</p>
+                    <p class="text-luxury-900">{{ hotel.address }}</p>
+                    <p class="text-sm text-luxury-600">{{ hotel.city }}, {{ hotel.country }}</p>
+                </div>
+                
+                <div class="border-t border-luxury-200 pt-3">
+                    <p class="text-sm text-luxury-600">Owner</p>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <div class="w-6 h-6 bg-gold-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-crown text-gold-600 text-xs"></i>
+                        </div>
+                        <p class="text-luxury-900 font-medium">{{ hotel.owner.first_name }} {{ hotel.owner.last_name }}</p>
+                    </div>
+                </div>
+
+                {% if hotel.phone or hotel.email %}
+                <div class="border-t border-luxury-200 pt-3 space-y-1">
+                    {% if hotel.phone %}
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-phone text-luxury-400 text-sm"></i>
+                        <p class="text-sm text-luxury-600">{{ hotel.phone }}</p>
+                    </div>
+                    {% endif %}
+                    {% if hotel.email %}
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-envelope text-luxury-400 text-sm"></i>
+                        <p class="text-sm text-luxury-600">{{ hotel.email }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="border-t border-luxury-200 pt-3">
+                    <p class="text-xs text-luxury-500">Created {{ hotel.created_at|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <i class="fas fa-building text-6xl text-luxury-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-luxury-600 mb-2">No Hotels</h3>
+            <p class="text-luxury-500 mb-6">Create your first hotel property to get started</p>
+            <a href="{% url 'accounts:hotel_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors">
+                Create First Hotel
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

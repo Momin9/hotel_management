@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to AuraStay - Your Subscription is Active!</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); padding: 40px 30px; text-align: center; }
+        .logo { color: white; font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+        .header-text { color: rgba(255,255,255,0.9); font-size: 16px; }
+        .content { padding: 40px 30px; }
+        .welcome-title { color: #1e293b; font-size: 28px; font-weight: bold; margin-bottom: 20px; text-align: center; }
+        .plan-card { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 15px; padding: 25px; margin: 25px 0; border-left: 5px solid #0ea5e9; }
+        .plan-name { color: #0ea5e9; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        .plan-price { color: #059669; font-size: 20px; font-weight: bold; margin-bottom: 15px; }
+        .feature-list { list-style: none; padding: 0; margin: 15px 0; }
+        .feature-list li { padding: 8px 0; color: #475569; display: flex; align-items: center; }
+        .feature-list li:before { content: "✓"; color: #059669; font-weight: bold; margin-right: 10px; }
+        .credentials-box { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 10px; padding: 20px; margin: 25px 0; }
+        .credentials-title { color: #92400e; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .credential-item { margin: 10px 0; padding: 10px; background: white; border-radius: 5px; }
+        .credential-label { color: #6b7280; font-size: 14px; }
+        .credential-value { color: #1f2937; font-weight: bold; font-size: 16px; }
+        .login-button { display: inline-block; background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px; font-weight: bold; margin: 20px 0; }
+        .info-section { background: #f0f9ff; border-radius: 10px; padding: 20px; margin: 25px 0; }
+        .info-title { color: #0369a1; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .footer { background: #1e293b; color: white; padding: 30px; text-align: center; }
+        .footer-logo { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .support-info { color: #94a3b8; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🏨 AuraStay</div>
+            <div class="header-text">Premium Hotel Management Platform</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h1 class="welcome-title">🎉 Welcome to AuraStay!</h1>
+            
+            <p style="font-size: 16px; color: #475569; line-height: 1.6; text-align: center;">
+                Dear <strong>{{ owner_name }}</strong>,<br>
+                Congratulations! Your subscription for <strong>{{ hotel_name }}</strong> has been successfully activated.
+            </p>
+
+            <!-- Plan Details -->
+            <div class="plan-card">
+                <div class="plan-name">{{ plan_name }} Plan</div>
+                <div class="plan-price">${{ plan_price }}/month</div>
+                <ul class="feature-list">
+                    <li>Up to {{ max_rooms }} rooms</li>
+                    <li>{{ max_managers }} manager accounts</li>
+                    {% if plan_name != 'Basic' %}<li>Advanced Analytics Dashboard</li>{% endif %}
+                    {% if plan_name == 'Enterprise' %}<li>24/7 Priority Support</li>{% endif %}
+                    <li>Complete Hotel Management Suite</li>
+                </ul>
+            </div>
+
+            <!-- Login Credentials -->
+            <div class="credentials-box">
+                <div class="credentials-title">🔐 Your Login Credentials</div>
+                <div class="credential-item">
+                    <div class="credential-label">Email Address:</div>
+                    <div class="credential-value">{{ owner_email }}</div>
+                </div>
+                <div class="credential-item">
+                    <div class="credential-label">Username:</div>
+                    <div class="credential-value">{{ username }}</div>
+                </div>
+                <div class="credential-item">
+                    <div class="credential-label">Password:</div>
+                    <div class="credential-value">{{ password }}</div>
+                </div>
+            </div>
+
+            <!-- Subscription Details -->
+            <div class="info-section">
+                <div class="info-title">📅 Subscription Details</div>
+                <p><strong>Start Date:</strong> {{ start_date }}</p>
+                <p><strong>End Date:</strong> {{ end_date }}</p>
+                <p><strong>Status:</strong> <span style="color: #059669; font-weight: bold;">Active</span></p>
+                <p><strong>Billing Cycle:</strong> {{ billing_cycle|title }}</p>
+            </div>
+
+            <!-- Login Button -->
+            <div style="text-align: center;">
+                <a href="{{ login_url }}" class="login-button">🚀 Login to Your Dashboard</a>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="info-section">
+                <div class="info-title">🎯 Next Steps</div>
+                <ul style="color: #475569; line-height: 1.6;">
+                    <li>Login to your dashboard using the credentials above</li>
+                    <li>Complete your hotel profile setup</li>
+                    <li>Add your rooms and room types</li>
+                    <li>Invite your staff members</li>
+                    <li>Start managing reservations and guests</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">AuraStay</div>
+            <div class="support-info">
+                📧 Support: support@aurastay.com<br>
+                📞 Phone: +1 (555) 123-4567<br>
+                🌐 Website: www.aurastay.com
+            </div>
+            <p style="margin-top: 20px; color: #64748b; font-size: 14px;">
+                © 2024 AuraStay. All rights reserved.<br>
+                This email was sent because a subscription was created for your hotel.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

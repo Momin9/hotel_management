@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Management SaaS - Welcome</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; color: white; margin-bottom: 50px; padding-top: 30px; }
+        .header h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.2rem; opacity: 0.9; }
+        .login-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 40px; }
+        .login-card { background: white; border-radius: 15px; padding: 40px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.3s ease; }
+        .login-card:hover { transform: translateY(-5px); }
+        .login-card .icon { font-size: 4rem; margin-bottom: 20px; }
+        .super-admin .icon { color: #e74c3c; }
+        .tenant .icon { color: #3498db; }
+        .employee .icon { color: #27ae60; }
+        .login-card h3 { font-size: 1.8rem; margin-bottom: 15px; color: #333; }
+        .login-card p { color: #666; margin-bottom: 25px; line-height: 1.6; }
+        .login-btn { display: inline-block; background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem; }
+        .login-btn:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .features { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-top: 40px; color: white; }
+        .features h4 { margin-bottom: 15px; }
+        .features ul { list-style: none; }
+        .features li { padding: 5px 0; }
+        .features li:before { content: '✓ '; color: #2ecc71; font-weight: bold; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .login-options { grid-template-columns: 1fr; }
+            .login-card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏨 Hotel Management SaaS</h1>
+            <p>Complete hotel management solution for modern hospitality</p>
+        </div>
+        
+        <div class="login-options">
+            <div class="login-card super-admin">
+                <div class="icon">👑</div>
+                <h3>Super Admin</h3>
+                <p>System administrators can manage tenants, monitor platform performance, and configure global settings.</p>
+                <a href="{% url 'admin:index' %}" class="login-btn">Admin Login</a>
+                <div class="features">
+                    <h4>Admin Features:</h4>
+                    <ul>
+                        <li>Tenant Management</li>
+                        <li>System Monitoring</li>
+                        <li>Global Configuration</li>
+                        <li>Platform Analytics</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="login-card tenant">
+                <div class="icon">🏢</div>
+                <h3>Hotel Owner</h3>
+                <p>Hotel owners can access their dedicated dashboard to manage hotels, view reports, and configure settings.</p>
+                <button onclick="showTenantLogin()" class="login-btn">Owner Login</button>
+                <div class="features">
+                    <h4>Owner Features:</h4>
+                    <ul>
+                        <li>Property Management</li>
+                        <li>Revenue Analytics</li>
+                        <li>Staff Management</li>
+                        <li>Guest Relations</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="login-card employee">
+                <div class="icon">👥</div>
+                <h3>Hotel Staff</h3>
+                <p>Hotel employees can access their work dashboard for daily operations, reservations, and guest services.</p>
+                <button onclick="showEmployeeLogin()" class="login-btn">Staff Login</button>
+                <div class="features">
+                    <h4>Staff Features:</h4>
+                    <ul>
+                        <li>Reservation Management</li>
+                        <li>Guest Check-in/out</li>
+                        <li>Housekeeping Tasks</li>
+                        <li>Maintenance Requests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tenant Login Modal -->
+    <div id="tenantModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 400px;">
+            <h3 style="margin-bottom: 20px; text-align: center;">Hotel Owner Login</h3>
+            <form id="tenantForm">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Hotel Domain:</label>
+                    <input type="text" id="tenantDomain" placeholder="yourhotel" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                    <small style="color: #666;">.yourdomain.com</small>
+                </div>
+                <div style="text-align: center;">
+                    <button type="button" onclick="redirectToTenant()" class="login-btn" style="margin-right: 10px;">Continue</button>
+                    <button type="button" onclick="closeTenantModal()" style="background: #95a5a6; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Login Modal -->
+    <div id="employeeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 400px;">
+            <h3 style="margin-bottom: 20px; text-align: center;">Hotel Staff Login</h3>
+            <form id="employeeForm">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Hotel Domain:</label>
+                    <input type="text" id="employeeDomain" placeholder="yourhotel" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                    <small style="color: #666;">.yourdomain.com</small>
+                </div>
+                <div style="text-align: center;">
+                    <button type="button" onclick="redirectToEmployee()" class="login-btn" style="margin-right: 10px;">Continue</button>
+                    <button type="button" onclick="closeEmployeeModal()" style="background: #95a5a6; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showTenantLogin() {
+            document.getElementById('tenantModal').style.display = 'block';
+        }
+        
+        function closeTenantModal() {
+            document.getElementById('tenantModal').style.display = 'none';
+        }
+        
+        function showEmployeeLogin() {
+            document.getElementById('employeeModal').style.display = 'block';
+        }
+        
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').style.display = 'none';
+        }
+        
+        function redirectToTenant() {
+            const domain = document.getElementById('tenantDomain').value.trim();
+            if (!domain) {
+                alert('Please enter your hotel domain');
+                return;
+            }
+            // For demo purposes, redirect to demo tenant
+            window.location.href = `http://demo.localhost:8000/accounts/login/`;
+        }
+        
+        function redirectToEmployee() {
+            const domain = document.getElementById('employeeDomain').value.trim();
+            if (!domain) {
+                alert('Please enter your hotel domain');
+                return;
+            }
+            // For demo purposes, redirect to demo tenant staff login
+            window.location.href = `http://demo.localhost:8000/accounts/login/?staff=1`;
+        }
+        
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const tenantModal = document.getElementById('tenantModal');
+            const employeeModal = document.getElementById('employeeModal');
+            if (event.target === tenantModal) {
+                closeTenantModal();
+            }
+            if (event.target === employeeModal) {
+                closeEmployeeModal();
+            }
+        }
+    </script>
+</body>
+</html>

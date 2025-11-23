@@ -1,0 +1,115 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Reservation Details - {{ reservation.guest.full_name }}{% endblock %}
+{% block page_title %}Reservation Details{% endblock %}
+{% block page_subtitle %}{{ reservation.guest.full_name }} • {{ reservation.hotel.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <!-- Reservation Info Card -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-luxury-900">Reservation #{{ reservation.id|slice:":8" }}</h2>
+                <p class="text-luxury-600">{{ reservation.created_at|date:"M d, Y H:i" }}</p>
+            </div>
+            
+            <div class="flex space-x-3">
+                <a href="{% url 'reservations:edit' reservation.id %}" 
+                   class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit</span>
+                </a>
+                <span class="px-4 py-2 rounded-xl text-sm font-medium 
+                      {% if reservation.status == 'confirmed' %}bg-green-100 text-green-800
+                      {% elif reservation.status == 'pending' %}bg-yellow-100 text-yellow-800
+                      {% elif reservation.status == 'cancelled' %}bg-red-100 text-red-800
+                      {% else %}bg-blue-100 text-blue-800{% endif %}">
+                    {{ reservation.status|title }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Guest Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-user mr-3 text-royal-500"></i>
+                    Guest Information
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Name:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.guest.full_name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Email:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.guest.email }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Phone:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.guest.phone|default:"Not provided" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Adults:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.adults }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Children:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.children }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-bed mr-3 text-royal-500"></i>
+                    Booking Information
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Hotel:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.hotel.name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Room:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.room.room_number }} - {{ reservation.room.type }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Check-in:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.check_in|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Check-out:</span>
+                        <span class="font-medium text-luxury-900">{{ reservation.check_out|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Rate:</span>
+                        <span class="font-medium text-luxury-900">${{ reservation.rate }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-lg font-semibold text-luxury-800 mb-6">Actions</h3>
+        
+        <div class="flex space-x-4">
+            <a href="{% url 'reservations:list' %}" class="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to List
+            </a>
+            
+            {% if reservation.status != 'cancelled' %}
+            <a href="{% url 'reservations:cancel' reservation.id %}" class="bg-red-500 text-white px-6 py-3 rounded-xl hover:bg-red-600 transition-colors">
+                <i class="fas fa-times mr-2"></i>Cancel Reservation
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

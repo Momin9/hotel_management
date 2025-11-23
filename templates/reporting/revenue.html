@@ -1,0 +1,37 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Revenue Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Revenue Report</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h4>${{ total_revenue|floatformat:2 }}</h4>
+                                    <p>Total Revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h4>${{ monthly_revenue|floatformat:2 }}</h4>
+                                    <p>This Month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

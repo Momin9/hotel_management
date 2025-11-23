@@ -1,0 +1,250 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}AuraStay - Effortless Hotel Management{% endblock %}
+{% block page_title %}Welcome to AuraStay{% endblock %}
+{% block page_subtitle %}Effortless Hotel Management, Elevated Guest Experience{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-white rounded-3xl p-8 luxury-shadow mb-8 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-royal-50 to-gold-50 opacity-50"></div>
+    <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-bold text-luxury-800 mb-4">
+                Effortless Hotel Management
+            </h1>
+            <h2 class="text-2xl font-semibold text-royal-600 mb-6">
+                Elevated Guest Experience
+            </h2>
+            <p class="text-lg text-luxury-600 mb-8 leading-relaxed">
+                Streamline your hotel operations, boost bookings, and delight guests with our comprehensive 
+                cloud-based platform. From reservations to housekeeping, manage everything seamlessly in one place.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="#contact" class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-4 rounded-xl font-semibold hover-lift transition-all duration-300">
+                    Start Free Trial
+                </a>
+                <a href="{% url 'accounts:login' %}" class="border-2 border-royal-500 text-royal-600 px-8 py-4 rounded-xl font-semibold hover:bg-royal-500 hover:text-white transition-all duration-300">
+                    Sign In
+                </a>
+            </div>
+        </div>
+        <div class="text-center">
+            <img src="{% static 'images/hero/hotel-hero.png' %}" 
+                 alt="Luxury Hotel Reception" 
+                 class="rounded-2xl luxury-shadow w-full h-96 object-cover">
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Pricing & Plans Section -->
+<div id="pricing" class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-luxury-800 mb-4">Pricing & Plans</h2>
+        <p class="text-lg text-luxury-600">Choose the perfect plan for your hotel</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for plan in plans %}
+        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300 {% if plan.name == 'Premium' %}ring-2 ring-royal-500 bg-royal-50{% endif %}">
+            {% if plan.name == 'Premium' %}
+            <div class="text-center mb-4">
+                <span class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Most Popular
+                </span>
+            </div>
+            {% endif %}
+            
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold text-luxury-800 mb-2">{{ plan.name }}</h3>
+                <div class="mb-3">
+                    <span class="text-3xl font-bold text-royal-600">${{ plan.price_monthly }}</span>
+                    <span class="text-luxury-600">/month</span>
+                </div>
+                <p class="text-luxury-600 text-sm">{{ plan.description }}</p>
+            </div>
+                    
+            <div class="space-y-3 mb-6">
+                <div class="flex items-center text-sm">
+                    <i class="fas fa-check text-green-600 mr-2"></i>
+                    <span>Up to {{ plan.max_rooms }} rooms</span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <i class="fas fa-check text-green-600 mr-2"></i>
+                    <span>{{ plan.max_managers }} manager{{ plan.max_managers|pluralize }}</span>
+                </div>
+                <div class="flex items-center text-sm">
+                    {% if plan.name == 'Basic' %}
+                        <i class="fas fa-times text-red-500 mr-2"></i>
+                    {% else %}
+                        <i class="fas fa-check text-green-600 mr-2"></i>
+                    {% endif %}
+                    <span>Advanced Analytics</span>
+                </div>
+                <div class="flex items-center text-sm">
+                    {% if plan.name == 'Enterprise' %}
+                        <i class="fas fa-check text-green-600 mr-2"></i>
+                    {% else %}
+                        <i class="fas fa-times text-red-500 mr-2"></i>
+                    {% endif %}
+                    <span>24/7 Priority Support</span>
+                </div>
+            </div>
+            
+            <a href="#contact" class="block w-full text-center {% if plan.name == 'Premium' %}bg-gradient-to-r from-royal-500 to-royal-600 text-white{% else %}bg-luxury-200 text-luxury-700 hover:bg-royal-500 hover:text-white{% endif %} py-3 rounded-xl font-semibold transition-all duration-300 plan-select" data-plan="{{ plan.name }}">
+                Choose {{ plan.name }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Contact Us Section -->
+<div id="contact" class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-luxury-800 mb-4">Contact Us</h2>
+        <p class="text-lg text-luxury-600">Ready to transform your hotel management? Get in touch!</p>
+    </div>
+    
+    <div class="max-w-2xl mx-auto">
+        <form id="contactForm" class="space-y-6">
+            {% csrf_token %}
+            <input type="hidden" id="selectedPlan" name="selected_plan" value="">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-luxury-700 mb-2">Name</label>
+                    <input type="text" id="name" name="name" required
+                           class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent transition-all duration-300">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-luxury-700 mb-2">Email</label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent transition-all duration-300">
+                </div>
+            </div>
+            <div>
+                <label for="company" class="block text-sm font-medium text-luxury-700 mb-2">Hotel/Company Name</label>
+                <input type="text" id="company" name="company"
+                       class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent transition-all duration-300">
+            </div>
+            <div>
+                <label for="message" class="block text-sm font-medium text-luxury-700 mb-2">Message</label>
+                <textarea id="message" name="message" rows="4" required
+                          class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent transition-all duration-300"></textarea>
+            </div>
+            <div class="text-center">
+                <button type="submit" 
+                        class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
+                    Send Message
+                </button>
+            </div>
+        </form>
+        <div id="contactMessage" class="mt-4 text-center hidden"></div>
+    </div>
+</div>
+
+<!-- Trusted By Section -->
+<div class="bg-white rounded-3xl p-8 luxury-shadow">
+    <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-luxury-800 mb-4">Trusted By Leading Hotels</h2>
+        <p class="text-luxury-600">Join thousands of hotels worldwide using AuraStay</p>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
+        <div class="text-center">
+            <div class="bg-luxury-50 rounded-xl p-4 mb-2">
+                <i class="fas fa-hotel text-2xl text-royal-500"></i>
+            </div>
+            <p class="font-semibold text-luxury-700 text-sm">Royal Palace</p>
+        </div>
+        <div class="text-center">
+            <div class="bg-luxury-50 rounded-xl p-4 mb-2">
+                <i class="fas fa-building text-2xl text-royal-500"></i>
+            </div>
+            <p class="font-semibold text-luxury-700 text-sm">Grand Resort</p>
+        </div>
+        <div class="text-center">
+            <div class="bg-luxury-50 rounded-xl p-4 mb-2">
+                <i class="fas fa-bed text-2xl text-royal-500"></i>
+            </div>
+            <p class="font-semibold text-luxury-700 text-sm">Luxury Suites</p>
+        </div>
+        <div class="text-center">
+            <div class="bg-luxury-50 rounded-xl p-4 mb-2">
+                <i class="fas fa-star text-2xl text-royal-500"></i>
+            </div>
+            <p class="font-semibold text-luxury-700 text-sm">Elite Hotels</p>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+// Plan selection handling
+document.querySelectorAll('.plan-select').forEach(button => {
+    button.addEventListener('click', function(e) {
+        const planName = this.getAttribute('data-plan');
+        document.getElementById('selectedPlan').value = planName;
+        document.getElementById('message').value = `I'm interested in the ${planName} plan. Please contact me with more details.`;
+    });
+});
+
+// Contact form handling
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const messageDiv = document.getElementById('contactMessage');
+    
+    try {
+        const response = await fetch('{% url "accounts:contact_form" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            messageDiv.className = 'mt-4 text-center text-green-600 font-semibold';
+            messageDiv.textContent = data.message;
+            this.reset();
+            document.getElementById('selectedPlan').value = '';
+        } else {
+            messageDiv.className = 'mt-4 text-center text-red-600 font-semibold';
+            messageDiv.textContent = data.message;
+        }
+        
+        messageDiv.classList.remove('hidden');
+        setTimeout(() => {
+            messageDiv.classList.add('hidden');
+        }, 5000);
+        
+    } catch (error) {
+        messageDiv.className = 'mt-4 text-center text-red-600 font-semibold';
+        messageDiv.textContent = 'An error occurred. Please try again.';
+        messageDiv.classList.remove('hidden');
+    }
+});
+
+// Smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

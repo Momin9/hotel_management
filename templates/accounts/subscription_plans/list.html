@@ -1,0 +1,112 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Subscription Plans{% endblock %}
+{% block page_title %}Subscription Plans{% endblock %}
+{% block page_subtitle %}Manage subscription plans for hotels{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-luxury-900">All Subscription Plans</h2>
+            <p class="text-luxury-600">Create and manage subscription plans for hotels</p>
+        </div>
+        <a href="{% url 'accounts:subscription_plan_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
+            <i class="fas fa-plus mr-2"></i>
+            Create New Plan
+        </a>
+    </div>
+
+    <!-- Plans Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for plan in plans %}
+        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300 {% if plan.name == 'Premium' %}ring-2 ring-royal-500 bg-royal-50{% endif %}">
+            {% if plan.name == 'Premium' %}
+            <div class="text-center mb-4">
+                <span class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Most Popular
+                </span>
+            </div>
+            {% endif %}
+            
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-luxury-900">{{ plan.name }}</h3>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium {% if plan.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+                <div class="flex space-x-2">
+                    <a href="{% url 'accounts:subscription_plan_edit' plan.plan_id %}" class="text-royal-600 hover:text-royal-700">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'accounts:subscription_plan_delete' plan.plan_id %}" class="text-red-600 hover:text-red-700" onclick="return confirm('Are you sure?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-luxury-600">{{ plan.description|default:"No description" }}</p>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-luxury-600">Monthly Price</span>
+                    <span class="text-lg font-bold text-royal-600">${{ plan.price_monthly }}</span>
+                </div>
+                
+                {% if plan.price_yearly %}
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-luxury-600">Yearly Price</span>
+                    <span class="text-lg font-bold text-green-600">${{ plan.price_yearly }}</span>
+                </div>
+                {% endif %}
+
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center text-sm">
+                        <i class="fas fa-check text-green-600 mr-2"></i>
+                        <span>Up to {{ plan.max_rooms }} rooms</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <i class="fas fa-check text-green-600 mr-2"></i>
+                        <span>{{ plan.max_managers }} manager{{ plan.max_managers|pluralize }}</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        {% if plan.name == 'Basic' %}
+                            <i class="fas fa-times text-red-500 mr-2"></i>
+                        {% else %}
+                            <i class="fas fa-check text-green-600 mr-2"></i>
+                        {% endif %}
+                        <span>Advanced Analytics</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        {% if plan.name == 'Enterprise' %}
+                            <i class="fas fa-check text-green-600 mr-2"></i>
+                        {% else %}
+                            <i class="fas fa-times text-red-500 mr-2"></i>
+                        {% endif %}
+                        <span>24/7 Priority Support</span>
+                    </div>
+                </div>
+                
+                <div class="border-t border-luxury-200 pt-3 space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-luxury-600">Max Reports</span>
+                        <span class="text-sm font-medium">{{ plan.max_reports|default:"Unlimited" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <i class="fas fa-credit-card text-6xl text-luxury-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-luxury-600 mb-2">No Subscription Plans</h3>
+            <p class="text-luxury-500 mb-6">Create your first subscription plan to get started</p>
+            <a href="{% url 'accounts:subscription_plan_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors">
+                Create First Plan
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

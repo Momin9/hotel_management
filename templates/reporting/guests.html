@@ -1,0 +1,37 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Guest Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Guest Report</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h4>{{ total_guests }}</h4>
+                                    <p>Total Guests</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body text-center">
+                                    <h4>{{ repeat_guests }}</h4>
+                                    <p>Repeat Guests</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

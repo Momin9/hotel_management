@@ -1,0 +1,162 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Payment Management - AuraStay{% endblock %}
+{% block page_title %}Payment Management{% endblock %}
+{% block page_subtitle %}Track and manage all payments{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-credit-card text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Payments</h2>
+                <p class="text-luxury-600 font-medium">{{ payments.count }} Total Payment{{ payments.count|pluralize }}</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center p-4 bg-green-50 rounded-xl">
+                <p class="text-2xl font-bold text-green-600">$12,450</p>
+                <p class="text-sm text-green-700">Total Received</p>
+            </div>
+            <div class="text-center p-4 bg-yellow-50 rounded-xl">
+                <p class="text-2xl font-bold text-yellow-600">$2,340</p>
+                <p class="text-sm text-yellow-700">Pending</p>
+            </div>
+            <div class="text-center p-4 bg-red-50 rounded-xl">
+                <p class="text-2xl font-bold text-red-600">$890</p>
+                <p class="text-sm text-red-700">Failed</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment List -->
+    <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-luxury-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Payment ID</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Invoice</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Guest</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Amount</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Method</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-luxury-100">
+                    {% for payment in payments %}
+                    <tr class="hover:bg-luxury-25 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-luxury-900">#{{ payment.id|slice:":8" }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-royal-600">#{{ payment.invoice.invoice_number|default:payment.invoice.id|slice:":8" }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium text-luxury-800">{{ payment.guest_name|default:"Guest Name" }}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-lg font-bold text-luxury-800">${{ payment.amount|default:"299.99"|floatformat:2 }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                {% if payment.payment_method == 'credit_card' or not payment.payment_method %}
+                                <i class="fas fa-credit-card text-blue-500"></i>
+                                <span class="text-luxury-700">Credit Card</span>
+                                {% elif payment.payment_method == 'cash' %}
+                                <i class="fas fa-money-bill text-green-500"></i>
+                                <span class="text-luxury-700">Cash</span>
+                                {% else %}
+                                <i class="fas fa-university text-purple-500"></i>
+                                <span class="text-luxury-700">Bank Transfer</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium 
+                                  {% if payment.status == 'completed' %}bg-green-100 text-green-800
+                                  {% elif payment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                  {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ payment.status|default:"Completed"|title }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-luxury-700">{{ payment.created_at|date:"M d, Y"|default:"Nov 18, 2024" }}</p>
+                            <p class="text-sm text-luxury-500">{{ payment.created_at|time:"H:i"|default:"14:30" }}</p>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <!-- Sample Data -->
+                    <tr class="hover:bg-luxury-25 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-luxury-900">#PAY-001</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-royal-600">#INV-001</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium text-luxury-800">John Doe</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-lg font-bold text-luxury-800">$299.99</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-credit-card text-blue-500"></i>
+                                <span class="text-luxury-700">Credit Card</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Completed</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-luxury-700">Nov 18, 2024</p>
+                            <p class="text-sm text-luxury-500">14:30</p>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-luxury-25 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-luxury-900">#PAY-002</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-royal-600">#INV-002</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium text-luxury-800">Jane Smith</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-lg font-bold text-luxury-800">$449.97</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-money-bill text-green-500"></i>
+                                <span class="text-luxury-700">Cash</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">Pending</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-luxury-700">Nov 17, 2024</p>
+                            <p class="text-sm text-luxury-500">16:45</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{{ guest.full_name }} - Guest Details{% endblock %}
+{% block page_title %}Guest Details{% endblock %}
+{% block page_subtitle %}{{ guest.full_name }} • Member since {{ guest.created_at|date:"M Y" }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <!-- Guest Profile Card -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-6">
+                <div class="w-20 h-20 bg-gradient-to-r from-royal-400 to-royal-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">
+                    {{ guest.first_name.0 }}{{ guest.last_name.0 }}
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-luxury-900">{{ guest.full_name }}</h2>
+                    <p class="text-luxury-600 text-lg">{{ guest.email }}</p>
+                    <p class="text-luxury-500">Guest ID: #{{ guest.id|slice:":8" }}</p>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <a href="{% url 'crm:edit' guest.id %}" 
+                   class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Details</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Contact Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-address-card mr-3 text-royal-500"></i>
+                    Contact Information
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Email:</span>
+                        <span class="font-medium text-luxury-900">{{ guest.email }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Phone:</span>
+                        <span class="font-medium text-luxury-900">{{ guest.phone|default:"Not provided" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Date of Birth:</span>
+                        <span class="font-medium text-luxury-900">{{ guest.date_of_birth|date:"M d, Y"|default:"Not provided" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Nationality:</span>
+                        <span class="font-medium text-luxury-900">{{ guest.nationality|default:"Not provided" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Address:</span>
+                        <span class="font-medium text-luxury-900">{{ guest.address|default:"Not provided" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Guest Statistics -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-bar mr-3 text-royal-500"></i>
+                    Guest Statistics
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Total Reservations:</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{{ guest.reservations.count }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Member Since:</span>
+                        <span class="font-medium text-luxury-900">{{ guest.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Last Visit:</span>
+                        <span class="font-medium text-luxury-900">
+                            {% if guest.reservations.exists %}
+                                {{ guest.reservations.last.check_in|date:"M d, Y" }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Status:</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if guest.notes %}
+        <div class="mt-8 pt-6 border-t border-luxury-200">
+            <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                <i class="fas fa-sticky-note mr-3 text-royal-500"></i>
+                Notes
+            </h3>
+            <div class="bg-luxury-50 rounded-xl p-4">
+                <p class="text-luxury-700">{{ guest.notes }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-lg font-semibold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-bolt mr-3 text-royal-500"></i>
+            Quick Actions
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="{% url 'reservations:create' %}?guest={{ guest.id }}" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-calendar-plus text-2xl text-blue-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">New Reservation</p>
+                <p class="text-sm text-luxury-600">Create booking for guest</p>
+            </a>
+            
+            <a href="#" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-envelope text-2xl text-green-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">Send Email</p>
+                <p class="text-sm text-luxury-600">Contact guest directly</p>
+            </a>
+            
+            <a href="#" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-history text-2xl text-purple-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">View History</p>
+                <p class="text-sm text-luxury-600">See all reservations</p>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Back Button -->
+    <div class="flex justify-start">
+        <a href="{% url 'crm:list' %}" class="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Guest List
+        </a>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

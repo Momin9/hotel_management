@@ -1,0 +1,239 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Reservations - AuraStay{% endblock %}
+
+{% block page_title %}Reservations{% endblock %}
+{% block page_subtitle %}Manage guest bookings and stays{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-calendar-check text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Reservations</h2>
+                <p class="text-luxury-600 font-medium">3 Active Reservation{{ 3|pluralize }}</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex items-center space-x-2 bg-luxury-50 rounded-xl p-1">
+                <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-white">
+                    <i class="fas fa-list mr-2"></i>List View
+                </button>
+                <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm">
+                    <i class="fas fa-columns mr-2"></i>Kanban View
+                </button>
+            </div>
+            <a href="{% url 'reservations:create' %}" 
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-2xl hover-lift transition-all duration-300 group">
+                <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                New Reservation
+            </a>
+            <a href="{% url 'accounts:dashboard' %}" 
+               class="inline-flex items-center px-6 py-3 bg-luxury-100 text-luxury-700 font-semibold rounded-2xl hover:bg-luxury-200 transition-all duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- List View -->
+    <div id="listView" class="hidden">
+        <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-luxury-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Guest</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Room</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Dates</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Total</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-luxury-100">
+                        {% for reservation in reservations %}
+                        <tr class="hover:bg-luxury-25 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-royal-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-luxury-800">{{ reservation.guest.full_name }}</p>
+                                        <p class="text-sm text-luxury-600">{{ reservation.guest.email }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-luxury-700">{{ reservation.room.room_number }} - {{ reservation.room.type }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-luxury-700">{{ reservation.check_in|date:"M d" }} - {{ reservation.check_out|date:"M d, Y" }}</p>
+                                <p class="text-sm text-luxury-600">{{ reservation.nights }} night{{ reservation.nights|pluralize }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-lg font-bold text-luxury-800">${{ reservation.total_amount|default:reservation.rate }}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 rounded-full text-sm font-medium 
+                                      {% if reservation.status == 'confirmed' %}bg-green-100 text-green-800
+                                      {% elif reservation.status == 'pending' %}bg-orange-100 text-orange-800
+                                      {% elif reservation.status == 'checked_in' %}bg-blue-100 text-blue-800
+                                      {% elif reservation.status == 'cancelled' %}bg-red-100 text-red-800
+                                      {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ reservation.status|title }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'reservations:detail' reservation.id %}" class="text-royal-600 hover:text-royal-800 transition-colors" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'reservations:edit' reservation.id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-luxury-600">
+                                <i class="fas fa-calendar-times text-4xl mb-4 text-luxury-300"></i>
+                                <p class="text-lg">No reservations found</p>
+                                <p class="text-sm">Create your first reservation to get started</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kanban View -->
+    <div id="kanbanView" class="grid grid-cols-1 gap-6">
+        {% for reservation in reservations %}
+        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group">
+            <div class="bg-gradient-to-r 
+                      {% if reservation.status == 'confirmed' %}from-green-500 to-green-600
+                      {% elif reservation.status == 'pending' %}from-orange-500 to-orange-600
+                      {% elif reservation.status == 'checked_in' %}from-blue-500 to-blue-600
+                      {% elif reservation.status == 'checked_out' %}from-gray-500 to-gray-600
+                      {% else %}from-red-500 to-red-600{% endif %} p-6 relative overflow-hidden">
+                <div class="absolute inset-0 bg-black/10"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                <div class="relative flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <i class="fas fa-user text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">{{ reservation.guest.full_name }}</h3>
+                            <p class="{% if reservation.status == 'confirmed' %}text-green-100
+                                    {% elif reservation.status == 'pending' %}text-orange-100
+                                    {% elif reservation.status == 'checked_in' %}text-blue-100
+                                    {% elif reservation.status == 'checked_out' %}text-gray-100
+                                    {% else %}text-red-100{% endif %}">{{ reservation.guest.email }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="{% if reservation.status == 'confirmed' %}bg-green-200 text-green-800
+                                    {% elif reservation.status == 'pending' %}bg-orange-200 text-orange-800
+                                    {% elif reservation.status == 'checked_in' %}bg-blue-200 text-blue-800
+                                    {% elif reservation.status == 'checked_out' %}bg-gray-200 text-gray-800
+                                    {% else %}bg-red-200 text-red-800{% endif %} px-4 py-2 rounded-full font-semibold">{{ reservation.status|title }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
+                        <i class="fas fa-bed text-royal-500 text-xl mb-2"></i>
+                        <p class="font-semibold text-luxury-800">{{ reservation.room.room_number }} - {{ reservation.room.type }}</p>
+                        <p class="text-luxury-600 text-sm">{{ reservation.room.category }}</p>
+                    </div>
+                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
+                        <i class="fas fa-calendar text-royal-500 text-xl mb-2"></i>
+                        <p class="font-semibold text-luxury-800">{{ reservation.check_in|date:"M d, Y" }}</p>
+                        <p class="text-luxury-600 text-sm">Check-in</p>
+                    </div>
+                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
+                        <i class="fas fa-calendar-times text-royal-500 text-xl mb-2"></i>
+                        <p class="font-semibold text-luxury-800">{{ reservation.check_out|date:"M d, Y" }}</p>
+                        <p class="text-luxury-600 text-sm">Check-out</p>
+                    </div>
+                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
+                        <i class="fas fa-dollar-sign text-royal-500 text-xl mb-2"></i>
+                        <p class="font-semibold text-luxury-800">${{ reservation.total_amount|default:reservation.rate }}</p>
+                        <p class="text-luxury-600 text-sm">Total</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <a href="{% url 'reservations:detail' reservation.id %}" class="flex-1 bg-gradient-to-r from-royal-500 to-royal-600 text-white py-3 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center">
+                        <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
+                        View Details
+                    </a>
+                    {% if reservation.status == 'checked_in' %}
+                    <button class="flex-1 bg-gold-100 text-gold-700 py-3 rounded-2xl font-semibold hover:bg-gold-200 transition-all duration-300 group">
+                        <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                        Check Out
+                    </button>
+                    {% else %}
+                    <a href="{% url 'reservations:edit' reservation.id %}" class="flex-1 bg-luxury-100 text-luxury-700 py-3 rounded-2xl font-semibold hover:bg-luxury-200 transition-all duration-300 group text-center">
+                        <i class="fas fa-edit mr-2 group-hover:scale-110 transition-transform"></i>
+                        Edit
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-white rounded-3xl p-8 luxury-shadow text-center">
+            <i class="fas fa-calendar-times text-4xl mb-4 text-luxury-300"></i>
+            <p class="text-lg text-luxury-600">No reservations found</p>
+            <p class="text-sm text-luxury-500">Create your first reservation to get started</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function toggleView(viewType) {
+    const listView = document.getElementById('listView');
+    const kanbanView = document.getElementById('kanbanView');
+    const listBtn = document.getElementById('listViewBtn');
+    const kanbanBtn = document.getElementById('kanbanViewBtn');
+    
+    if (viewType === 'list') {
+        listView.classList.remove('hidden');
+        kanbanView.classList.add('hidden');
+        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm';
+        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-white';
+    } else {
+        listView.classList.add('hidden');
+        kanbanView.classList.remove('hidden');
+        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-white';
+        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm';
+    }
+}
+</script>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

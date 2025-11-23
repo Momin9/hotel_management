@@ -1,0 +1,164 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Billing Dashboard - AuraStay{% endblock %}
+
+{% block page_title %}Billing Dashboard{% endblock %}
+{% block page_subtitle %}Monitor revenue, invoices, and financial performance{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Revenue Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-green-600">${{ total_revenue|floatformat:2|default:"0.00" }}</p>
+                    <p class="text-luxury-600 font-medium">Total Revenue</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-orange-600">${{ pending_payments|floatformat:2|default:"0.00" }}</p>
+                    <p class="text-luxury-600 font-medium">Pending Payments</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-file-invoice text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-blue-600">{{ total_invoices|default:"0" }}</p>
+                    <p class="text-luxury-600 font-medium">Total Invoices</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-purple-600">${{ monthly_revenue|floatformat:2|default:"0.00" }}</p>
+                    <p class="text-luxury-600 font-medium">This Month</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <!-- Recent Invoices -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-luxury-800 flex items-center">
+                    <i class="fas fa-file-invoice text-royal-500 mr-3"></i>
+                    Recent Invoices
+                </h3>
+                <a href="{% url 'billing:invoice_list' %}" class="text-royal-600 hover:text-royal-700 font-medium">
+                    View All →
+                </a>
+            </div>
+            
+            {% if recent_invoices %}
+            <div class="space-y-4">
+                {% for invoice in recent_invoices %}
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-2xl hover:bg-luxury-100 transition-colors">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-receipt text-royal-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-luxury-800">{{ invoice.invoice_number }}</p>
+                            <p class="text-luxury-600 text-sm">{{ invoice.guest_name }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-luxury-800">${{ invoice.total_amount|floatformat:2 }}</p>
+                        <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold
+                            {% if invoice.status == 'paid' %}bg-green-100 text-green-800
+                            {% elif invoice.status == 'pending' %}bg-orange-100 text-orange-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ invoice.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-file-invoice text-luxury-400 text-xl"></i>
+                </div>
+                <p class="text-luxury-600">No recent invoices</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <h3 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+                <i class="fas fa-bolt text-gold-500 mr-3"></i>
+                Quick Actions
+            </h3>
+            
+            <div class="space-y-4">
+                <a href="{% url 'billing:invoice_list' %}" 
+                   class="flex items-center justify-between p-4 bg-gradient-to-r from-royal-50 to-royal-100 rounded-2xl hover:from-royal-100 hover:to-royal-200 transition-all duration-300 group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-royal-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-list text-white"></i>
+                        </div>
+                        <span class="font-semibold text-royal-700">View All Invoices</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-royal-500 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                
+                <a href="{% url 'billing:payment_list' %}" 
+                   class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl hover:from-green-100 hover:to-green-200 transition-all duration-300 group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-credit-card text-white"></i>
+                        </div>
+                        <span class="font-semibold text-green-700">View Payments</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-green-500 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                
+                <a href="{% url 'billing:create_invoice' %}" 
+                   class="flex items-center justify-between p-4 bg-gradient-to-r from-gold-50 to-gold-100 rounded-2xl hover:from-gold-100 hover:to-gold-200 transition-all duration-300 group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-gold-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-plus text-white"></i>
+                        </div>
+                        <span class="font-semibold text-gold-700">Create Invoice</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-gold-500 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

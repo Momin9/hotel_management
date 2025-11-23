@@ -1,0 +1,184 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Invoice Management - AuraStay{% endblock %}
+{% block page_title %}Invoice Management{% endblock %}
+{% block page_subtitle %}Manage guest invoices and billing{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-file-invoice-dollar text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Invoices</h2>
+                <p class="text-luxury-600 font-medium">{{ invoices.count }} Total Invoice{{ invoices.count|pluralize }}</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="{% url 'billing:create_invoice' %}" 
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-2xl hover-lift transition-all duration-300 group">
+                <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                Create Invoice
+            </a>
+        </div>
+    </div>
+
+    <!-- Invoice List -->
+    <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-luxury-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Invoice #</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Guest</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Amount</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Date</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-luxury-100">
+                    {% for invoice in invoices %}
+                    <tr class="hover:bg-luxury-25 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-luxury-900">#{{ invoice.invoice_number|default:invoice.id|slice:":8" }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-royal-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-luxury-800">{{ invoice.guest_name|default:"Guest Name" }}</p>
+                                    <p class="text-sm text-luxury-600">{{ invoice.guest_email|default:"guest@email.com" }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-lg font-bold text-luxury-800">${{ invoice.total_amount|default:"299.99"|floatformat:2 }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium 
+                                  {% if invoice.status == 'paid' %}bg-green-100 text-green-800
+                                  {% elif invoice.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                  {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ invoice.status|default:"Pending"|title }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-luxury-700">{{ invoice.created_at|date:"M d, Y"|default:"Nov 18, 2024" }}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <button class="text-royal-600 hover:text-royal-800 transition-colors" title="View Invoice">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800 transition-colors" title="Mark as Paid">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                                <button class="text-blue-600 hover:text-blue-800 transition-colors" title="Download PDF">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <!-- Sample Data -->
+                    <tr class="hover:bg-luxury-25 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-luxury-900">#INV-001</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-royal-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-luxury-800">John Doe</p>
+                                    <p class="text-sm text-luxury-600">john.doe@email.com</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-lg font-bold text-luxury-800">$299.99</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Paid</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-luxury-700">Nov 18, 2024</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <button class="text-royal-600 hover:text-royal-800 transition-colors" title="View Invoice">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800 transition-colors" title="Mark as Paid">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                                <button class="text-blue-600 hover:text-blue-800 transition-colors" title="Download PDF">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-luxury-25 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-mono text-luxury-900">#INV-002</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-royal-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-luxury-800">Jane Smith</p>
+                                    <p class="text-sm text-luxury-600">jane.smith@email.com</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-lg font-bold text-luxury-800">$449.97</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">Pending</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-luxury-700">Nov 17, 2024</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <button class="text-royal-600 hover:text-royal-800 transition-colors" title="View Invoice">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800 transition-colors" title="Mark as Paid">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                                <button class="text-blue-600 hover:text-blue-800 transition-colors" title="Download PDF">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Staff Management - AuraStay{% endblock %}
+
+{% block page_title %}Staff Management{% endblock %}
+{% block page_subtitle %}Manage your hotel staff and their roles{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Staff List -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-luxury-800 flex items-center">
+                <i class="fas fa-users text-royal-500 mr-3"></i>
+                Staff Members
+            </h3>
+            <button class="bg-gradient-to-r from-gold-500 to-gold-600 text-white px-6 py-3 rounded-2xl font-semibold hover-lift transition-all duration-300">
+                <i class="fas fa-plus mr-2"></i>
+                Add Staff Member
+            </button>
+        </div>
+        
+        {% if staff_members %}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {% for staff in staff_members %}
+            <div class="bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl p-6 hover-lift transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-royal-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-user text-royal-600 text-xl"></i>
+                    </div>
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Active</span>
+                </div>
+                
+                <h4 class="text-xl font-bold text-luxury-800 mb-2">{{ staff.first_name }} {{ staff.last_name }}</h4>
+                <p class="text-luxury-600 mb-4">{{ staff.email }}</p>
+                
+                <div class="flex space-x-2">
+                    <button class="flex-1 bg-royal-500 text-white py-2 rounded-xl text-sm font-semibold hover:bg-royal-600 transition-colors">
+                        Edit Role
+                    </button>
+                    <button class="flex-1 bg-luxury-200 text-luxury-700 py-2 rounded-xl text-sm font-semibold hover:bg-luxury-300 transition-colors">
+                        View
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-users text-luxury-400 text-xl"></i>
+            </div>
+            <p class="text-luxury-600 mb-4">No staff members found</p>
+            <button class="bg-gradient-to-r from-gold-500 to-gold-600 text-white px-6 py-3 rounded-2xl font-semibold hover-lift transition-all duration-300">
+                <i class="fas fa-plus mr-2"></i>
+                Add Your First Staff Member
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

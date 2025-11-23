@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to AuraStay - Your Account is Ready!</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 40px 30px; text-align: center; }
+        .logo { color: white; font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+        .header-text { color: rgba(255,255,255,0.9); font-size: 16px; }
+        .content { padding: 40px 30px; }
+        .welcome-title { color: #1e293b; font-size: 28px; font-weight: bold; margin-bottom: 20px; text-align: center; }
+        .role-badge { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        .credentials-box { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 10px; padding: 20px; margin: 25px 0; }
+        .credentials-title { color: #92400e; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .credential-item { margin: 10px 0; padding: 10px; background: white; border-radius: 5px; }
+        .credential-label { color: #6b7280; font-size: 14px; }
+        .credential-value { color: #1f2937; font-weight: bold; font-size: 16px; }
+        .login-button { display: inline-block; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px; font-weight: bold; margin: 20px 0; }
+        .info-section { background: #f0fdf4; border-radius: 10px; padding: 20px; margin: 25px 0; }
+        .info-title { color: #047857; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .footer { background: #1e293b; color: white; padding: 30px; text-align: center; }
+        .footer-logo { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .support-info { color: #94a3b8; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🏨 AuraStay</div>
+            <div class="header-text">Hotel Management Platform</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h1 class="welcome-title">👋 Welcome to the Team!</h1>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div class="role-badge">{{ role_display }}</div>
+            </div>
+            
+            <p style="font-size: 16px; color: #475569; line-height: 1.6; text-align: center;">
+                Dear <strong>{{ employee_name }}</strong>,<br>
+                Your account has been created for <strong>{{ hotel_name }}</strong>. You can now access the AuraStay management system.
+            </p>
+
+            <!-- Login Credentials -->
+            <div class="credentials-box">
+                <div class="credentials-title">🔐 Your Login Credentials</div>
+                <div class="credential-item">
+                    <div class="credential-label">Email Address:</div>
+                    <div class="credential-value">{{ employee_email }}</div>
+                </div>
+                <div class="credential-item">
+                    <div class="credential-label">Username:</div>
+                    <div class="credential-value">{{ username }}</div>
+                </div>
+                <div class="credential-item">
+                    <div class="credential-label">Temporary Password:</div>
+                    <div class="credential-value">{{ password }}</div>
+                </div>
+            </div>
+
+            <!-- Account Details -->
+            <div class="info-section">
+                <div class="info-title">👤 Account Details</div>
+                <p><strong>Role:</strong> {{ role_display }}</p>
+                <p><strong>Hotel:</strong> {{ hotel_name }}</p>
+                <p><strong>Created By:</strong> {{ created_by }}</p>
+                <p><strong>Account Status:</strong> <span style="color: #059669; font-weight: bold;">Active</span></p>
+            </div>
+
+            <!-- Login Button -->
+            <div style="text-align: center;">
+                <a href="{{ login_url }}" class="login-button">🚀 Login & Setup Profile</a>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="info-section">
+                <div class="info-title">📋 Next Steps</div>
+                <ul style="color: #475569; line-height: 1.6;">
+                    <li>Login using the credentials above</li>
+                    <li>Change your password for security</li>
+                    <li>Complete your profile information</li>
+                    <li>Upload a profile picture</li>
+                    <li>Familiarize yourself with the system</li>
+                </ul>
+            </div>
+
+            <!-- Security Notice -->
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 15px; margin: 20px 0;">
+                <p style="color: #dc2626; font-size: 14px; margin: 0;">
+                    <strong>🔒 Security Notice:</strong> Please change your password after first login for security purposes.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">AuraStay</div>
+            <div class="support-info">
+                📧 Support: support@aurastay.com<br>
+                📞 Phone: +1 (555) 123-4567<br>
+                🌐 Website: www.aurastay.com
+            </div>
+            <p style="margin-top: 20px; color: #64748b; font-size: 14px;">
+                © 2024 AuraStay. All rights reserved.<br>
+                This email was sent because an account was created for you.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

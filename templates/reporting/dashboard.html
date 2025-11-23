@@ -1,0 +1,229 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Reports & Analytics - AuraStay{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+{% block page_subtitle %}Comprehensive business intelligence and insights{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-chart-line text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Analytics Dashboard</h2>
+                <p class="text-luxury-600 font-medium">Real-time business insights and performance metrics</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex items-center space-x-2 bg-luxury-50 rounded-xl p-1">
+                <input type="date" value="2024-01-01" class="px-3 py-2 rounded-lg text-sm border-0 bg-transparent">
+                <span class="text-luxury-600">to</span>
+                <input type="date" value="2024-12-31" class="px-3 py-2 rounded-lg text-sm border-0 bg-transparent">
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-bed text-blue-600 text-xl"></i>
+                </div>
+                <span class="text-green-500 text-sm font-medium flex items-center">
+                    <i class="fas fa-arrow-up mr-1"></i>+5.2%
+                </span>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-900">87.5%</h3>
+            <p class="text-luxury-600">Average Occupancy</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
+                </div>
+                <span class="text-green-500 text-sm font-medium flex items-center">
+                    <i class="fas fa-arrow-up mr-1"></i>+12.8%
+                </span>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-900">$124.5K</h3>
+            <p class="text-luxury-600">Monthly Revenue</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-users text-purple-600 text-xl"></i>
+                </div>
+                <span class="text-green-500 text-sm font-medium flex items-center">
+                    <i class="fas fa-arrow-up mr-1"></i>+8.3%
+                </span>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-900">1,247</h3>
+            <p class="text-luxury-600">Total Guests</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-star text-yellow-600 text-xl"></i>
+                </div>
+                <span class="text-green-500 text-sm font-medium flex items-center">
+                    <i class="fas fa-arrow-up mr-1"></i>+0.2
+                </span>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-900">4.8</h3>
+            <p class="text-luxury-600">Average Rating</p>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <h3 class="text-lg font-semibold text-luxury-800 mb-6">Revenue Trend (Last 12 Months)</h3>
+            <canvas id="revenueChart" width="400" height="200"></canvas>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <h3 class="text-lg font-semibold text-luxury-800 mb-6">Occupancy Distribution</h3>
+            <canvas id="occupancyChart" width="300" height="300"></canvas>
+        </div>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 cursor-pointer" onclick="window.location.href='{% url 'reporting:occupancy' %}'">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-chart-bar text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 text-center mb-2">Occupancy Analytics</h3>
+            <p class="text-luxury-600 text-sm text-center mb-4">Detailed room occupancy statistics and trends</p>
+            <button class="w-full bg-royal-500 text-white py-2 rounded-xl hover:bg-royal-600 transition-colors">
+                View Report
+            </button>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 cursor-pointer" onclick="window.location.href='{% url 'reporting:revenue' %}'">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-chart-line text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 text-center mb-2">Revenue Intelligence</h3>
+            <p class="text-luxury-600 text-sm text-center mb-4">Financial performance and profit analysis</p>
+            <button class="w-full bg-royal-500 text-white py-2 rounded-xl hover:bg-royal-600 transition-colors">
+                View Report
+            </button>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 cursor-pointer" onclick="window.location.href='{% url 'reporting:guests' %}'">
+            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-users text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 text-center mb-2">Guest Insights</h3>
+            <p class="text-luxury-600 text-sm text-center mb-4">Demographics and behavior patterns</p>
+            <button class="w-full bg-royal-500 text-white py-2 rounded-xl hover:bg-royal-600 transition-colors">
+                View Report
+            </button>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 cursor-pointer" onclick="alert('Performance report coming soon!')">
+            <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-tachometer-alt text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 text-center mb-2">Performance Dashboard</h3>
+            <p class="text-luxury-600 text-sm text-center mb-4">Operational efficiency metrics</p>
+            <button class="w-full bg-royal-500 text-white py-2 rounded-xl hover:bg-royal-600 transition-colors">
+                View Report
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Revenue ($K)',
+                data: [95, 102, 118, 125, 134, 128, 142, 138, 145, 152, 148, 155],
+                borderColor: '#8B5CF6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#6B7280'
+                    },
+                    grid: {
+                        color: 'rgba(107, 114, 128, 0.1)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#6B7280'
+                    },
+                    grid: {
+                        color: 'rgba(107, 114, 128, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Occupancy Chart
+    const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+    new Chart(occupancyCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Occupied', 'Available', 'Maintenance'],
+            datasets: [{
+                data: [87.5, 10.2, 2.3],
+                backgroundColor: ['#8B5CF6', '#6B7280', '#EF4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#374151',
+                        padding: 20
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

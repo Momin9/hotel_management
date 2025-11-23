@@ -1,0 +1,323 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{{ user_role }} Dashboard - AuraStay{% endblock %}
+
+{% block page_title %}{{ user_role }} Dashboard{% endblock %}
+{% block page_subtitle %}Your daily tasks and responsibilities{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Role-specific Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {% if role_key == 'FRONT_DESK' %}
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-blue-600">8</p>
+                    <p class="text-luxury-600 font-medium">Check-ins Today</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-green-600">5</p>
+                    <p class="text-luxury-600 font-medium">Check-outs Today</p>
+                </div>
+            </div>
+        </div>
+        
+        {% elif role_key == 'HOUSEKEEPING' %}
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-broom text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-purple-600">12</p>
+                    <p class="text-luxury-600 font-medium">Rooms to Clean</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-green-600">8</p>
+                    <p class="text-luxury-600 font-medium">Completed</p>
+                </div>
+            </div>
+        </div>
+        
+        {% elif role_key == 'MAINTENANCE' %}
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tools text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-orange-600">3</p>
+                    <p class="text-luxury-600 font-medium">Open Issues</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-red-600">1</p>
+                    <p class="text-luxury-600 font-medium">Urgent</p>
+                </div>
+            </div>
+        </div>
+        
+        {% elif role_key == 'KITCHEN_STAFF' %}
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-utensils text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-yellow-600">15</p>
+                    <p class="text-luxury-600 font-medium">Active Orders</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-green-600">42</p>
+                    <p class="text-luxury-600 font-medium">Completed Today</p>
+                </div>
+            </div>
+        </div>
+        
+        {% elif role_key == 'ACCOUNTANT' %}
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-green-600">$8,450</p>
+                    <p class="text-luxury-600 font-medium">Today's Revenue</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-file-invoice text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-orange-600">7</p>
+                    <p class="text-luxury-600 font-medium">Pending Invoices</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Common stats -->
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-royal-500 to-royal-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-royal-600">{{ user_role }}</p>
+                    <p class="text-luxury-600 font-medium">Your Role</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-purple-600">8h</p>
+                    <p class="text-luxury-600 font-medium">Shift Duration</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role-specific Actions -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-tasks text-gold-500 mr-3"></i>
+            Your Tasks & Tools
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {% if can_checkin %}
+            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl transition-all duration-300">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt text-white"></i>
+                    </div>
+                    <span class="font-semibold text-blue-700">Check-in Guests</span>
+                </div>
+                <span class="text-blue-500 text-sm">Coming Soon</span>
+            </div>
+            {% endif %}
+            
+            {% if can_checkout %}
+            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl transition-all duration-300">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-sign-out-alt text-white"></i>
+                    </div>
+                    <span class="font-semibold text-green-700">Check-out Guests</span>
+                </div>
+                <span class="text-green-500 text-sm">Coming Soon</span>
+            </div>
+            {% endif %}
+            
+            {% if can_view_reservations %}
+            <a href="/reservations/" 
+               class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl hover:from-purple-100 hover:to-purple-200 transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-white"></i>
+                    </div>
+                    <span class="font-semibold text-purple-700">Reservations</span>
+                </div>
+                <i class="fas fa-arrow-right text-purple-500 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            {% endif %}
+            
+            {% if can_view_housekeeping %}
+            <a href="/housekeeping/" 
+               class="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-2xl hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-broom text-white"></i>
+                    </div>
+                    <span class="font-semibold text-indigo-700">Housekeeping Tasks</span>
+                </div>
+                <i class="fas fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            {% endif %}
+            
+            {% if can_view_maintenance %}
+            <a href="/maintenance/" 
+               class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl hover:from-orange-100 hover:to-orange-200 transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-tools text-white"></i>
+                    </div>
+                    <span class="font-semibold text-orange-700">Maintenance Issues</span>
+                </div>
+                <i class="fas fa-arrow-right text-orange-500 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            {% endif %}
+            
+            {% if can_view_pos %}
+            <a href="/pos/" 
+               class="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-2xl hover:from-yellow-100 hover:to-yellow-200 transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-utensils text-white"></i>
+                    </div>
+                    <span class="font-semibold text-yellow-700">Kitchen Orders</span>
+                </div>
+                <i class="fas fa-arrow-right text-yellow-500 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            {% endif %}
+            
+            {% if can_view_billing %}
+            <a href="/billing/" 
+               class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl hover:from-green-100 hover:to-green-200 transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-file-invoice-dollar text-white"></i>
+                    </div>
+                    <span class="font-semibold text-green-700">Billing & Invoices</span>
+                </div>
+                <i class="fas fa-arrow-right text-green-500 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-calendar-day text-royal-500 mr-3"></i>
+            Today's Schedule
+        </h3>
+        
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-2xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-clock text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-luxury-800">Shift Start</p>
+                        <p class="text-luxury-600 text-sm">8:00 AM</p>
+                    </div>
+                </div>
+                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Completed</span>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-2xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-tasks text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-luxury-800">Daily Tasks</p>
+                        <p class="text-luxury-600 text-sm">Complete assigned duties</p>
+                    </div>
+                </div>
+                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">In Progress</span>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-2xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-clock text-orange-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-luxury-800">Shift End</p>
+                        <p class="text-luxury-600 text-sm">4:00 PM</p>
+                    </div>
+                </div>
+                <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">Pending</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Occupancy Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Occupancy Report</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h4>{{ occupancy_rate }}%</h4>
+                                    <p>Current Occupancy</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h4>{{ occupied_rooms }}</h4>
+                                    <p>Occupied Rooms</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h4>{{ available_rooms }}</h4>
+                                    <p>Available Rooms</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body text-center">
+                                    <h4>{{ total_rooms }}</h4>
+                                    <p>Total Rooms</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Room Number</th>
+                                    <th>Room Type</th>
+                                    <th>Status</th>
+                                    <th>Guest</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for room in rooms %}
+                                <tr>
+                                    <td>{{ room.room_number }}</td>
+                                    <td>{{ room.room_type.name }}</td>
+                                    <td>
+                                        <span class="badge badge-{% if room.status == 'occupied' %}danger{% elif room.status == 'available' %}success{% else %}warning{% endif %}">
+                                            {{ room.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if room.current_guest %}
+                                            {{ room.current_guest.first_name }} {{ room.current_guest.last_name }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if room.current_reservation %}
+                                            {{ room.current_reservation.check_in }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if room.current_reservation %}
+                                            {{ room.current_reservation.check_out }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

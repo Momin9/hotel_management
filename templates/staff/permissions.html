@@ -1,0 +1,124 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Manage Permissions - {{ staff.get_full_name }}{% endblock %}
+{% block page_title %}Manage Permissions{% endblock %}
+{% block page_subtitle %}Set permissions for {{ staff.get_full_name }} ({{ staff.role }}){% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Staff Info -->
+            <div class="bg-luxury-50 p-6 rounded-2xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-r from-royal-400 to-royal-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl">
+                        {{ staff.first_name.0 }}{{ staff.last_name.0 }}
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-luxury-900">{{ staff.get_full_name }}</h3>
+                        <p class="text-luxury-600">{{ staff.role }} • {{ staff.assigned_hotel.name|default:"No Hotel Assigned" }}</p>
+                        <p class="text-sm text-luxury-500">{{ staff.email }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Permissions Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {% for category, permissions in permission_categories.items %}
+                <div class="bg-luxury-50 p-6 rounded-2xl">
+                    <h4 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                        <i class="fas fa-{% if 'Hotel' in category %}hotel{% elif 'Reservation' in category %}calendar{% elif 'Guest' in category %}users{% elif 'Staff' in category %}user-tie{% elif 'Housekeeping' in category %}broom{% elif 'Maintenance' in category %}tools{% elif 'Point' in category %}cash-register{% elif 'Inventory' in category %}boxes{% elif 'Financial' in category %}dollar-sign{% endif %} mr-3 text-royal-500"></i>
+                        {{ category }}
+                    </h4>
+                    
+                    <div class="space-y-3">
+                        {% for perm_code, perm_name in permissions %}
+                        <label class="flex items-center space-x-3 cursor-pointer hover:bg-white p-2 rounded-lg transition-colors">
+                            <input type="checkbox" 
+                                   name="permissions" 
+                                   value="{{ perm_code }}"
+                                   {% if perm_code in current_permissions %}checked{% endif %}
+                                   class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                            <span class="text-luxury-700 flex-1">{{ perm_name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-luxury-50 p-6 rounded-2xl">
+                <h4 class="text-lg font-semibold text-luxury-800 mb-4">Quick Actions</h4>
+                <div class="flex flex-wrap gap-3">
+                    <button type="button" onclick="selectAll()" 
+                            class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
+                        <i class="fas fa-check-double mr-2"></i>Select All
+                    </button>
+                    <button type="button" onclick="selectNone()" 
+                            class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
+                        <i class="fas fa-times mr-2"></i>Select None
+                    </button>
+                    <button type="button" onclick="selectByRole('{{ staff.role }}')" 
+                            class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                        <i class="fas fa-user-tag mr-2"></i>Default for {{ staff.role }}
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-4 pt-6">
+                <button type="submit" 
+                        class="bg-royal-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-royal-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>Save Permissions</span>
+                </button>
+                <a href="{% url 'staff:detail' staff.user_id %}" 
+                   class="bg-luxury-200 text-luxury-700 px-8 py-3 rounded-xl font-semibold hover:bg-luxury-300 transition-colors">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function selectAll() {
+    const checkboxes = document.querySelectorAll('input[name="permissions"]');
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+}
+
+function selectNone() {
+    const checkboxes = document.querySelectorAll('input[name="permissions"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+}
+
+function selectByRole(role) {
+    // Default permissions by role
+    const rolePermissions = {
+        'Manager': ['view_hotel', 'change_hotel', 'view_room', 'add_room', 'change_room', 'view_reservation', 'add_reservation', 'change_reservation', 'delete_reservation', 'view_guest', 'add_guest', 'change_guest', 'view_staff', 'add_staff', 'change_staff', 'view_reports', 'view_billing', 'view_maintenance', 'add_maintenance', 'change_maintenance'],
+        'Staff': ['view_hotel', 'view_room', 'view_reservation', 'view_guest', 'add_guest', 'change_guest'],
+        'Receptionist': ['view_hotel', 'view_room', 'view_reservation', 'add_reservation', 'change_reservation', 'view_guest', 'add_guest', 'change_guest', 'view_checkin', 'add_checkin', 'change_checkin'],
+        'Housekeeper': ['view_hotel', 'view_room', 'change_room', 'view_housekeeping', 'add_housekeeping', 'change_housekeeping'],
+        'Maintenance': ['view_hotel', 'view_room', 'view_maintenance', 'add_maintenance', 'change_maintenance', 'delete_maintenance'],
+        'Kitchen': ['view_hotel', 'view_pos', 'add_pos', 'change_pos', 'view_inventory', 'change_inventory'],
+        'Accountant': ['view_hotel', 'view_billing', 'add_billing', 'change_billing', 'view_reports', 'view_payment']
+    };
+    
+    const checkboxes = document.querySelectorAll('input[name="permissions"]');
+    const defaultPerms = rolePermissions[role] || [];
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = defaultPerms.includes(checkbox.value);
+    });
+}
+</script>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

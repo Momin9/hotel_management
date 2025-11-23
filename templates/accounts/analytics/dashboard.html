@@ -1,0 +1,206 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Analytics Dashboard{% endblock %}
+{% block page_title %}Advanced Analytics{% endblock %}
+{% block page_subtitle %}Comprehensive insights and performance metrics{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Key Metrics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100 text-sm font-medium">Total Revenue</p>
+                    <p class="text-3xl font-bold">${{ total_revenue|floatformat:0 }}</p>
+                    <p class="text-blue-200 text-sm">+12.5% from last year</p>
+                </div>
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm font-medium">Avg Monthly Revenue</p>
+                    <p class="text-3xl font-bold">${{ avg_monthly_revenue|floatformat:0 }}</p>
+                    <p class="text-green-200 text-sm">+8.3% growth rate</p>
+                </div>
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl p-6 text-white hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100 text-sm font-medium">Active Subscriptions</p>
+                    <p class="text-3xl font-bold">{{ subscription_stats|length }}</p>
+                    <p class="text-purple-200 text-sm">Across all plans</p>
+                </div>
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-handshake text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 text-white hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm font-medium">Customer Satisfaction</p>
+                    <p class="text-3xl font-bold">4.8/5</p>
+                    <p class="text-orange-200 text-sm">Based on 1,250 reviews</p>
+                </div>
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-star text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Revenue Chart -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-luxury-900">Revenue Trend</h3>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 bg-royal-100 text-royal-700 rounded-lg text-sm font-medium">12M</button>
+                    <button class="px-3 py-1 text-luxury-600 rounded-lg text-sm">6M</button>
+                    <button class="px-3 py-1 text-luxury-600 rounded-lg text-sm">3M</button>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Hotel Growth Chart -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-luxury-900">Hotel Growth</h3>
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span class="text-sm text-luxury-600">New Hotels</span>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="hotelGrowthChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-6">Subscription Distribution</h3>
+            <div class="space-y-4">
+                {% for plan in subscription_stats %}
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-4 h-4 bg-gradient-to-r from-royal-400 to-royal-600 rounded-full"></div>
+                        <span class="font-medium text-luxury-900">{{ plan.name }}</span>
+                    </div>
+                    <span class="font-bold text-luxury-900">{{ plan.subscription_count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-6">Performance Indicators</h3>
+            <div class="space-y-6">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-luxury-700">Revenue Growth</span>
+                        <span class="text-sm font-bold text-green-600">+12.5%</span>
+                    </div>
+                    <div class="w-full bg-luxury-200 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-luxury-700">Customer Retention</span>
+                        <span class="text-sm font-bold text-blue-600">89.2%</span>
+                    </div>
+                    <div class="w-full bg-luxury-200 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" style="width: 89%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-6">Quick Actions</h3>
+            <div class="space-y-3">
+                <a href="{% url 'accounts:subscription_plan_create' %}" class="flex items-center p-3 bg-royal-50 rounded-xl hover:bg-royal-100 transition-colors group">
+                    <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-plus text-royal-600"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="font-medium text-royal-900">New Plan</p>
+                        <p class="text-sm text-royal-600">Create subscription plan</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: {{ revenue_labels|safe }},
+        datasets: [{
+            label: 'Revenue ($)',
+            data: {{ revenue_data|safe }},
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+const hotelCtx = document.getElementById('hotelGrowthChart').getContext('2d');
+new Chart(hotelCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'New Hotels',
+            data: {{ hotel_growth_data|safe }},
+            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+            borderRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+{% endblock %}

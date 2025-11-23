@@ -1,0 +1,202 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Hotels - AuraStay{% endblock %}
+
+{% block page_title %}My Hotels{% endblock %}
+{% block page_subtitle %}Manage all your luxury hotels{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-building text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Hotels</h2>
+                <p class="text-luxury-600 font-medium">{{ hotels.count }} Propert{{ hotels.count|pluralize:"y,ies" }}</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="{% url 'hotels:hotel_create' %}" 
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-2xl hover-lift transition-all duration-300 group">
+                <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                Add Hotel
+            </a>
+            <a href="{% url 'hotels:dashboard' %}" 
+               class="inline-flex items-center px-6 py-3 bg-luxury-100 text-luxury-700 font-semibold rounded-2xl hover:bg-luxury-200 transition-all duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    {% if hotels %}
+        <!-- Hotels Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {% for hotel in hotels %}
+            <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group">
+                <!-- Property Header -->
+                <div class="bg-gradient-to-r from-royal-500 to-royal-600 p-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-black/10"></div>
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                    <div class="relative text-center">
+                        <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                            <i class="fas fa-hotel text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2">{{ hotel.name }}</h3>
+                        <p class="text-royal-100 text-sm">{{ hotel.address|truncatewords:5 }}</p>
+                    </div>
+                </div>
+
+                <!-- Property Details -->
+                <div class="p-6 space-y-6">
+                    <!-- Contact Info -->
+                    {% if hotel.phone or hotel.email %}
+                    <div class="space-y-2">
+                        {% if hotel.phone %}
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-royal-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-phone text-royal-600 text-sm"></i>
+                            </div>
+                            <span class="text-luxury-700 text-sm">{{ hotel.phone }}</span>
+                        </div>
+                        {% endif %}
+                        {% if hotel.email %}
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-royal-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-envelope text-royal-600 text-sm"></i>
+                            </div>
+                            <span class="text-luxury-700 text-sm">{{ hotel.email }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Property Stats -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center p-4 bg-gradient-to-br from-gold-50 to-gold-100 rounded-2xl">
+                            <p class="text-2xl font-bold text-gold-600">{{ hotel.room_types.count }}</p>
+                            <p class="text-luxury-600 text-xs font-medium">Room Types</p>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
+                            <p class="text-2xl font-bold text-green-600">{{ hotel.rooms.count|default:"0" }}</p>
+                            <p class="text-luxury-600 text-xs font-medium">Total Rooms</p>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl">
+                            <p class="text-2xl font-bold text-purple-600">{% if hotel.is_active %}Active{% else %}Inactive{% endif %}</p>
+                            <p class="text-luxury-600 text-xs font-medium">Status</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="{% url 'hotels:room_type_list' hotel.id %}" 
+                           class="bg-gradient-to-r from-royal-500 to-royal-600 text-white py-3 rounded-2xl font-semibold text-center hover-lift transition-all duration-300 group">
+                            <i class="fas fa-tags mr-2 group-hover:scale-110 transition-transform"></i>
+                            Room Types
+                        </a>
+                        <a href="{% url 'hotels:room_list' hotel.id %}" 
+                           class="bg-luxury-100 text-luxury-700 py-3 rounded-2xl font-semibold text-center hover:bg-luxury-200 transition-all duration-300 group">
+                            <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
+                            Rooms
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Hotels Summary -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <h3 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+                <i class="fas fa-chart-bar text-royal-500 mr-3"></i>
+                Hotels Overview
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-gradient-to-br from-royal-50 to-royal-100 rounded-2xl">
+                    <div class="w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-building text-white text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold text-royal-600">{{ hotels.count }}</p>
+                    <p class="text-luxury-600 font-medium">Total Hotels</p>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-gold-50 to-gold-100 rounded-2xl">
+                    <div class="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tags text-white text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold text-gold-600">{{ hotels.count }}</p>
+                    <p class="text-luxury-600 font-medium">Room Types</p>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-bed text-white text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold text-green-600">{{ hotels.count }}</p>
+                    <p class="text-luxury-600 font-medium">Total Rooms</p>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check-circle text-white text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold text-purple-600">{{ hotels.count }}</p>
+                    <p class="text-luxury-600 font-medium">Active</p>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+                <div class="w-32 h-32 bg-gradient-to-r from-luxury-100 to-luxury-200 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <i class="fas fa-building text-luxury-400 text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800 mb-4">No Hotels Yet</h3>
+                <p class="text-luxury-600 mb-8 leading-relaxed">
+                    Start by adding your first hotel to manage rooms, reservations, and guests. 
+                    Create a luxury experience for your customers.
+                </p>
+                <a href="{% url 'hotels:hotel_create' %}" 
+                   class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-2xl hover-lift transition-all duration-300 group">
+                    <i class="fas fa-plus mr-3 group-hover:rotate-90 transition-transform duration-300"></i>
+                    Add Your First Property
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth animations to cards
+    const cards = document.querySelectorAll('.hover-lift');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate-fade-in');
+    });
+});
+</script>
+{% endblock %}

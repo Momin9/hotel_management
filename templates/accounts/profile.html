@@ -1,0 +1,386 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Profile{% endblock %}
+{% block page_title %}User Profile{% endblock %}
+{% block page_subtitle %}Manage your account settings and information{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Profile Header -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-luxury-800">Profile Information</h3>
+            <button onclick="toggleEdit()" id="editBtn" class="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors">
+                <i class="fas fa-edit mr-2"></i>Edit
+            </button>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data" id="profileForm" class="space-y-6">
+            {% csrf_token %}
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" alt="Profile" class="w-24 h-24 rounded-2xl object-cover">
+                    {% else %}
+                        <div class="w-24 h-24 bg-gradient-to-r from-royal-400 to-royal-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold">
+                            {{ user.first_name.0|default:user.email.0|upper }}
+                        </div>
+                    {% endif %}
+                    <label for="profile_image" class="absolute -bottom-2 -right-2 w-8 h-8 bg-royal-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-royal-700 transition-colors hidden" id="imageLabel">
+                        <i class="fas fa-camera text-white text-sm"></i>
+                    </label>
+                    <input type="file" id="profile_image" name="profile_image" accept="image/*" class="hidden" disabled>
+                </div>
+                <div class="flex-1">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-luxury-700 mb-1">First Name</label>
+                            <input type="text" name="first_name" value="{{ user.first_name }}" 
+                                   class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent disabled:bg-gray-100" 
+                                   disabled>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-luxury-700 mb-1">Last Name</label>
+                            <input type="text" name="last_name" value="{{ user.last_name }}" 
+                                   class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent disabled:bg-gray-100" 
+                                   disabled>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-luxury-700 mb-1">Phone</label>
+                        <input type="text" name="phone" value="{{ user.phone }}" 
+                               class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent disabled:bg-gray-100" 
+                               disabled>
+                    </div>
+                    <p class="text-luxury-600">
+                        {% if user.is_superuser %}
+                            Super Administrator
+                        {% elif user.role == 'Owner' %}
+                            Hotel Owner
+                        {% elif user.is_staff %}
+                            Staff Member
+                        {% else %}
+                            Employee
+                        {% endif %}
+                    </p>
+                    <p class="text-sm text-luxury-500">Member since {{ user.date_joined|date:"F Y" }}</p>
+                </div>
+            </div>
+            
+            <!-- Save/Cancel Buttons -->
+            <div class="flex justify-end space-x-4 hidden" id="formButtons">
+                <button type="button" onclick="cancelEdit()" 
+                        class="px-6 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </button>
+                <button type="submit" 
+                        class="px-6 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Profile Information -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Personal Information -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-6">Personal Information</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-luxury-700 mb-1">Full Name</label>
+                    <p class="text-luxury-900">{{ user.get_full_name|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-luxury-700 mb-1">Username</label>
+                    <p class="text-luxury-900">{{ user.username }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-luxury-700 mb-1">Email Address</label>
+                    <p class="text-luxury-900">{{ user.email }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-luxury-700 mb-1">Phone Number</label>
+                    <p class="text-luxury-900">{{ user.phone|default:"Not provided" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Status -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-6">Account Status</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-luxury-700">Account Status</span>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium {% if user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-luxury-700">Role</span>
+                    <span class="px-3 py-1 bg-royal-100 text-royal-800 rounded-full text-sm font-medium">
+                        {% if user.is_superuser %}
+                            Super Admin
+                        {% elif user.role == 'Owner' %}
+                            Hotel Owner
+                        {% elif user.is_staff %}
+                            Staff
+                        {% else %}
+                            Employee
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-luxury-700">Last Login</span>
+                    <span class="text-luxury-600">{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-luxury-700">Date Joined</span>
+                    <span class="text-luxury-600">{{ user.date_joined|date:"M d, Y" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Section -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-luxury-900">Security Settings</h3>
+            <button onclick="togglePasswordReset()" id="passwordResetBtn" class="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors">
+                <i class="fas fa-key mr-2"></i>Reset Password
+            </button>
+        </div>
+        
+        <div id="passwordResetForm" class="hidden">
+            <form method="post" action="{% url 'accounts:reset_password' %}" onsubmit="return validatePassword()" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="new_password" class="block text-sm font-medium text-luxury-700 mb-2">New Password</label>
+                    <input type="password" id="new_password" name="new_password" 
+                           class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                           required minlength="8">
+                    <div id="password-requirements" class="mt-2 text-sm text-luxury-600">
+                        <p class="mb-1">Password must contain:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li id="length-req" class="text-red-500">At least 8 characters</li>
+                            <li id="uppercase-req" class="text-red-500">One uppercase letter</li>
+                            <li id="lowercase-req" class="text-red-500">One lowercase letter</li>
+                            <li id="number-req" class="text-red-500">One number</li>
+                            <li id="special-req" class="text-red-500">One special character (!@#$%^&*)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-luxury-700 mb-2">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" 
+                           class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                           required>
+                    <div id="password-match" class="mt-2 text-sm"></div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button type="submit" id="submitPasswordBtn" 
+                            class="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed" 
+                            disabled>
+                        <i class="fas fa-save mr-2"></i>Update Password
+                    </button>
+                    <button type="button" onclick="cancelPasswordReset()" 
+                            class="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <h3 class="text-xl font-bold text-luxury-900 mb-6">Quick Actions</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="{% url 'accounts:dashboard' %}" class="flex items-center p-4 bg-royal-50 rounded-xl hover:bg-royal-100 transition-colors group">
+                <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center group-hover:bg-royal-200 transition-colors">
+                    <i class="fas fa-tachometer-alt text-royal-600"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="font-medium text-royal-900">Dashboard</p>
+                    <p class="text-sm text-royal-600">Go to main dashboard</p>
+                </div>
+            </a>
+            
+            {% if user.is_superuser %}
+            <a href="{% url 'accounts:subscription_plan_list' %}" class="flex items-center p-4 bg-gold-50 rounded-xl hover:bg-gold-100 transition-colors group">
+                <div class="w-10 h-10 bg-gold-100 rounded-xl flex items-center justify-center group-hover:bg-gold-200 transition-colors">
+                    <i class="fas fa-credit-card text-gold-600"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="font-medium text-gold-900">Subscription Plans</p>
+                    <p class="text-sm text-gold-600">Manage plans</p>
+                </div>
+            </a>
+            
+            <a href="{% url 'accounts:hotel_list' %}" class="flex items-center p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors group">
+                <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                    <i class="fas fa-building text-green-600"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="font-medium text-green-900">Hotels</p>
+                    <p class="text-sm text-green-600">Manage hotels</p>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleEdit() {
+    const inputs = document.querySelectorAll('#profileForm input[name="first_name"], #profileForm input[name="last_name"], #profileForm input[name="phone"], #profileForm input[name="profile_image"]');
+    const editBtn = document.getElementById('editBtn');
+    const formButtons = document.getElementById('formButtons');
+    const imageLabel = document.getElementById('imageLabel');
+    
+    inputs.forEach(input => {
+        input.disabled = !input.disabled;
+    });
+    
+    if (formButtons.classList.contains('hidden')) {
+        formButtons.classList.remove('hidden');
+        imageLabel.classList.remove('hidden');
+        editBtn.innerHTML = '<i class="fas fa-times mr-2"></i>Cancel';
+        editBtn.onclick = cancelEdit;
+    } else {
+        formButtons.classList.add('hidden');
+        imageLabel.classList.add('hidden');
+        editBtn.innerHTML = '<i class="fas fa-edit mr-2"></i>Edit';
+        editBtn.onclick = toggleEdit;
+    }
+}
+
+function cancelEdit() {
+    location.reload();
+}
+
+function togglePasswordReset() {
+    const form = document.getElementById('passwordResetForm');
+    const btn = document.getElementById('passwordResetBtn');
+    
+    if (form.classList.contains('hidden')) {
+        form.classList.remove('hidden');
+        btn.innerHTML = '<i class="fas fa-times mr-2"></i>Cancel';
+        btn.onclick = cancelPasswordReset;
+    } else {
+        form.classList.add('hidden');
+        btn.innerHTML = '<i class="fas fa-key mr-2"></i>Reset Password';
+        btn.onclick = togglePasswordReset;
+    }
+}
+
+function cancelPasswordReset() {
+    document.getElementById('passwordResetForm').classList.add('hidden');
+    document.getElementById('passwordResetBtn').innerHTML = '<i class="fas fa-key mr-2"></i>Reset Password';
+    document.getElementById('passwordResetBtn').onclick = togglePasswordReset;
+    document.getElementById('new_password').value = '';
+    document.getElementById('confirm_password').value = '';
+    resetPasswordValidation();
+}
+
+function validatePasswordStrength(password) {
+    const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+    
+    // Update UI indicators
+    document.getElementById('length-req').className = requirements.length ? 'text-green-500' : 'text-red-500';
+    document.getElementById('uppercase-req').className = requirements.uppercase ? 'text-green-500' : 'text-red-500';
+    document.getElementById('lowercase-req').className = requirements.lowercase ? 'text-green-500' : 'text-red-500';
+    document.getElementById('number-req').className = requirements.number ? 'text-green-500' : 'text-red-500';
+    document.getElementById('special-req').className = requirements.special ? 'text-green-500' : 'text-red-500';
+    
+    return Object.values(requirements).every(req => req);
+}
+
+function checkPasswordMatch() {
+    const password = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const matchDiv = document.getElementById('password-match');
+    
+    if (confirmPassword === '') {
+        matchDiv.innerHTML = '';
+        return false;
+    }
+    
+    if (password === confirmPassword) {
+        matchDiv.innerHTML = '<span class="text-green-500"><i class="fas fa-check mr-1"></i>Passwords match</span>';
+        return true;
+    } else {
+        matchDiv.innerHTML = '<span class="text-red-500"><i class="fas fa-times mr-1"></i>Passwords do not match</span>';
+        return false;
+    }
+}
+
+function updateSubmitButton() {
+    const password = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const submitBtn = document.getElementById('submitPasswordBtn');
+    
+    const isPasswordStrong = validatePasswordStrength(password);
+    const doPasswordsMatch = checkPasswordMatch();
+    
+    if (isPasswordStrong && doPasswordsMatch && password !== '' && confirmPassword !== '') {
+        submitBtn.disabled = false;
+        submitBtn.className = 'px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors';
+    } else {
+        submitBtn.disabled = true;
+        submitBtn.className = 'px-6 py-3 bg-gray-400 text-white rounded-xl cursor-not-allowed';
+    }
+}
+
+function resetPasswordValidation() {
+    document.getElementById('length-req').className = 'text-red-500';
+    document.getElementById('uppercase-req').className = 'text-red-500';
+    document.getElementById('lowercase-req').className = 'text-red-500';
+    document.getElementById('number-req').className = 'text-red-500';
+    document.getElementById('special-req').className = 'text-red-500';
+    document.getElementById('password-match').innerHTML = '';
+    document.getElementById('submitPasswordBtn').disabled = true;
+    document.getElementById('submitPasswordBtn').className = 'px-6 py-3 bg-gray-400 text-white rounded-xl cursor-not-allowed';
+}
+
+function validatePassword() {
+    const password = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (!validatePasswordStrength(password)) {
+        alert('Password does not meet the required criteria.');
+        return false;
+    }
+    
+    if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return false;
+    }
+    
+    return true;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const newPasswordInput = document.getElementById('new_password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', updateSubmitButton);
+    }
+    
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', updateSubmitButton);
+    }
+});
+</script>
+{% endblock %}

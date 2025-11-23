@@ -1,0 +1,226 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Dashboard - Hotel Management System{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <!-- Total Rooms -->
+    <div class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+        <dt>
+            <div class="absolute rounded-md bg-primary-500 p-3">
+                <i class="fas fa-bed text-white text-xl"></i>
+            </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">Total Rooms</p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+            <p class="text-2xl font-semibold text-gray-900">{{ total_rooms }}</p>
+            <p class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                <i class="fas fa-arrow-up text-xs mr-1"></i>
+                <span class="sr-only">Increased by</span>
+                12%
+            </p>
+        </dd>
+    </div>
+
+    <!-- Occupied Rooms -->
+    <div class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+        <dt>
+            <div class="absolute rounded-md bg-green-500 p-3">
+                <i class="fas fa-user-check text-white text-xl"></i>
+            </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">Occupied Rooms</p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+            <p class="text-2xl font-semibold text-gray-900">{{ occupied_rooms }}</p>
+            <p class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                {{ occupancy_rate }}%
+            </p>
+        </dd>
+    </div>
+
+    <!-- Daily Revenue -->
+    <div class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+        <dt>
+            <div class="absolute rounded-md bg-yellow-500 p-3">
+                <i class="fas fa-dollar-sign text-white text-xl"></i>
+            </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">Today's Revenue</p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+            <p class="text-2xl font-semibold text-gray-900">${{ daily_revenue|floatformat:0 }}</p>
+            <p class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                <i class="fas fa-arrow-up text-xs mr-1"></i>
+                8%
+            </p>
+        </dd>
+    </div>
+
+    <!-- Total Guests -->
+    <div class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+        <dt>
+            <div class="absolute rounded-md bg-purple-500 p-3">
+                <i class="fas fa-users text-white text-xl"></i>
+            </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">Total Guests</p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+            <p class="text-2xl font-semibold text-gray-900">{{ total_guests }}</p>
+            <p class="ml-2 flex items-baseline text-sm font-semibold text-blue-600">
+                In system
+            </p>
+        </dd>
+    </div>
+</div>
+
+<!-- Room Status & Quick Actions -->
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-8">
+    <!-- Room Status -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Room Status Overview</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-green-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600">{{ available_rooms }}</div>
+                    <div class="text-sm text-green-700 font-medium">Available</div>
+                </div>
+                <div class="bg-yellow-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-yellow-600">{{ occupied_rooms }}</div>
+                    <div class="text-sm text-yellow-700 font-medium">Occupied</div>
+                </div>
+                <div class="bg-blue-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-blue-600">{{ dirty_rooms }}</div>
+                    <div class="text-sm text-blue-700 font-medium">Needs Cleaning</div>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-red-600">{{ maintenance_rooms }}</div>
+                    <div class="text-sm text-red-700 font-medium">Maintenance</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <a href="{% url 'crm:create' %}" class="group relative rounded-lg p-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105">
+                    <div>
+                        <span class="rounded-lg inline-flex p-3 bg-blue-800 text-white">
+                            <i class="fas fa-user-plus text-xl"></i>
+                        </span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-lg font-medium text-white">Add Guest</h3>
+                        <p class="mt-2 text-sm text-blue-100">Create new guest profile</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'hotels:hotel_create' %}" class="group relative rounded-lg p-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition duration-200 transform hover:scale-105">
+                    <div>
+                        <span class="rounded-lg inline-flex p-3 bg-green-800 text-white">
+                            <i class="fas fa-building text-xl"></i>
+                        </span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-lg font-medium text-white">Add Hotel</h3>
+                        <p class="mt-2 text-sm text-green-100">New hotel hotel</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'pos:menu' %}" class="group relative rounded-lg p-6 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 transition duration-200 transform hover:scale-105">
+                    <div>
+                        <span class="rounded-lg inline-flex p-3 bg-yellow-800 text-white">
+                            <i class="fas fa-utensils text-xl"></i>
+                        </span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-lg font-medium text-white">Manage Menu</h3>
+                        <p class="mt-2 text-sm text-yellow-100">Food & beverages</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'billing:dashboard' %}" class="group relative rounded-lg p-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 transition duration-200 transform hover:scale-105">
+                    <div>
+                        <span class="rounded-lg inline-flex p-3 bg-purple-800 text-white">
+                            <i class="fas fa-file-invoice-dollar text-xl"></i>
+                        </span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-lg font-medium text-white">Billing</h3>
+                        <p class="mt-2 text-sm text-purple-100">Invoices & payments</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hotels Overview -->
+{% if hotels %}
+<div class="bg-white shadow overflow-hidden sm:rounded-md mb-8">
+    <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Hotels Overview</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Manage your hotels</p>
+    </div>
+    <ul role="list" class="divide-y divide-gray-200">
+        {% for hotel in hotels %}
+        <li>
+            <div class="px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                        <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+                            <i class="fas fa-building text-primary-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">{{ hotel.name }}</div>
+                        <div class="text-sm text-gray-500">{{ hotel.address }}</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-bed mr-1"></i>
+                        {% with hotel.room_types.all as room_types %}
+                            {% for rt in room_types %}{{ rt.rooms.count }}{% if not forloop.last %} + {% endif %}{% endfor %} rooms
+                        {% endwith %}
+                    </div>
+                    <a href="{% url 'hotels:room_list' hotel.id %}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 transition duration-200">
+                        View Rooms
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Recent Activity -->
+<div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">System Status</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Live system information</p>
+    </div>
+    <ul role="list" class="divide-y divide-gray-200">
+        {% for activity in recent_activities %}
+        <li class="px-4 py-4">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="h-8 w-8 rounded-full bg-{{ activity.color }}-100 flex items-center justify-center">
+                        <i class="fas {{ activity.icon }} text-{{ activity.color }}-600 text-sm"></i>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ activity.text }}</p>
+                    <p class="text-sm text-gray-500">{{ activity.time }}</p>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

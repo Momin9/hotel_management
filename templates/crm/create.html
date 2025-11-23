@@ -1,0 +1,155 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Create New Guest Profile - AuraStay{% endblock %}
+{% block page_title %}Create New Guest Profile{% endblock %}
+{% block page_subtitle %}Create your luxury hospitality experience{% endblock %}
+
+{% block content %}
+<!-- Guest Form Card -->
+<div class="bg-white rounded-3xl p-8 luxury-shadow hover-lift">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center space-x-4">
+            <div class="w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <div>
+                <h3 class="text-2xl font-bold text-luxury-800">New Guest Profile</h3>
+                <p class="text-luxury-600 font-medium">Create your luxury hospitality experience</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Personal Information Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column -->
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-luxury-700 font-semibold mb-3" for="first_name">
+                        <i class="fas fa-user text-royal-500 mr-2"></i>
+                        First Name *
+                    </label>
+                    <input type="text" name="first_name" id="first_name" 
+                           class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                           required placeholder="Enter first name">
+                </div>
+                
+                <div>
+                    <label class="block text-luxury-700 font-semibold mb-3" for="last_name">
+                        <i class="fas fa-user text-royal-500 mr-2"></i>
+                        Last Name *
+                    </label>
+                    <input type="text" name="last_name" id="last_name" 
+                           class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                           required placeholder="Enter last name">
+                </div>
+                
+                <div>
+                    <label class="block text-luxury-700 font-semibold mb-3" for="email">
+                        <i class="fas fa-envelope text-royal-500 mr-2"></i>
+                        Email Address *
+                    </label>
+                    <input type="email" name="email" id="email" 
+                           class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                           required placeholder="guest@example.com">
+                </div>
+                
+                <div>
+                    <label class="block text-luxury-700 font-semibold mb-3" for="phone">
+                        <i class="fas fa-phone text-royal-500 mr-2"></i>
+                        Phone Number
+                    </label>
+                    <input type="tel" name="phone" id="phone" 
+                           class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                           placeholder="+1 (555) 123-4567">
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-luxury-700 font-semibold mb-3" for="date_of_birth">
+                        <i class="fas fa-calendar text-royal-500 mr-2"></i>
+                        Date of Birth
+                    </label>
+                    <input type="date" name="date_of_birth" id="date_of_birth" 
+                           class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors">
+                </div>
+                
+                <div>
+                    <label class="block text-luxury-700 font-semibold mb-3" for="nationality">
+                        <i class="fas fa-flag text-royal-500 mr-2"></i>
+                        Nationality
+                    </label>
+                    <input type="text" name="nationality" id="nationality" 
+                           class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                           placeholder="e.g., American, British">
+                </div>
+                
+                <div>
+                    <label class="block text-luxury-700 font-semibold mb-3" for="address">
+                        <i class="fas fa-map-marker-alt text-royal-500 mr-2"></i>
+                        Address
+                    </label>
+                    <textarea name="address" id="address" rows="3"
+                              class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors resize-none" 
+                              placeholder="Enter full address"></textarea>
+                </div>
+                
+                <!-- Guest Preferences -->
+                <div class="bg-gradient-to-br from-gold-50 to-gold-100 rounded-2xl p-6">
+                    <h4 class="text-gold-800 font-semibold mb-4 flex items-center">
+                        <i class="fas fa-star text-gold-600 mr-2"></i>
+                        Guest Preferences
+                    </h4>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="preferences" value="non_smoking" class="w-5 h-5 text-gold-600 rounded">
+                            <span class="text-gold-700">Non-Smoking Rooms</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="preferences" value="high_floor" class="w-5 h-5 text-gold-600 rounded">
+                            <span class="text-gold-700">High Floor Preference</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="preferences" value="quiet_room" class="w-5 h-5 text-gold-600 rounded">
+                            <span class="text-gold-700">Quiet Room</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="preferences" value="early_checkin" class="w-5 h-5 text-gold-600 rounded">
+                            <span class="text-gold-700">Early Check-in</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Special Notes -->
+        <div>
+            <label class="block text-luxury-700 font-semibold mb-3" for="notes">
+                <i class="fas fa-sticky-note text-royal-500 mr-2"></i>
+                Special Notes & Requirements
+            </label>
+            <textarea name="notes" id="notes" rows="4"
+                      class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors resize-none" 
+                      placeholder="Dietary restrictions, accessibility needs, special requests, etc."></textarea>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-luxury-200">
+            <button type="submit" 
+                    class="flex-1 bg-gradient-to-r from-gold-500 to-gold-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                <i class="fas fa-save mr-2 group-hover:scale-110 transition-transform"></i>
+                Create Guest Profile
+            </button>
+            <a href="{% url 'crm:list' %}" 
+               class="flex-1 bg-luxury-100 text-luxury-700 py-4 rounded-2xl font-semibold text-center hover:bg-luxury-200 transition-all duration-300">
+                <i class="fas fa-times mr-2"></i>
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

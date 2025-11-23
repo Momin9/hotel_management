@@ -1,0 +1,261 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Hotel Management - Super Admin{% endblock %}
+
+{% block page_title %}Hotel Management{% endblock %}
+{% block page_subtitle %}Manage all hotels, owners, and subscriptions{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+            <h3 class="text-2xl font-bold text-luxury-800 flex items-center mb-4 lg:mb-0">
+                <i class="fas fa-building text-royal-500 mr-3"></i>
+                All Hotels ({{ hotels.count }})
+            </h3>
+            
+            <div class="flex flex-col sm:flex-row gap-4">
+                <form method="GET" class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative">
+                        <input type="text" name="search" value="{{ search_query }}" 
+                               placeholder="Search hotels, owners..." 
+                               class="pl-10 pr-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-luxury-400"></i>
+                    </div>
+                    
+                    <select name="status" class="px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500">
+                        <option value="">All Status</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="plan" class="px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500">
+                        <option value="">All Plans</option>
+                        {% for plan in subscription_plans %}
+                        <option value="{{ plan.id }}" {% if plan_filter == plan.id|stringformat:"s" %}selected{% endif %}>{{ plan.name }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <button type="submit" class="px-6 py-2 bg-royal-600 text-white rounded-xl hover:bg-royal-700 transition-colors">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hotels List -->
+    <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+        {% if hotels %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-luxury-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Hotel</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Owner</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Subscription</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Created</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-luxury-200">
+                    {% for hotel in hotels %}
+                    <tr class="hover:bg-luxury-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-building text-royal-600"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-luxury-900">{{ hotel.name }}</div>
+                                    <div class="text-sm text-luxury-500">{{ hotel.email|default:"No email" }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if hotel.owner %}
+                            <div class="text-sm font-medium text-luxury-900">{{ hotel.owner.full_name }}</div>
+                            <div class="text-sm text-luxury-500">{{ hotel.owner.email }}</div>
+                            <div class="text-xs text-luxury-400">{{ hotel.owner.get_role_display }}</div>
+                            {% else %}
+                            <span class="text-sm text-luxury-400">No owner assigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if hotel.subscription_plan %}
+                            <div class="text-sm font-medium text-luxury-900">{{ hotel.subscription_plan.name }}</div>
+                            <div class="text-sm text-luxury-500">${{ hotel.subscription_plan.price }}/{{ hotel.subscription_plan.billing_cycle }}</div>
+                            {% if hotel.subscription_end %}
+                            <div class="text-xs text-luxury-400">Expires: {{ hotel.subscription_end|date:"M d, Y" }}</div>
+                            {% endif %}
+                            {% else %}
+                            <span class="text-sm text-luxury-400">No plan</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold
+                                {% if hotel.subscription_status == 'active' %}bg-green-100 text-green-800
+                                {% elif hotel.subscription_status == 'trial' %}bg-blue-100 text-blue-800
+                                {% elif hotel.subscription_status == 'expired' %}bg-red-100 text-red-800
+                                {% elif hotel.subscription_status == 'suspended' %}bg-orange-100 text-orange-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ hotel.get_subscription_status_display }}
+                            </span>
+                            {% if not hotel.is_active %}
+                            <div class="mt-1">
+                                <span class="inline-flex px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">Inactive</span>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-luxury-500">
+                            {{ hotel.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <a href="{% url 'accounts:hotel_detail' hotel.id %}" 
+                                   class="text-royal-600 hover:text-royal-900 bg-royal-50 hover:bg-royal-100 px-3 py-1 rounded-lg transition-colors">
+                                    <i class="fas fa-eye mr-1"></i>View
+                                </a>
+                                <button onclick="editHotel('{{ hotel.id }}')" 
+                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                                {% if hotel.subscription_status != 'active' %}
+                                <button onclick="activateHotel('{{ hotel.id }}')" 
+                                        class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">
+                                    <i class="fas fa-check mr-1"></i>Activate
+                                </button>
+                                {% else %}
+                                <button onclick="suspendHotel('{{ hotel.id }}')" 
+                                        class="text-orange-600 hover:text-orange-900 bg-orange-50 hover:bg-orange-100 px-3 py-1 rounded-lg transition-colors">
+                                    <i class="fas fa-pause mr-1"></i>Suspend
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-building text-luxury-400 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-luxury-900 mb-2">No hotels found</h3>
+            <p class="text-luxury-500">
+                {% if search_query or status_filter or plan_filter %}
+                Try adjusting your search criteria.
+                {% else %}
+                No hotels have been registered yet.
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Edit Hotel Modal -->
+<div id="editHotelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-2xl w-full luxury-shadow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-luxury-800">Edit Hotel</h3>
+                <button onclick="closeEditModal()" class="text-luxury-400 hover:text-luxury-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="editHotelForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Subscription Status</label>
+                        <select id="subscriptionStatus" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500">
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Subscription Plan</label>
+                        <select id="subscriptionPlan" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500">
+                            <option value="">No Plan</option>
+                            {% for plan in subscription_plans %}
+                            <option value="{{ plan.id }}">{{ plan.name }} - ${{ plan.price }}/{{ plan.billing_cycle }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Active Status</label>
+                        <select id="isActive" class="w-full px-4 py-2 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 mt-8">
+                    <button type="button" onclick="closeEditModal()" 
+                            class="px-6 py-2 border border-luxury-300 text-luxury-700 rounded-xl hover:bg-luxury-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-royal-600 text-white rounded-xl hover:bg-royal-700 transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+
+<script>
+let currentHotelId = null;
+
+function editHotel(hotelId) {
+    currentHotelId = hotelId;
+    document.getElementById('editHotelModal').classList.remove('hidden');
+    // Here you would typically fetch the current hotel data and populate the form
+}
+
+function closeEditModal() {
+    document.getElementById('editHotelModal').classList.add('hidden');
+    currentHotelId = null;
+}
+
+function activateHotel(hotelId) {
+    if (confirm('Are you sure you want to activate this hotel?')) {
+        // Implement activation logic
+        console.log('Activating hotel:', hotelId);
+    }
+}
+
+function suspendHotel(hotelId) {
+    if (confirm('Are you sure you want to suspend this hotel?')) {
+        // Implement suspension logic
+        console.log('Suspending hotel:', hotelId);
+    }
+}
+
+document.getElementById('editHotelForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (currentHotelId) {
+        // Implement save logic
+        console.log('Saving hotel changes for:', currentHotelId);
+        closeEditModal();
+    }
+});
+</script>
+{% endblock %}

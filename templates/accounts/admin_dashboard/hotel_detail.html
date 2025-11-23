@@ -1,0 +1,337 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{{ hotel.name }} - Hotel Details{% endblock %}
+
+{% block page_title %}{{ hotel.name }}{% endblock %}
+{% block page_subtitle %}Comprehensive hotel information and management{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Back Button -->
+    <div class="flex items-center">
+        <a href="{% url 'accounts:manage_hotels' %}" 
+           class="flex items-center text-royal-600 hover:text-royal-700 font-medium">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Hotels
+        </a>
+    </div>
+
+    <!-- Hotel Overview -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Hotel Information -->
+        <div class="lg:col-span-2 bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-luxury-800 flex items-center">
+                    <i class="fas fa-building text-royal-500 mr-3"></i>
+                    Hotel Information
+                </h3>
+                <button onclick="editHotelInfo()" class="px-4 py-2 bg-royal-600 text-white rounded-xl hover:bg-royal-700 transition-colors">
+                    <i class="fas fa-edit mr-2"></i>Edit
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-luxury-600 mb-2">Hotel Name</label>
+                    <p class="text-luxury-900 font-semibold">{{ hotel.name }}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-luxury-600 mb-2">Email</label>
+                    <p class="text-luxury-900">{{ hotel.email|default:"Not provided" }}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-luxury-600 mb-2">Phone</label>
+                    <p class="text-luxury-900">{{ hotel.phone|default:"Not provided" }}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-luxury-600 mb-2">Timezone</label>
+                    <p class="text-luxury-900">{{ hotel.timezone }}</p>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-luxury-600 mb-2">Address</label>
+                    <p class="text-luxury-900">{{ hotel.address }}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-luxury-600 mb-2">Created</label>
+                    <p class="text-luxury-900">{{ hotel.created_at|date:"F d, Y" }}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-luxury-600 mb-2">Status</label>
+                    <span class="inline-flex px-3 py-1 rounded-full text-sm font-semibold
+                        {% if hotel.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {% if hotel.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="space-y-6">
+            <!-- Subscription Status -->
+            <div class="bg-white rounded-3xl p-6 luxury-shadow">
+                <h4 class="text-lg font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-crown text-gold-500 mr-2"></i>
+                    Subscription
+                </h4>
+                
+                {% if hotel.subscription_plan %}
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-sm text-luxury-600">Plan:</span>
+                        <p class="font-semibold text-luxury-900">{{ hotel.subscription_plan.name }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-luxury-600">Price:</span>
+                        <p class="font-semibold text-luxury-900">${{ hotel.subscription_plan.price }}/{{ hotel.subscription_plan.billing_cycle }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-luxury-600">Status:</span>
+                        <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold
+                            {% if hotel.subscription_status == 'active' %}bg-green-100 text-green-800
+                            {% elif hotel.subscription_status == 'trial' %}bg-blue-100 text-blue-800
+                            {% elif hotel.subscription_status == 'expired' %}bg-red-100 text-red-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ hotel.get_subscription_status_display }}
+                        </span>
+                    </div>
+                    {% if hotel.subscription_end %}
+                    <div>
+                        <span class="text-sm text-luxury-600">Expires:</span>
+                        <p class="font-semibold text-luxury-900">{{ hotel.subscription_end|date:"F d, Y" }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-luxury-500">No subscription plan assigned</p>
+                {% endif %}
+                
+                <button onclick="manageSubscription()" class="w-full mt-4 px-4 py-2 bg-gold-600 text-white rounded-xl hover:bg-gold-700 transition-colors">
+                    Manage Subscription
+                </button>
+            </div>
+
+            <!-- Hotel Stats -->
+            <div class="bg-white rounded-3xl p-6 luxury-shadow">
+                <h4 class="text-lg font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-bar text-blue-500 mr-2"></i>
+                    Statistics
+                </h4>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-luxury-600">Total Rooms:</span>
+                        <span class="font-semibold text-luxury-900">{{ hotel.total_rooms }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-luxury-600">Total Bookings:</span>
+                        <span class="font-semibold text-luxury-900">{{ hotel.total_bookings }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-luxury-600">Staff Members:</span>
+                        <span class="font-semibold text-luxury-900">{{ hotel_users.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Owner Information -->
+    {% if hotel.owner %}
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-luxury-800 flex items-center">
+                <i class="fas fa-user-tie text-purple-500 mr-3"></i>
+                Owner Information
+            </h3>
+            <button onclick="changeOwner()" class="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors">
+                <i class="fas fa-exchange-alt mr-2"></i>Change Owner
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-luxury-600 mb-2">Full Name</label>
+                <p class="text-luxury-900 font-semibold">{{ hotel.owner.full_name }}</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-600 mb-2">Email</label>
+                <p class="text-luxury-900">{{ hotel.owner.email }}</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-600 mb-2">Phone</label>
+                <p class="text-luxury-900">{{ hotel.owner.phone|default:"Not provided" }}</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-600 mb-2">Role</label>
+                <p class="text-luxury-900">{{ hotel.owner.get_role_display }}</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-600 mb-2">Joined</label>
+                <p class="text-luxury-900">{{ hotel.owner.created_at|date:"F d, Y" }}</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-600 mb-2">Status</label>
+                <span class="inline-flex px-3 py-1 rounded-full text-sm font-semibold
+                    {% if hotel.owner.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                    {% if hotel.owner.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="text-center py-8">
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-plus text-orange-500 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-luxury-900 mb-2">No Owner Assigned</h3>
+            <p class="text-luxury-500 mb-4">This hotel doesn't have an owner assigned yet.</p>
+            <button onclick="assignOwner()" class="px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors">
+                <i class="fas fa-user-plus mr-2"></i>Assign Owner
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Hotel Users -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-luxury-800 flex items-center">
+                <i class="fas fa-users text-blue-500 mr-3"></i>
+                Hotel Staff ({{ hotel_users.count }})
+            </h3>
+            <button onclick="addUser()" class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
+                <i class="fas fa-user-plus mr-2"></i>Add User
+            </button>
+        </div>
+        
+        {% if hotel_users %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-luxury-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Joined</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-luxury-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-luxury-200">
+                    {% for user in hotel_users %}
+                    <tr class="hover:bg-luxury-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-user text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-luxury-900">{{ user.full_name }}</div>
+                                    <div class="text-sm text-luxury-500">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                {{ user.get_role_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold
+                                {% if user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-luxury-500">
+                            {{ user.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="editUser('{{ user.id }}')" 
+                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                                <button onclick="managePermissions('{{ user.id }}')" 
+                                        class="text-purple-600 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1 rounded-lg transition-colors">
+                                    <i class="fas fa-key mr-1"></i>Permissions
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-users text-luxury-400 text-xl"></i>
+            </div>
+            <p class="text-luxury-500">No staff members assigned to this hotel yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Activity Log -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-history text-green-500 mr-3"></i>
+            Recent Activity
+        </h3>
+        
+        <div class="text-center py-8">
+            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-clock text-luxury-400 text-xl"></i>
+            </div>
+            <p class="text-luxury-500">Activity logging will be implemented soon.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+
+<script>
+function editHotelInfo() {
+    alert('Edit hotel information functionality will be implemented.');
+}
+
+function manageSubscription() {
+    alert('Subscription management functionality will be implemented.');
+}
+
+function changeOwner() {
+    alert('Change owner functionality will be implemented.');
+}
+
+function assignOwner() {
+    alert('Assign owner functionality will be implemented.');
+}
+
+function addUser() {
+    alert('Add user functionality will be implemented.');
+}
+
+function editUser(userId) {
+    alert('Edit user functionality will be implemented for user: ' + userId);
+}
+
+function managePermissions(userId) {
+    alert('Manage permissions functionality will be implemented for user: ' + userId);
+}
+</script>
+{% endblock %}

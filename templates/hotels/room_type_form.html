@@ -1,0 +1,116 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Add Room Type - {{ hotel.name }} - AuraStay{% endblock %}
+
+{% block page_title %}Add Room Type{% endblock %}
+{% block page_subtitle %}Create a new room category for {{ hotel.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+        <!-- Form Header -->
+        <div class="bg-gradient-to-r from-royal-500 to-royal-600 p-8 relative overflow-hidden">
+            <div class="absolute inset-0 bg-black/10"></div>
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="relative flex items-center space-x-4">
+                <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                    <i class="fas fa-tags text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-white">New Room Type</h2>
+                    <p class="text-royal-100">{{ hotel.name }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="p-8">
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-luxury-700 font-semibold mb-3" for="name">
+                                <i class="fas fa-tag text-royal-500 mr-2"></i>
+                                Room Type Name *
+                            </label>
+                            <input type="text" name="name" id="name" 
+                                   class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                                   required placeholder="e.g., Standard, Deluxe, Suite">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-luxury-700 font-semibold mb-3" for="capacity">
+                                <i class="fas fa-users text-royal-500 mr-2"></i>
+                                Capacity *
+                            </label>
+                            <input type="number" name="capacity" id="capacity" 
+                                   class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                                   required min="1" max="10" placeholder="Number of guests">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-luxury-700 font-semibold mb-3" for="base_rate">
+                                <i class="fas fa-dollar-sign text-royal-500 mr-2"></i>
+                                Base Rate (per night) *
+                            </label>
+                            <input type="number" name="base_rate" id="base_rate" 
+                                   class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors" 
+                                   required min="0" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-luxury-700 font-semibold mb-3" for="amenities">
+                                <i class="fas fa-star text-royal-500 mr-2"></i>
+                                Amenities
+                            </label>
+                            <textarea name="amenities" id="amenities" rows="4"
+                                      class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors resize-none" 
+                                      placeholder="WiFi, TV, Mini Bar, Air Conditioning..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-luxury-700 font-semibold mb-3" for="description">
+                                <i class="fas fa-align-left text-royal-500 mr-2"></i>
+                                Description
+                            </label>
+                            <textarea name="description" id="description" rows="4"
+                                      class="w-full px-4 py-3 border-2 border-luxury-200 rounded-2xl focus:border-royal-500 focus:outline-none transition-colors resize-none" 
+                                      placeholder="Detailed description of the room type..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-luxury-200">
+                    <button type="submit" 
+                            class="flex-1 bg-gradient-to-r from-gold-500 to-gold-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                        <i class="fas fa-save mr-2 group-hover:scale-110 transition-transform"></i>
+                        Add Room Type
+                    </button>
+                    <a href="{% url 'hotels:room_type_list' hotel.id %}" 
+                       class="flex-1 bg-luxury-100 text-luxury-700 py-4 rounded-2xl font-semibold text-center hover:bg-luxury-200 transition-all duration-300">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

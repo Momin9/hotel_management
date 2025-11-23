@@ -1,0 +1,59 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{{ staff.get_full_name }} - Performance{% endblock %}
+{% block page_title %}Staff Performance{% endblock %}
+{% block page_subtitle %}{{ staff.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-star text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-900">4.8</h3>
+            <p class="text-luxury-600">Overall Rating</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-tasks text-2xl text-blue-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-900">95%</h3>
+            <p class="text-luxury-600">Task Completion</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow text-center">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-clock text-2xl text-purple-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-900">98%</h3>
+            <p class="text-luxury-600">Punctuality</p>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-lg font-semibold text-luxury-800 mb-6">Recent Performance</h3>
+        <div class="space-y-4">
+            <div class="flex justify-between items-center p-4 bg-luxury-50 rounded-xl">
+                <span class="text-luxury-700">Customer Service</span>
+                <span class="text-green-600 font-medium">Excellent</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-luxury-50 rounded-xl">
+                <span class="text-luxury-700">Team Collaboration</span>
+                <span class="text-green-600 font-medium">Very Good</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-luxury-50 rounded-xl">
+                <span class="text-luxury-700">Problem Solving</span>
+                <span class="text-blue-600 font-medium">Good</span>
+            </div>
+        </div>
+        
+        <div class="mt-8 pt-6 border-t border-luxury-200">
+            <a href="{% url 'staff:detail' staff.user_id %}" class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Profile
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

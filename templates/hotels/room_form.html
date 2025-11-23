@@ -1,0 +1,121 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{% if room %}Edit Room {{ room.room_number }}{% else %}Add New Room{% endif %} - {{ hotel.name }}{% endblock %}
+{% block page_title %}{% if room %}Edit Room{% else %}Add New Room{% endif %}{% endblock %}
+{% block page_subtitle %}{{ hotel.name }} - Room Management{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Basic Information -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-luxury-800 mb-4">Basic Information</h3>
+                    
+                    <div>
+                        <label for="room_number" class="block text-sm font-medium text-luxury-700 mb-2">Room Number</label>
+                        <input type="text" name="room_number" id="room_number" 
+                               value="{% if room %}{{ room.room_number }}{% endif %}"
+                               class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-luxury-700 mb-2">Room Type</label>
+                        <select name="type" id="type" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Type</option>
+                            <option value="Single" {% if room and room.type == 'Single' %}selected{% endif %}>Single</option>
+                            <option value="Double" {% if room and room.type == 'Double' %}selected{% endif %}>Double</option>
+                            <option value="Twin" {% if room and room.type == 'Twin' %}selected{% endif %}>Twin</option>
+                            <option value="Triple" {% if room and room.type == 'Triple' %}selected{% endif %}>Triple</option>
+                            <option value="Quad" {% if room and room.type == 'Quad' %}selected{% endif %}>Quad</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-luxury-700 mb-2">Category</label>
+                        <select name="category" id="category" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Category</option>
+                            <option value="Standard" {% if room and room.category == 'Standard' %}selected{% endif %}>Standard</option>
+                            <option value="Deluxe" {% if room and room.category == 'Deluxe' %}selected{% endif %}>Deluxe</option>
+                            <option value="SuperDeluxe" {% if room and room.category == 'SuperDeluxe' %}selected{% endif %}>Super Deluxe</option>
+                            <option value="Executive" {% if room and room.category == 'Executive' %}selected{% endif %}>Executive</option>
+                            <option value="Suite" {% if room and room.category == 'Suite' %}selected{% endif %}>Suite</option>
+                            <option value="JuniorSuite" {% if room and room.category == 'JuniorSuite' %}selected{% endif %}>Junior Suite</option>
+                            <option value="PresidentialSuite" {% if room and room.category == 'PresidentialSuite' %}selected{% endif %}>Presidential Suite</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Details -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-luxury-800 mb-4">Room Details</h3>
+                    
+                    <div>
+                        <label for="bed" class="block text-sm font-medium text-luxury-700 mb-2">Bed Type</label>
+                        <select name="bed" id="bed" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Bed Type</option>
+                            <option value="King" {% if room and room.bed == 'King' %}selected{% endif %}>King</option>
+                            <option value="Queen" {% if room and room.bed == 'Queen' %}selected{% endif %}>Queen</option>
+                            <option value="DoubleBed" {% if room and room.bed == 'DoubleBed' %}selected{% endif %}>Double Bed</option>
+                            <option value="TwinBed" {% if room and room.bed == 'TwinBed' %}selected{% endif %}>Twin Bed</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-luxury-700 mb-2">Price per Night ($)</label>
+                        <input type="number" name="price" id="price" step="0.01" min="0"
+                               value="{% if room %}{{ room.price }}{% endif %}"
+                               class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                        <select name="status" id="status" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Status</option>
+                            <option value="Available" {% if room and room.status == 'Available' %}selected{% endif %}>Available</option>
+                            <option value="Occupied" {% if room and room.status == 'Occupied' %}selected{% endif %}>Occupied</option>
+                            <option value="Reserved" {% if room and room.status == 'Reserved' %}selected{% endif %}>Reserved</option>
+                            <option value="Dirty" {% if room and room.status == 'Dirty' %}selected{% endif %}>Dirty</option>
+                            <option value="Cleaning" {% if room and room.status == 'Cleaning' %}selected{% endif %}>Cleaning</option>
+                            <option value="Maintenance" {% if room and room.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                            <option value="Blocked" {% if room and room.status == 'Blocked' %}selected{% endif %}>Blocked</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-4 pt-6">
+                <button type="submit" 
+                        class="bg-royal-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-royal-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>{% if room %}Update Room{% else %}Create Room{% endif %}</span>
+                </button>
+                <a href="{% url 'hotels:room_list' hotel.hotel_id %}" 
+                   class="bg-luxury-200 text-luxury-700 px-8 py-3 rounded-xl font-semibold hover:bg-luxury-300 transition-colors">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

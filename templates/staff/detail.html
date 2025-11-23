@@ -1,0 +1,132 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{{ staff.get_full_name }} - Staff Details{% endblock %}
+{% block page_title %}Staff Details{% endblock %}
+{% block page_subtitle %}{{ staff.get_full_name }} • {{ staff.role }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <!-- Staff Profile Card -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-6">
+                <div class="w-20 h-20 bg-gradient-to-r from-royal-400 to-royal-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">
+                    {{ staff.first_name.0 }}{{ staff.last_name.0 }}
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-luxury-900">{{ staff.get_full_name }}</h2>
+                    <p class="text-luxury-600 text-lg">{{ staff.role }}</p>
+                    <p class="text-luxury-500">{{ staff.assigned_hotel.name|default:"No Hotel Assigned" }}</p>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                {% if user.role == 'Owner' or user.is_superuser %}
+                <a href="{% url 'staff:permissions' staff.user_id %}" 
+                   class="bg-purple-500 text-white px-6 py-3 rounded-xl hover:bg-purple-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-key"></i>
+                    <span>Manage Permissions</span>
+                </a>
+                {% endif %}
+                <a href="{% url 'staff:edit' staff.user_id %}" 
+                   class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Details</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Personal Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-user mr-3 text-royal-500"></i>
+                    Personal Information
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Full Name:</span>
+                        <span class="font-medium text-luxury-900">{{ staff.get_full_name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Email:</span>
+                        <span class="font-medium text-luxury-900">{{ staff.email }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Phone:</span>
+                        <span class="font-medium text-luxury-900">{{ staff.phone|default:"Not provided" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Joined:</span>
+                        <span class="font-medium text-luxury-900">{{ staff.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Work Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-briefcase mr-3 text-royal-500"></i>
+                    Work Information
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Role:</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{{ staff.role }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Hotel:</span>
+                        <span class="font-medium text-luxury-900">{{ staff.assigned_hotel.name|default:"Not assigned" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Status:</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium {% if staff.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {% if staff.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Last Login:</span>
+                        <span class="font-medium text-luxury-900">{{ staff.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h3 class="text-lg font-semibold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-bolt mr-3 text-royal-500"></i>
+            Quick Actions
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="{% url 'staff:send_message' staff.user_id %}" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-envelope text-2xl text-blue-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">Send Message</p>
+                <p class="text-sm text-luxury-600">Contact staff member</p>
+            </a>
+            
+            <a href="{% url 'staff:schedule' staff.user_id %}" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-calendar text-2xl text-green-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">View Schedule</p>
+                <p class="text-sm text-luxury-600">Check work schedule</p>
+            </a>
+            
+            <a href="{% url 'staff:performance' staff.user_id %}" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
+                <i class="fas fa-chart-line text-2xl text-purple-500 mb-2"></i>
+                <p class="font-medium text-luxury-900">Performance</p>
+                <p class="text-sm text-luxury-600">View performance metrics</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,267 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}New Reservation - AuraStay{% endblock %}
+{% block page_title %}Create Reservation{% endblock %}
+{% block page_subtitle %}Book a room for your guest{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <form method="post" id="reservationForm" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Guest Selection -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 flex items-center">
+                    <i class="fas fa-user mr-3 text-royal-500"></i>
+                    Guest Information
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Select Guest</label>
+                        <select name="guest" id="guestSelect" required
+                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="">Choose existing guest or create new</option>
+                            {% for guest in guests %}
+                            <option value="{{ guest.id }}">{{ guest.full_name }} - {{ guest.email }}</option>
+                            {% endfor %}
+                            <option value="new">+ Create New Guest</option>
+                        </select>
+                    </div>
+                    
+                    <div id="newGuestBtn" class="hidden">
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">&nbsp;</label>
+                        <button type="button" onclick="showNewGuestForm()" 
+                                class="w-full px-4 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Create New Guest
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- New Guest Form (Hidden by default) -->
+                <div id="newGuestForm" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-luxury-50 rounded-xl">
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">First Name</label>
+                        <input type="text" name="guest_first_name" 
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Last Name</label>
+                        <input type="text" name="guest_last_name"
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Email</label>
+                        <input type="email" name="guest_email"
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Phone</label>
+                        <input type="tel" name="guest_phone"
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Details -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 flex items-center">
+                    <i class="fas fa-calendar mr-3 text-royal-500"></i>
+                    Booking Details
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Hotel</label>
+                        <select name="hotel" id="hotelSelect" required onchange="checkAvailability()"
+                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="">Select Hotel</option>
+                            {% for hotel in hotels %}
+                            <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Reservation Type</label>
+                        <select name="reservation_type" required
+                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="reservation">Reservation (Future booking)</option>
+                            <option value="booking">Booking (Immediate check-in)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Check-in Date</label>
+                        <input type="date" name="check_in" id="checkInDate" required onchange="checkAvailability()"
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Check-out Date</label>
+                        <input type="date" name="check_out" id="checkOutDate" required onchange="checkAvailability()"
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Adults</label>
+                        <input type="number" name="adults" value="1" min="1" required
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Children</label>
+                        <input type="number" name="children" value="0" min="0"
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Room Selection -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 flex items-center">
+                    <i class="fas fa-bed mr-3 text-royal-500"></i>
+                    Available Rooms
+                </h3>
+                
+                <div id="availableRooms" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="text-center py-8 text-luxury-600">
+                        <i class="fas fa-search text-4xl mb-4 text-luxury-300"></i>
+                        <p>Select hotel and dates to see available rooms</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Special Requests -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Special Requests</label>
+                <textarea name="special_requests" rows="3" placeholder="Any special requirements or requests..."
+                          class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent"></textarea>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="submit" class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors">
+                    <i class="fas fa-calendar-check mr-2"></i>Create Reservation
+                </button>
+                <a href="{% url 'reservations:list' %}" class="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition-colors">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('guestSelect').addEventListener('change', function() {
+    const newGuestBtn = document.getElementById('newGuestBtn');
+    const newGuestForm = document.getElementById('newGuestForm');
+    
+    if (this.value === 'new') {
+        newGuestBtn.classList.remove('hidden');
+        newGuestForm.classList.remove('hidden');
+    } else {
+        newGuestBtn.classList.add('hidden');
+        newGuestForm.classList.add('hidden');
+    }
+});
+
+function showNewGuestForm() {
+    document.getElementById('newGuestForm').classList.remove('hidden');
+}
+
+function checkAvailability() {
+    const hotel = document.getElementById('hotelSelect').value;
+    const checkIn = document.getElementById('checkInDate').value;
+    const checkOut = document.getElementById('checkOutDate').value;
+    
+    if (!hotel || !checkIn || !checkOut) {
+        return;
+    }
+    
+    const availableRoomsDiv = document.getElementById('availableRooms');
+    availableRoomsDiv.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-royal-500"></i><p class="mt-2 text-luxury-600">Checking availability...</p></div>';
+    
+    fetch(`{% url 'reservations:check_availability' %}?hotel_id=${hotel}&check_in=${checkIn}&check_out=${checkOut}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.rooms && data.rooms.length > 0) {
+                let roomsHtml = '';
+                data.rooms.forEach(room => {
+                    roomsHtml += `
+                        <div class="border border-luxury-200 rounded-xl p-4 hover:bg-luxury-50 transition-colors cursor-pointer room-option" 
+                             onclick="selectRoom(${room.id}, '${room.number}', '${room.type}', ${room.price})">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-luxury-800">Room ${room.number}</h4>
+                                <span class="text-lg font-bold text-royal-600">$${room.price}</span>
+                            </div>
+                            <p class="text-luxury-600 text-sm">${room.type} • ${room.category}</p>
+                            <p class="text-luxury-500 text-xs">${room.bed}</p>
+                            <input type="radio" name="room" value="${room.id}" class="hidden room-radio">
+                        </div>
+                    `;
+                });
+                availableRoomsDiv.innerHTML = roomsHtml;
+            } else {
+                availableRoomsDiv.innerHTML = `
+                    <div class="text-center py-8 text-luxury-600 col-span-2">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4 text-yellow-500"></i>
+                        <p>No rooms available for selected dates</p>
+                        <p class="text-sm">Please try different dates</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            availableRoomsDiv.innerHTML = `
+                <div class="text-center py-8 text-red-600 col-span-2">
+                    <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
+                    <p>Error checking availability</p>
+                </div>
+            `;
+        });
+}
+
+function selectRoom(roomId, roomNumber, roomType, price) {
+    // Remove previous selections
+    document.querySelectorAll('.room-option').forEach(el => {
+        el.classList.remove('border-royal-500', 'bg-royal-50');
+        el.classList.add('border-luxury-200');
+    });
+    
+    // Select current room
+    event.currentTarget.classList.remove('border-luxury-200');
+    event.currentTarget.classList.add('border-royal-500', 'bg-royal-50');
+    
+    // Set radio button
+    document.querySelector(`input[value="${roomId}"]`).checked = true;
+}
+
+// Set minimum date to today
+document.getElementById('checkInDate').min = new Date().toISOString().split('T')[0];
+document.getElementById('checkOutDate').min = new Date().toISOString().split('T')[0];
+
+// Update checkout min date when checkin changes
+document.getElementById('checkInDate').addEventListener('change', function() {
+    const checkInDate = new Date(this.value);
+    checkInDate.setDate(checkInDate.getDate() + 1);
+    document.getElementById('checkOutDate').min = checkInDate.toISOString().split('T')[0];
+});
+</script>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .room-option:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}
