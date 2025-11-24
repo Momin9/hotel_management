@@ -62,11 +62,14 @@ def forgot_password(request):
             )
             
             # Send email
-            from django.core.mail import send_mail
+            from django.core.mail import EmailMultiAlternatives
+            from django.template.loader import render_to_string
             from django.conf import settings
             
-            subject = 'Password Reset OTP - AuraStay'
-            message = f'''
+            subject = '🔐 Password Reset Code - AuraStay'
+            
+            # Plain text version
+            text_message = f'''
 Hello {user.get_full_name()},
 
 You requested a password reset for your AuraStay account.
@@ -81,15 +84,23 @@ Best regards,
 AuraStay Team
 '''
             
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                fail_silently=False,
-            )
+            # HTML version
+            html_message = render_to_string('emails/password_reset_otp.html', {
+                'user_name': user.get_full_name(),
+                'otp': otp
+            })
             
-            messages.success(request, f'OTP sent to {email}. Please check your email.')
+            # Send email with both text and HTML versions
+            email_msg = EmailMultiAlternatives(
+                subject,
+                text_message,
+                settings.DEFAULT_FROM_EMAIL,
+                [email]
+            )
+            email_msg.attach_alternative(html_message, "text/html")
+            email_msg.send(fail_silently=False)
+            
+            messages.success(request, f'🎉 Password reset code sent to {email}. Please check your email and spam folder.')
             return redirect('accounts:verify_otp')
             
         except User.DoesNotExist:
