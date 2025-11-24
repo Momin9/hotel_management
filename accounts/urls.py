@@ -10,6 +10,8 @@ def home_redirect(request):
 urlpatterns = [
     path('', views.landing_page, name='landing'),
     path('about/', views.about_page, name='about'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
     path('login/', views.custom_login, name='login'),
     path('contact/', views.contact_form, name='contact_form'),
     path('logout/', views.custom_logout, name='logout'),

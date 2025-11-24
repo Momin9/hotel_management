@@ -1,0 +1,131 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Terms of Service - AuraStay{% endblock %}
+{% block page_title %}Terms of Service{% endblock %}
+{% block page_subtitle %}Please read these terms carefully{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full mb-6">
+                <i class="fas fa-file-contract text-white text-2xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-luxury-800 mb-4">Terms of Service</h1>
+            <p class="text-lg text-luxury-600">Last updated: {{ "now"|date:"F d, Y" }}</p>
+        </div>
+
+        <div class="prose prose-lg max-w-none">
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-handshake text-royal-500 mr-3"></i>
+                    Acceptance of Terms
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700">By accessing and using AuraStay's hotel management platform, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.</p>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-cogs text-royal-500 mr-3"></i>
+                    Use of Service
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">You may use our service for lawful purposes only. You agree not to use the service:</p>
+                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
+                        <li>In any way that violates applicable laws or regulations</li>
+                        <li>To transmit or procure sending of any unsolicited advertising</li>
+                        <li>To impersonate or attempt to impersonate the company or employees</li>
+                        <li>To engage in any other conduct that restricts others' use of the service</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-user-shield text-royal-500 mr-3"></i>
+                    User Accounts
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">When you create an account with us, you must provide accurate and complete information. You are responsible for:</p>
+                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
+                        <li>Safeguarding your password and account information</li>
+                        <li>All activities that occur under your account</li>
+                        <li>Notifying us immediately of any unauthorized use</li>
+                        <li>Ensuring your account information remains current</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-credit-card text-royal-500 mr-3"></i>
+                    Subscription and Payment
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">Our service is provided on a subscription basis:</p>
+                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
+                        <li>Subscription fees are billed in advance on a monthly or annual basis</li>
+                        <li>All fees are non-refundable except as required by law</li>
+                        <li>We reserve the right to change our pricing with 30 days notice</li>
+                        <li>Failure to pay may result in service suspension or termination</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-copyright text-royal-500 mr-3"></i>
+                    Intellectual Property
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700">The service and its original content, features, and functionality are and will remain the exclusive property of AuraStay and its licensors. The service is protected by copyright, trademark, and other laws.</p>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-ban text-royal-500 mr-3"></i>
+                    Termination
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700">We may terminate or suspend your account and bar access to the service immediately, without prior notice, for any reason, including breach of these Terms. Upon termination, your right to use the service will cease immediately.</p>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-exclamation-triangle text-royal-500 mr-3"></i>
+                    Disclaimer
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700">The information on this service is provided on an "as is" basis. To the fullest extent permitted by law, this company excludes all representations, warranties, conditions and terms.</p>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-envelope text-royal-500 mr-3"></i>
+                    Contact Information
+                </h2>
+                <div class="bg-royal-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">Questions about the Terms of Service should be sent to us:</p>
+                    <div class="space-y-2 text-luxury-700">
+                        <p><strong>Email:</strong> legal@aurastay.com</p>
+                        <p><strong>Phone:</strong> +1 (555) 123-4567</p>
+                        <p><strong>Address:</strong> 123 Business Ave, New York, NY 10001</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="{% url 'accounts:landing' %}" class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

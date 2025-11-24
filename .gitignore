@@ -19,7 +19,6 @@ venv.bak/
 .env.local
 .env.prod
 .env.dev
-.env.example
 
 # Static files (collected static files should not be in repo)
 /staticfiles/

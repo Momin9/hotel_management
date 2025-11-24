@@ -1,0 +1,118 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Privacy Policy - AuraStay{% endblock %}
+{% block page_title %}Privacy Policy{% endblock %}
+{% block page_subtitle %}Your privacy is important to us{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mb-6">
+                <i class="fas fa-shield-alt text-white text-2xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-luxury-800 mb-4">Privacy Policy</h1>
+            <p class="text-lg text-luxury-600">Last updated: {{ "now"|date:"F d, Y" }}</p>
+        </div>
+
+        <div class="prose prose-lg max-w-none">
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-info-circle text-royal-500 mr-3"></i>
+                    Information We Collect
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">We collect information you provide directly to us, such as when you:</p>
+                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
+                        <li>Create an account or use our services</li>
+                        <li>Contact us through our contact form</li>
+                        <li>Subscribe to our newsletter or marketing communications</li>
+                        <li>Participate in surveys or provide feedback</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-database text-royal-500 mr-3"></i>
+                    How We Use Your Information
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">We use the information we collect to:</p>
+                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
+                        <li>Provide, maintain, and improve our services</li>
+                        <li>Process transactions and send related information</li>
+                        <li>Send technical notices and support messages</li>
+                        <li>Respond to your comments and questions</li>
+                        <li>Monitor and analyze trends and usage</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-share-alt text-royal-500 mr-3"></i>
+                    Information Sharing
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">We do not sell, trade, or otherwise transfer your personal information to third parties except:</p>
+                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
+                        <li>With your consent</li>
+                        <li>To comply with legal obligations</li>
+                        <li>To protect our rights and safety</li>
+                        <li>With trusted service providers who assist us</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-lock text-royal-500 mr-3"></i>
+                    Data Security
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700">We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure.</p>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-user-cog text-royal-500 mr-3"></i>
+                    Your Rights
+                </h2>
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">You have the right to:</p>
+                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
+                        <li>Access and update your personal information</li>
+                        <li>Request deletion of your personal information</li>
+                        <li>Opt-out of marketing communications</li>
+                        <li>Request a copy of your data</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-envelope text-royal-500 mr-3"></i>
+                    Contact Us
+                </h2>
+                <div class="bg-royal-50 rounded-2xl p-6">
+                    <p class="text-luxury-700 mb-4">If you have any questions about this Privacy Policy, please contact us:</p>
+                    <div class="space-y-2 text-luxury-700">
+                        <p><strong>Email:</strong> privacy@aurastay.com</p>
+                        <p><strong>Phone:</strong> +1 (555) 123-4567</p>
+                        <p><strong>Address:</strong> 123 Business Ave, New York, NY 10001</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="{% url 'accounts:landing' %}" class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

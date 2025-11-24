@@ -30,3 +30,5 @@ django-taggit==4.0.0
 django-storages==1.14.2
 boto3==1.34.0
 django-environ==0.11.2
+python-dotenv==1.0.0
+dj-database-url==2.1.0

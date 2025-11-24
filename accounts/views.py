@@ -27,6 +27,14 @@ def about_page(request):
     about_content = AboutUs.objects.filter(is_active=True).first()
     return render(request, 'accounts/about.html', {'about_us': about_content})
 
+def privacy_policy(request):
+    """Privacy Policy page"""
+    return render(request, 'accounts/privacy_policy.html')
+
+def terms_of_service(request):
+    """Terms of Service page"""
+    return render(request, 'accounts/terms_of_service.html')
+
 
 def footer_context(request):
     """Context processor to add footer data to all templates"""

@@ -383,7 +383,7 @@
                                 <div class="flex items-start">
                                     {{ contact_form.privacy_consent }}
                                     <label for="{{ contact_form.privacy_consent.id_for_label }}" class="ml-3 text-sm text-luxury-700 leading-relaxed">
-                                        I agree to the <a href="#" class="text-royal-600 hover:text-royal-800 font-semibold underline">privacy policy</a> and <a href="#" class="text-royal-600 hover:text-royal-800 font-semibold underline">terms of service</a> *
+                                        I agree to the <a href="{% url 'accounts:privacy_policy' %}" target="_blank" class="text-royal-600 hover:text-royal-800 font-semibold underline">privacy policy</a> and <a href="{% url 'accounts:terms_of_service' %}" target="_blank" class="text-royal-600 hover:text-royal-800 font-semibold underline">terms of service</a> *
                                         <span class="block text-xs text-luxury-500 mt-1">We respect your privacy and will never share your information.</span>
                                     </label>
                                 </div>
