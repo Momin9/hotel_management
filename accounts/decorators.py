@@ -1,95 +1,96 @@
-"""
-Custom decorators for role-based access control
-"""
 from functools import wraps
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.contrib import messages
-from .roles import RoleManager
+from django.core.exceptions import PermissionDenied
+from .permissions import check_user_permission
 
-def role_required(*allowed_roles):
+def permission_required(permission_codename, raise_exception=False):
     """
-    Decorator to restrict access to specific roles
-    Usage: @role_required('HOTEL_OWNER', 'HOTEL_MANAGER')
+    Decorator to check if user has specific permission
     """
     def decorator(view_func):
         @wraps(view_func)
-        @login_required
         def _wrapped_view(request, *args, **kwargs):
-            user_role = RoleManager.get_user_role(request.user)
+            if not request.user.is_authenticated:
+                return redirect('accounts:login')
             
-            if user_role not in allowed_roles:
-                messages.error(request, f'Access denied. Required roles: {", ".join(allowed_roles)}. Your role: {user_role}')
-                # Redirect to appropriate dashboard based on actual role
-                if user_role == 'SUPER_ADMIN':
-                    return redirect('accounts:super_admin_dashboard')
-                elif user_role in ['HOTEL_OWNER', 'HOTEL_MANAGER']:
-                    return redirect('accounts:owner_dashboard')
-                elif user_role in ['FRONT_DESK', 'HOUSEKEEPING', 'MAINTENANCE', 'KITCHEN_STAFF', 'ACCOUNTANT']:
-                    return redirect('accounts:employee_dashboard')
+            # Check permission
+            if not check_user_permission(request.user, permission_codename):
+                if raise_exception:
+                    raise PermissionDenied(f"You don't have permission to {permission_codename.replace('_', ' ')}")
                 else:
-                    return redirect('accounts:login')
+                    messages.error(request, f"You don't have permission to {permission_codename.replace('_', ' ')}")
+                    return redirect('accounts:dashboard')
             
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
 
-def permission_required(permission):
+def any_permission_required(*permission_codenames, raise_exception=False):
     """
-    Decorator to check specific permissions
-    Usage: @permission_required('view_reservations')
+    Decorator to check if user has any of the specified permissions
     """
     def decorator(view_func):
         @wraps(view_func)
-        @login_required
         def _wrapped_view(request, *args, **kwargs):
-            if not RoleManager.user_has_permission(request.user, permission):
-                messages.error(request, 'You do not have permission to perform this action.')
-                user_role = RoleManager.get_user_role(request.user)
-                if user_role == 'SUPER_ADMIN':
-                    return redirect('accounts:super_admin_dashboard')
-                elif user_role in ['HOTEL_OWNER', 'HOTEL_MANAGER']:
-                    return redirect('accounts:owner_dashboard')
-                elif user_role in ['FRONT_DESK', 'HOUSEKEEPING', 'MAINTENANCE', 'KITCHEN_STAFF', 'ACCOUNTANT']:
-                    return redirect('accounts:employee_dashboard')
+            if not request.user.is_authenticated:
+                return redirect('accounts:login')
+            
+            # Check if user has any of the permissions
+            has_permission = any(
+                check_user_permission(request.user, perm) 
+                for perm in permission_codenames
+            )
+            
+            if not has_permission:
+                if raise_exception:
+                    raise PermissionDenied("You don't have permission to access this resource")
                 else:
-                    return redirect('accounts:login')
+                    messages.error(request, "You don't have permission to access this resource")
+                    return redirect('accounts:dashboard')
+            
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+def owner_or_permission_required(permission_codename, raise_exception=False):
+    """
+    Decorator to check if user is owner or has specific permission
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return redirect('accounts:login')
+            
+            # Owners and superusers always have access
+            if request.user.role == 'Owner' or request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
+            
+            # Check permission for staff
+            if not check_user_permission(request.user, permission_codename):
+                if raise_exception:
+                    raise PermissionDenied(f"You don't have permission to {permission_codename.replace('_', ' ')}")
+                else:
+                    messages.error(request, f"You don't have permission to {permission_codename.replace('_', ' ')}")
+                    return redirect('accounts:dashboard')
             
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
 
 def super_admin_required(view_func):
-    """Decorator for super admin only views"""
+    """Decorator to require super admin access"""
     @wraps(view_func)
-    @login_required
     def _wrapped_view(request, *args, **kwargs):
-        if not request.user.is_superuser:
-            messages.error(request, 'Super admin access required.')
-            user_role = RoleManager.get_user_role(request.user)
-            if user_role in ['HOTEL_OWNER', 'HOTEL_MANAGER']:
-                return redirect('accounts:owner_dashboard')
-            elif user_role in ['FRONT_DESK', 'HOUSEKEEPING', 'MAINTENANCE', 'KITCHEN_STAFF', 'ACCOUNTANT']:
-                return redirect('accounts:employee_dashboard')
-            else:
-                return redirect('accounts:login')
-        return view_func(request, *args, **kwargs)
-    return _wrapped_view
-
-def hotel_owner_required(view_func):
-    """Decorator for hotel owner only views"""
-    @wraps(view_func)
-    @login_required
-    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        
+        from .roles import RoleManager
         user_role = RoleManager.get_user_role(request.user)
-        if not (user_role in ['HOTEL_OWNER', 'SUPER_ADMIN']):
-            messages.error(request, 'Hotel owner access required.')
-            if user_role == 'SUPER_ADMIN':
-                return redirect('accounts:super_admin_dashboard')
-            elif user_role in ['FRONT_DESK', 'HOUSEKEEPING', 'MAINTENANCE', 'KITCHEN_STAFF', 'ACCOUNTANT']:
-                return redirect('accounts:employee_dashboard')
-            else:
-                return redirect('accounts:login')
+        if user_role != 'SUPER_ADMIN':
+            messages.error(request, 'You do not have permission to access this page.')
+            return redirect('accounts:dashboard')
+        
         return view_func(request, *args, **kwargs)
     return _wrapped_view

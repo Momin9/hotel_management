@@ -4,17 +4,19 @@ from .models import Hotel, HotelSubscription, Room, Service, RoomCategory, RoomT
 
 class RoomInline(admin.TabularInline):
     model = Room
-    extra = 1
+    extra = 0
+    max_num = 20
     fields = ['room_number', 'type', 'category', 'bed', 'price', 'status']
 
 class ServiceInline(admin.TabularInline):
     model = Service
-    extra = 1
+    extra = 0
+    max_num = 10
     fields = ['name', 'description', 'price']
 
 @admin.register(Hotel)
 class HotelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'owner', 'city', 'country', 'room_count', 'is_active_badge', 'created_at']
+    list_display = ['icon_preview', 'name', 'owner', 'city', 'country', 'room_count', 'is_active_badge', 'created_at']
     list_filter = ['is_active', 'city', 'country', 'created_at']
     search_fields = ['name', 'address', 'phone', 'email', 'owner__username']
     readonly_fields = ['hotel_id', 'created_at']
@@ -26,6 +28,9 @@ class HotelAdmin(admin.ModelAdmin):
         }),
         ('Contact Information', {
             'fields': ('phone', 'email')
+        }),
+        ('Media', {
+            'fields': ('image', 'icon')
         }),
         ('Settings', {
             'fields': ('is_active',)
@@ -46,6 +51,12 @@ class HotelAdmin(admin.ModelAdmin):
             return format_html('<span style="color: green;">✓ Active</span>')
         return format_html('<span style="color: red;">✗ Inactive</span>')
     is_active_badge.short_description = 'Status'
+    
+    def icon_preview(self, obj):
+        if obj.icon:
+            return format_html('<img src="{}" width="30" height="30" style="border-radius: 4px;" />', obj.icon.url)
+        return format_html('<div style="width: 30px; height: 30px; background: #f3f4f6; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6b7280;">🏨</div>')
+    icon_preview.short_description = 'Icon'
 
 @admin.register(HotelSubscription)
 class HotelSubscriptionAdmin(admin.ModelAdmin):

@@ -67,7 +67,11 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center mr-4">
-                                    <i class="fas fa-building text-royal-600"></i>
+                                    {% if hotel.icon %}
+                                        <img src="{{ hotel.icon.url }}" alt="{{ hotel.name }}" class="w-8 h-8 rounded-lg object-cover">
+                                    {% else %}
+                                        <i class="fas fa-building text-royal-600"></i>
+                                    {% endif %}
                                 </div>
                                 <div>
                                     <div class="text-sm font-medium text-luxury-900">{{ hotel.name }}</div>

@@ -1,8 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Payment Management - AuraStay{% endblock %}
-{% block page_title %}Payment Management{% endblock %}
-{% block page_subtitle %}Track and manage all payments{% endblock %}
+{% block title %}
+    {% if page_contents.payment_management %}
+        {{ page_contents.payment_management.page_title }}
+    {% else %}
+        Payment Management
+    {% endif %} - AuraStay
+{% endblock %}
+
+{% block page_title %}
+    {% if page_contents.payment_management %}
+        {{ page_contents.payment_management.page_title }}
+    {% else %}
+        Payment Management
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.payment_management %}
+        {{ page_contents.payment_management.page_subtitle }}
+    {% else %}
+        Track and manage payment transactions
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto space-y-8">
@@ -18,24 +38,37 @@
             </div>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="text-center p-4 bg-green-50 rounded-xl">
-                <p class="text-2xl font-bold text-green-600">$12,450</p>
-                <p class="text-sm text-green-700">Total Received</p>
-            </div>
-            <div class="text-center p-4 bg-yellow-50 rounded-xl">
-                <p class="text-2xl font-bold text-yellow-600">$2,340</p>
-                <p class="text-sm text-yellow-700">Pending</p>
-            </div>
-            <div class="text-center p-4 bg-red-50 rounded-xl">
-                <p class="text-2xl font-bold text-red-600">$890</p>
-                <p class="text-sm text-red-700">Failed</p>
+        <div class="flex flex-col sm:flex-row gap-4">
+            <!-- View Toggle -->
+            <div class="bg-white rounded-xl p-1 luxury-shadow">
+                <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-royal-600 text-white">
+                    <i class="fas fa-list mr-2"></i>List
+                </button>
+                <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-luxury-600 hover:bg-luxury-50">
+                    <i class="fas fa-th-large mr-2"></i>Kanban
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Payment List -->
-    <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center p-6 bg-green-50 rounded-3xl luxury-shadow">
+            <p class="text-3xl font-bold text-green-600">$12,450</p>
+            <p class="text-sm text-green-700 font-medium">Total Received</p>
+        </div>
+        <div class="text-center p-6 bg-yellow-50 rounded-3xl luxury-shadow">
+            <p class="text-3xl font-bold text-yellow-600">$2,340</p>
+            <p class="text-sm text-yellow-700 font-medium">Pending</p>
+        </div>
+        <div class="text-center p-6 bg-red-50 rounded-3xl luxury-shadow">
+            <p class="text-3xl font-bold text-red-600">$890</p>
+            <p class="text-sm text-red-700 font-medium">Failed</p>
+        </div>
+    </div>
+
+    <!-- List View -->
+    <div id="listView" class="bg-white rounded-3xl luxury-shadow overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-luxury-50">
@@ -47,6 +80,7 @@
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Method</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Date</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-luxury-100">
@@ -90,6 +124,19 @@
                             <p class="text-luxury-700">{{ payment.created_at|date:"M d, Y"|default:"Nov 18, 2024" }}</p>
                             <p class="text-sm text-luxury-500">{{ payment.created_at|time:"H:i"|default:"14:30" }}</p>
                         </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Download Receipt">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <a href="#" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Refund">
+                                    <i class="fas fa-undo"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% empty %}
                     <!-- Sample Data -->
@@ -119,6 +166,19 @@
                             <p class="text-luxury-700">Nov 18, 2024</p>
                             <p class="text-sm text-luxury-500">14:30</p>
                         </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Download Receipt">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <a href="#" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Refund">
+                                    <i class="fas fa-undo"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     <tr class="hover:bg-luxury-25 transition-colors">
                         <td class="px-6 py-4">
@@ -146,15 +206,130 @@
                             <p class="text-luxury-700">Nov 17, 2024</p>
                             <p class="text-sm text-luxury-500">16:45</p>
                         </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Download Receipt">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <a href="#" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Refund">
+                                    <i class="fas fa-undo"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Kanban View -->
+    <div id="kanbanView" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Sample Payment Cards -->
+            <div class="bg-white rounded-2xl luxury-shadow p-6 hover-lift">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-mono text-sm text-luxury-600">#PAY-001</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Completed</span>
+                </div>
+                <div class="mb-4">
+                    <h3 class="font-bold text-luxury-900 text-lg mb-1">John Doe</h3>
+                    <p class="text-sm text-luxury-600 mb-2">Invoice: #INV-001</p>
+                    <p class="text-2xl font-bold text-luxury-800">$299.99</p>
+                </div>
+                <div class="space-y-2 text-sm mb-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-luxury-600">Method:</span>
+                        <div class="flex items-center space-x-1">
+                            <i class="fas fa-credit-card text-blue-500"></i>
+                            <span class="font-medium">Credit Card</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Date:</span>
+                        <span class="font-medium">Nov 18, 2024</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <a href="#" class="flex-1 bg-royal-50 text-royal-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-royal-100 transition-colors text-center">
+                        <i class="fas fa-eye mr-1"></i>View
+                    </a>
+                    <a href="#" class="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors text-center">
+                        <i class="fas fa-download mr-1"></i>Receipt
+                    </a>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl luxury-shadow p-6 hover-lift">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-mono text-sm text-luxury-600">#PAY-002</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
+                </div>
+                <div class="mb-4">
+                    <h3 class="font-bold text-luxury-900 text-lg mb-1">Jane Smith</h3>
+                    <p class="text-sm text-luxury-600 mb-2">Invoice: #INV-002</p>
+                    <p class="text-2xl font-bold text-luxury-800">$449.97</p>
+                </div>
+                <div class="space-y-2 text-sm mb-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-luxury-600">Method:</span>
+                        <div class="flex items-center space-x-1">
+                            <i class="fas fa-money-bill text-green-500"></i>
+                            <span class="font-medium">Cash</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Date:</span>
+                        <span class="font-medium">Nov 17, 2024</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <a href="#" class="flex-1 bg-royal-50 text-royal-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-royal-100 transition-colors text-center">
+                        <i class="fas fa-eye mr-1"></i>View
+                    </a>
+                    <a href="#" class="flex-1 bg-green-50 text-green-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors text-center">
+                        <i class="fas fa-check mr-1"></i>Process
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<script>
+function toggleView(viewType) {
+    const listView = document.getElementById('listView');
+    const kanbanView = document.getElementById('kanbanView');
+    const listBtn = document.getElementById('listViewBtn');
+    const kanbanBtn = document.getElementById('kanbanViewBtn');
+    
+    if (viewType === 'list') {
+        listView.classList.remove('hidden');
+        kanbanView.classList.add('hidden');
+        listBtn.classList.add('bg-royal-600', 'text-white');
+        listBtn.classList.remove('text-luxury-600', 'hover:bg-luxury-50');
+        kanbanBtn.classList.remove('bg-royal-600', 'text-white');
+        kanbanBtn.classList.add('text-luxury-600', 'hover:bg-luxury-50');
+    } else {
+        listView.classList.add('hidden');
+        kanbanView.classList.remove('hidden');
+        kanbanBtn.classList.add('bg-royal-600', 'text-white');
+        kanbanBtn.classList.remove('text-luxury-600', 'hover:bg-luxury-50');
+        listBtn.classList.remove('bg-royal-600', 'text-white');
+        listBtn.classList.add('text-luxury-600', 'hover:bg-luxury-50');
+    }
+}
+</script>
+
 <style>
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    }
+    
     .luxury-shadow {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }

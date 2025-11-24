@@ -1,8 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Reports & Analytics - AuraStay{% endblock %}
-{% block page_title %}Reports & Analytics{% endblock %}
-{% block page_subtitle %}Comprehensive business intelligence and insights{% endblock %}
+{% block title %}
+    {% if page_contents.reports_analytics %}
+        {{ page_contents.reports_analytics.page_title }}
+    {% else %}
+        Reports & Analytics
+    {% endif %} - AuraStay
+{% endblock %}
+
+{% block page_title %}
+    {% if page_contents.reports_analytics %}
+        {{ page_contents.reports_analytics.page_title }}
+    {% else %}
+        Reports & Analytics
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.reports_analytics %}
+        {{ page_contents.reports_analytics.page_subtitle }}
+    {% else %}
+        Comprehensive reporting and business analytics
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto space-y-8">

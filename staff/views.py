@@ -5,10 +5,11 @@ from accounts.models import User
 from accounts.roles import RoleManager
 from accounts.email_utils import send_employee_welcome_email
 from accounts.permissions import assign_default_permissions, get_permission_categories, check_user_permission
+from accounts.decorators import owner_or_permission_required
 from hotels.models import Hotel
 from django.contrib.auth.models import Permission
 
-@login_required
+@owner_or_permission_required('view_staff')
 def staff_list(request):
     """List staff based on user role (excluding soft-deleted)"""
     user_role = RoleManager.get_user_role(request.user)
@@ -16,14 +17,20 @@ def staff_list(request):
     if user_role == 'SUPER_ADMIN':
         # Super admin sees all staff (excluding owners and superusers)
         staff_users = User.objects.exclude(role='Owner').exclude(is_superuser=True).filter(deleted_at__isnull=True)
-    else:
+    elif request.user.role == 'Owner':
         # Hotel owners see only staff assigned to their hotels (excluding owners)
         owned_hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
         staff_users = User.objects.exclude(role='Owner').exclude(is_superuser=True).filter(assigned_hotel__in=owned_hotels, deleted_at__isnull=True)
+    else:
+        # Staff see only other staff in their assigned hotel
+        if request.user.assigned_hotel:
+            staff_users = User.objects.exclude(role='Owner').exclude(is_superuser=True).filter(assigned_hotel=request.user.assigned_hotel, deleted_at__isnull=True)
+        else:
+            staff_users = User.objects.none()
     
     return render(request, 'staff/list.html', {'staff_list': staff_users})
 
-@login_required
+@owner_or_permission_required('add_staff')
 def staff_create(request):
     """Create new staff"""
     user_role = RoleManager.get_user_role(request.user)
@@ -85,13 +92,13 @@ def staff_create(request):
         'available_roles': available_roles
     })
 
-@login_required
+@owner_or_permission_required('view_staff')
 def staff_detail(request, staff_id):
     """Staff detail view"""
     user = get_object_or_404(User, user_id=staff_id)
     return render(request, 'staff/detail.html', {'staff': user})
 
-@login_required
+@owner_or_permission_required('change_staff')
 def staff_edit(request, staff_id):
     """Edit staff"""
     user = get_object_or_404(User, user_id=staff_id)
@@ -108,7 +115,7 @@ def staff_edit(request, staff_id):
     
     return render(request, 'staff/edit.html', {'staff': user})
 
-@login_required
+@owner_or_permission_required('delete_staff')
 def staff_delete(request, staff_id):
     """Soft delete staff member"""
     from django.utils import timezone
@@ -162,7 +169,7 @@ def staff_permissions(request, staff_id):
     
     return render(request, 'staff/permissions.html', context)
 
-@login_required
+@owner_or_permission_required('view_staff')
 def staff_send_message(request, staff_id):
     """Send message to staff"""
     staff_user = get_object_or_404(User, user_id=staff_id)
@@ -175,13 +182,13 @@ def staff_send_message(request, staff_id):
     
     return render(request, 'staff/send_message.html', {'staff': staff_user})
 
-@login_required
+@owner_or_permission_required('view_staff')
 def staff_schedule(request, staff_id):
     """View staff schedule"""
     staff_user = get_object_or_404(User, user_id=staff_id)
     return render(request, 'staff/schedule.html', {'staff': staff_user})
 
-@login_required
+@owner_or_permission_required('view_staff')
 def staff_performance(request, staff_id):
     """View staff performance"""
     staff_user = get_object_or_404(User, user_id=staff_id)

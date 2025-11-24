@@ -23,7 +23,49 @@ def about_page(request):
     """About Us page for AuraStay"""
     from .models import AboutUs
     about_content = AboutUs.objects.filter(is_active=True).first()
-    return render(request, 'accounts/about.html', {'about': about_content})
+    return render(request, 'accounts/about.html', {'about_us': about_content})
+
+
+def footer_context(request):
+    """Context processor to add footer data to all templates"""
+    from .models import Footer
+    footer = Footer.objects.first()
+    return {'footer': footer}
+
+
+def page_content_context(request):
+    """Context processor to add page content data to all templates"""
+    from .models import PageContent
+    page_contents = {}
+    for content in PageContent.objects.all():
+        page_contents[content.page_name] = content
+    return {'page_contents': page_contents}
+
+def navigation_context(request):
+    """Context processor to add navigation permissions"""
+    if not request.user.is_authenticated:
+        return {}
+    
+    from .permissions import check_user_permission
+    
+    nav_permissions = {
+        'can_view_hotels': request.user.role == 'Owner' or check_user_permission(request.user, 'view_hotel'),
+        'can_view_staff': request.user.role == 'Owner' or check_user_permission(request.user, 'view_staff'),
+        'can_view_reservations': request.user.role == 'Owner' or check_user_permission(request.user, 'view_reservation'),
+        'can_view_guests': request.user.role == 'Owner' or check_user_permission(request.user, 'view_guest'),
+        'can_view_reports': request.user.role == 'Owner' or check_user_permission(request.user, 'view_reports'),
+        'can_add_staff': request.user.role == 'Owner' or check_user_permission(request.user, 'add_staff'),
+        'can_add_reservation': request.user.role == 'Owner' or check_user_permission(request.user, 'add_reservation'),
+        'can_add_guest': request.user.role == 'Owner' or check_user_permission(request.user, 'add_guest'),
+        'can_change_staff': request.user.role == 'Owner' or check_user_permission(request.user, 'change_staff'),
+        'can_change_reservation': request.user.role == 'Owner' or check_user_permission(request.user, 'change_reservation'),
+        'can_change_guest': request.user.role == 'Owner' or check_user_permission(request.user, 'change_guest'),
+        'can_checkin': request.user.role == 'Owner' or check_user_permission(request.user, 'add_checkin'),
+        'can_checkout': request.user.role == 'Owner' or check_user_permission(request.user, 'change_checkin'),
+        'can_view_rooms': request.user.role == 'Owner' or check_user_permission(request.user, 'view_room'),
+    }
+    
+    return nav_permissions
 
 @csrf_protect
 def contact_form(request):
@@ -271,11 +313,13 @@ def subscription_plan_create(request):
         plan = SubscriptionPlan.objects.create(
             name=request.POST.get('name'),
             description=request.POST.get('description', ''),
-            price_monthly=request.POST.get('price_monthly'),
-            price_yearly=request.POST.get('price_yearly', 0),
-            max_rooms=request.POST.get('max_rooms'),
-            max_managers=request.POST.get('max_managers'),
-            max_reports=request.POST.get('max_reports', 10),
+            price_monthly=request.POST.get('price_monthly') or 0,
+            price_yearly=request.POST.get('price_yearly') or 0,
+            max_rooms=request.POST.get('max_rooms') or 50,
+            max_managers=request.POST.get('max_managers') or 5,
+            max_reports=request.POST.get('max_reports') or 10,
+            has_advanced_analytics='has_advanced_analytics' in request.POST,
+            has_priority_support='has_priority_support' in request.POST,
             is_active=True
         )
         messages.success(request, f'Subscription plan "{plan.name}" created successfully!')
@@ -292,11 +336,16 @@ def subscription_plan_edit(request, plan_id):
     if request.method == 'POST':
         plan.name = request.POST.get('name')
         plan.description = request.POST.get('description', '')
-        plan.price_monthly = request.POST.get('price_monthly')
-        plan.price_yearly = request.POST.get('price_yearly', 0)
-        plan.max_rooms = request.POST.get('max_rooms')
-        plan.max_managers = request.POST.get('max_managers')
-        plan.max_reports = request.POST.get('max_reports', 10)
+        plan.price_monthly = request.POST.get('price_monthly') or 0
+        plan.price_yearly = request.POST.get('price_yearly') or 0
+        plan.max_rooms = request.POST.get('max_rooms') or 50
+        plan.max_managers = request.POST.get('max_managers') or 5
+        plan.max_reports = request.POST.get('max_reports') or 10
+        
+        # Handle checkbox values properly - if not checked, they won't be in POST data
+        plan.has_advanced_analytics = 'has_advanced_analytics' in request.POST
+        plan.has_priority_support = 'has_priority_support' in request.POST
+        
         new_status = request.POST.get('is_active') == 'on'
         plan.is_active = new_status
         plan.save()

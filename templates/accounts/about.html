@@ -1,9 +1,9 @@
 {% extends 'base_luxury.html' %}
 {% load static %}
 
-{% block title %}About Us - AuraStay{% endblock %}
-{% block page_title %}About AuraStay{% endblock %}
-{% block page_subtitle %}Transforming Hotel Operations Worldwide{% endblock %}
+{% block title %}{{ page_contents.about.page_title|default:"About Us - AuraStay" }}{% endblock %}
+{% block page_title %}{{ page_contents.about.page_title|default:"About AuraStay" }}{% endblock %}
+{% block page_subtitle %}{{ page_contents.about.page_subtitle|default:"Transforming Hotel Operations Worldwide" }}{% endblock %}
 
 {% block content %}
 <!-- Our Purpose Section -->
@@ -19,32 +19,32 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div class="text-center">
                 <div class="bg-red-50 rounded-xl p-6 mb-4">
-                    <i class="{{ about.problem_icon|default:'fas fa-exclamation-triangle' }} text-red-500 text-3xl mb-3"></i>
+                    <i class="{{ about_us.problem_icon|default:'fas fa-exclamation-triangle' }} text-red-500 text-3xl mb-3"></i>
                     <h3 class="font-bold text-luxury-800 mb-2">The Problem</h3>
-                    <p class="text-luxury-600 text-sm">{{ about.problem_description|default:"Legacy hotel software is expensive, complicated, and can't easily handle multiple properties." }}</p>
+                    <p class="text-luxury-600 text-sm">{{ about_us.problem_description|default:"Legacy hotel software is expensive, complicated, and can't easily handle multiple properties." }}</p>
                 </div>
             </div>
             
             <div class="text-center">
                 <div class="bg-blue-50 rounded-xl p-6 mb-4">
-                    <i class="{{ about.solution_icon|default:'fas fa-lightbulb' }} text-blue-500 text-3xl mb-3"></i>
+                    <i class="{{ about_us.solution_icon|default:'fas fa-lightbulb' }} text-blue-500 text-3xl mb-3"></i>
                     <h3 class="font-bold text-luxury-800 mb-2">Our Solution</h3>
-                    <p class="text-luxury-600 text-sm">{{ about.solution_description|default:"AuraStay is a single, streamlined system built specifically for multi-hotel management and designed to elevate the guest experience." }}</p>
+                    <p class="text-luxury-600 text-sm">{{ about_us.solution_description|default:"AuraStay is a single, streamlined system built specifically for multi-hotel management and designed to elevate the guest experience." }}</p>
                 </div>
             </div>
             
             <div class="text-center">
                 <div class="bg-green-50 rounded-xl p-6 mb-4">
-                    <i class="{{ about.mission_icon|default:'fas fa-target' }} text-green-500 text-3xl mb-3"></i>
+                    <i class="fas fa-bullseye text-green-500 text-3xl mb-3"></i>
                     <h3 class="font-bold text-luxury-800 mb-2">Our Mission</h3>
-                    <p class="text-luxury-600 text-sm">We turn complex hotel operations into a seamless, positive guest and manager experience.</p>
+                    <p class="text-luxury-600 text-sm">{{ about_us.mission_description|default:"We turn complex hotel operations into a seamless, positive guest and manager experience." }}</p>
                 </div>
             </div>
         </div>
         
         <div class="bg-gradient-to-r from-royal-50 to-gold-50 rounded-2xl p-6 text-center">
             <h3 class="text-xl font-bold text-luxury-800 mb-3">Mission Statement</h3>
-            <p class="text-lg text-royal-600 font-semibold italic">"{{ about.mission_statement|default:"We turn complex hotel operations into a seamless, positive guest and manager experience." }}"</p>
+            <p class="text-lg text-royal-600 font-semibold italic">"{{ about_us.mission_statement|default:"We turn complex hotel operations into a seamless, positive guest and manager experience." }}"</p>
         </div>
     </div>
 </div>
@@ -68,7 +68,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-luxury-800 mb-3">Global Architecture</h3>
                 </div>
-                <p class="text-luxury-600 text-center">{{ about.global_architecture_text|default:"We are built for <strong>international scale</strong>, allowing you to manage a single boutique hotel or a chain across continents from one secure login."|safe }}</p>
+                <p class="text-luxury-600 text-center">{{ about_us.global_architecture_text|default:"We are built for <strong>international scale</strong>, allowing you to manage a single boutique hotel or a chain across continents from one secure login."|safe }}</p>
             </div>
             
             <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
@@ -78,7 +78,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-luxury-800 mb-3">Data Security</h3>
                 </div>
-                <p class="text-luxury-600 text-center">{{ about.data_security_text|default:"Your data is completely <strong>isolated and secure</strong>. We use advanced architecture to ensure that the bookings from one hotel are never visible to another."|safe }}</p>
+                <p class="text-luxury-600 text-center">{{ about_us.data_security_text|default:"Your data is completely <strong>isolated and secure</strong>. We use advanced architecture to ensure that the bookings from one hotel are never visible to another."|safe }}</p>
             </div>
             
             <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
@@ -88,7 +88,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-luxury-800 mb-3">Modern Technology</h3>
                 </div>
-                <p class="text-luxury-600 text-center">{{ about.modern_tech_text|default:"Built on modern, stable, and secure technology (Python/Django and PostgreSQL) to ensure <strong>99.9% uptime</strong>."|safe }}</p>
+                <p class="text-luxury-600 text-center">{{ about_us.modern_tech_text|default:"Built on modern, stable, and secure technology (Python/Django and PostgreSQL) to ensure <strong>99.9% uptime</strong>."|safe }}</p>
             </div>
         </div>
         
@@ -96,19 +96,19 @@
         <div class="mt-8 bg-gradient-to-r from-luxury-50 to-royal-50 rounded-2xl p-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div>
-                    <div class="text-2xl font-bold text-royal-600">{{ about.uptime_percentage|default:"99.9%" }}</div>
+                    <div class="text-2xl font-bold text-royal-600">{{ about_us.uptime_percentage|default:"99.9%" }}</div>
                     <div class="text-sm text-luxury-600">Uptime Guarantee</div>
                 </div>
                 <div>
-                    <div class="text-2xl font-bold text-royal-600">{{ about.security_monitoring|default:"24/7" }}</div>
+                    <div class="text-2xl font-bold text-royal-600">{{ about_us.security_monitoring|default:"24/7" }}</div>
                     <div class="text-sm text-luxury-600">Security Monitoring</div>
                 </div>
                 <div>
-                    <div class="text-2xl font-bold text-royal-600">{{ about.security_certification|default:"ISO 27001" }}</div>
+                    <div class="text-2xl font-bold text-royal-600">{{ about_us.security_certification|default:"ISO 27001" }}</div>
                     <div class="text-sm text-luxury-600">Security Certified</div>
                 </div>
                 <div>
-                    <div class="text-2xl font-bold text-royal-600">{{ about.compliance_standard|default:"GDPR" }}</div>
+                    <div class="text-2xl font-bold text-royal-600">{{ about_us.compliance_standard|default:"GDPR" }}</div>
                     <div class="text-sm text-luxury-600">Compliant</div>
                 </div>
             </div>
@@ -134,7 +134,7 @@
                     <h3 class="text-xl font-bold text-luxury-800 mb-2">View Our Plans</h3>
                     <p class="text-luxury-600 mb-4">Explore our simple subscription plans designed for hotels of all sizes.</p>
                 </div>
-                <a href="/#pricing" class="inline-block bg-gradient-to-r from-royal-500 to-royal-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
+                <a href="{% url 'accounts:landing' %}#pricing" class="inline-block bg-gradient-to-r from-royal-500 to-royal-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
                     View Pricing Plans
                 </a>
             </div>
@@ -145,7 +145,7 @@
                     <h3 class="text-xl font-bold text-luxury-800 mb-2">Request Demo</h3>
                     <p class="text-luxury-600 mb-4">Get a personalized live demonstration of AuraStay's capabilities.</p>
                 </div>
-                <a href="/#contact" class="inline-block bg-gradient-to-r from-gold-500 to-gold-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
+                <a href="{% url 'accounts:landing' %}#contact" onclick="setTrialMessage()" class="inline-block bg-gradient-to-r from-gold-500 to-gold-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
                     Request Free Demo
                 </a>
             </div>
@@ -161,15 +161,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div class="flex items-center justify-center">
                     <i class="fas fa-envelope text-royal-500 mr-2"></i>
-                    <span class="text-luxury-700">{{ about.support_email|default:"support@aurastay.com" }}</span>
+                    <span class="text-luxury-700">{{ about_us.support_email|default:"support@aurastay.com" }}</span>
                 </div>
                 <div class="flex items-center justify-center">
                     <i class="fas fa-phone text-royal-500 mr-2"></i>
-                    <span class="text-luxury-700">{{ about.support_phone|default:"+1 (555) 123-4567" }}</span>
+                    <span class="text-luxury-700">{{ about_us.support_phone|default:"+1 (555) 123-4567" }}</span>
                 </div>
                 <div class="flex items-center justify-center">
                     <i class="fas fa-clock text-royal-500 mr-2"></i>
-                    <span class="text-luxury-700">{{ about.support_hours|default:"24/7 Support" }}</span>
+                    <span class="text-luxury-700">{{ about_us.support_hours|default:"24/7 Support" }}</span>
                 </div>
             </div>
         </div>
@@ -182,8 +182,31 @@ document.querySelectorAll('a[href^="/#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const targetId = this.getAttribute('href').substring(2);
-        window.location.href = '/' + '#' + targetId;
+        
+        // Navigate to landing page first, then scroll to section
+        window.location.href = '{% url "accounts:landing" %}' + '#' + targetId;
     });
+});
+
+// Set trial message function for About Us page
+function setTrialMessage() {
+    // Store trial message in sessionStorage to use on landing page
+    sessionStorage.setItem('trialMessage', 'I would like to request a free demo of AuraStay. Please contact me to schedule a personalized demonstration.');
+}
+
+// Handle smooth scrolling if coming from another page with hash
+window.addEventListener('load', function() {
+    if (window.location.hash) {
+        const targetElement = document.querySelector(window.location.hash);
+        if (targetElement) {
+            setTimeout(() => {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+        }
+    }
 });
 </script>
 {% endblock %}

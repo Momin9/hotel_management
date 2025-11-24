@@ -1,8 +1,8 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Analytics Dashboard{% endblock %}
-{% block page_title %}Advanced Analytics{% endblock %}
-{% block page_subtitle %}Comprehensive insights and performance metrics{% endblock %}
+{% block title %}{{ page_contents.advanced_analytics.page_title|default:'Analytics Dashboard' }}{% endblock %}
+{% block page_title %}{{ page_contents.advanced_analytics.page_title|default:'Advanced Analytics' }}{% endblock %}
+{% block page_subtitle %}{{ page_contents.advanced_analytics.page_subtitle|default:'Revenue trends and business intelligence dashboard' }}{% endblock %}
 
 {% block content %}
 <div class="space-y-8">

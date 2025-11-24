@@ -1,31 +1,11 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}{{ hotel_name }} Dashboard - AuraStay{% endblock %}
+{% block title %}{{ page_contents.owner_dashboard.page_title|default:hotel_name|default:"Owner" }} Dashboard - AuraStay{% endblock %}
 
-{% block page_title %}{{ hotel_name }} Dashboard{% endblock %}
-{% block page_subtitle %}Manage your hotel operations{% endblock %}
+{% block page_title %}{{ page_contents.owner_dashboard.page_title|default:hotel_name|default:"Owner" }} Dashboard{% endblock %}
+{% block page_subtitle %}{{ page_contents.owner_dashboard.page_subtitle|default:"Manage your hotel operations" }}{% endblock %}
 
-{% block extra_nav %}
-<div class="bg-white rounded-2xl p-1 luxury-shadow">
-    <nav class="flex space-x-1">
-        <a href="{% url 'accounts:owner_dashboard' %}" class="px-4 py-2 rounded-xl text-sm font-medium bg-royal-500 text-white">
-            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-        </a>
-        <a href="{% url 'hotels:hotel_list' %}" class="px-4 py-2 rounded-xl text-sm font-medium text-luxury-600 hover:bg-luxury-100 transition-colors">
-            <i class="fas fa-building mr-2"></i>Hotels
-        </a>
-        <a href="{% url 'staff:list' %}" class="px-4 py-2 rounded-xl text-sm font-medium text-luxury-600 hover:bg-luxury-100 transition-colors">
-            <i class="fas fa-users mr-2"></i>Staff
-        </a>
-        <a href="{% url 'reservations:list' %}" class="px-4 py-2 rounded-xl text-sm font-medium text-luxury-600 hover:bg-luxury-100 transition-colors">
-            <i class="fas fa-calendar mr-2"></i>Reservations
-        </a>
-        <a href="#" class="px-4 py-2 rounded-xl text-sm font-medium text-luxury-600 hover:bg-luxury-100 transition-colors">
-            <i class="fas fa-chart-bar mr-2"></i>Reports
-        </a>
-    </nav>
-</div>
-{% endblock %}
+
 
 {% block content %}
 <div class="space-y-8">

@@ -1,8 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Hotel Owners{% endblock %}
-{% block page_title %}Hotel Owners{% endblock %}
-{% block page_subtitle %}Manage hotel owners and their accounts{% endblock %}
+{% block title %}
+    {% if page_contents.hotel_owners_list %}
+        {{ page_contents.hotel_owners_list.page_title }}
+    {% else %}
+        Hotel Owners
+    {% endif %}
+{% endblock %}
+
+{% block page_title %}
+    {% if page_contents.hotel_owners_list %}
+        {{ page_contents.hotel_owners_list.page_title }}
+    {% else %}
+        Hotel Owners
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.hotel_owners_list %}
+        {{ page_contents.hotel_owners_list.page_subtitle }}
+    {% else %}
+        Manage hotel owners and their accounts
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
@@ -12,14 +32,25 @@
             <h2 class="text-2xl font-bold text-luxury-900">All Hotel Owners</h2>
             <p class="text-luxury-600">Create and manage hotel owner accounts</p>
         </div>
-        <a href="{% url 'accounts:hotel_owner_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
-            <i class="fas fa-plus mr-2"></i>
-            Create New Owner
-        </a>
+        <div class="flex items-center space-x-4">
+            <!-- View Toggle -->
+            <div class="bg-white rounded-xl p-1 luxury-shadow">
+                <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-royal-600 text-white">
+                    <i class="fas fa-list mr-2"></i>List
+                </button>
+                <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-luxury-600 hover:bg-luxury-50">
+                    <i class="fas fa-th-large mr-2"></i>Kanban
+                </button>
+            </div>
+            <a href="{% url 'accounts:hotel_owner_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Create New Owner
+            </a>
+        </div>
     </div>
 
-    <!-- Owners Table -->
-    <div class="bg-white rounded-2xl luxury-shadow overflow-hidden">
+    <!-- List View -->
+    <div id="listView" class="bg-white rounded-2xl luxury-shadow overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-luxury-50">
@@ -97,5 +128,96 @@
             </table>
         </div>
     </div>
+
+    <!-- Kanban View -->
+    <div id="kanbanView" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for owner in owners %}
+            <div class="bg-white rounded-2xl luxury-shadow p-6 hover-lift">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-royal-400 to-royal-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                        {{ owner.first_name.0|default:owner.email.0|upper }}
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium {% if owner.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {% if owner.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-bold text-luxury-900 text-lg mb-1">{{ owner.first_name }} {{ owner.last_name }}</h3>
+                    <p class="text-sm text-luxury-600 mb-2">@{{ owner.username }}</p>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        {{ owner.role|title }}
+                    </span>
+                </div>
+                
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-luxury-600">
+                        <i class="fas fa-envelope w-4 mr-2"></i>
+                        <span class="truncate">{{ owner.email }}</span>
+                    </div>
+                    {% if owner.phone %}
+                    <div class="flex items-center text-sm text-luxury-600">
+                        <i class="fas fa-phone w-4 mr-2"></i>
+                        <span>{{ owner.phone }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center text-sm text-luxury-600">
+                        <i class="fas fa-calendar w-4 mr-2"></i>
+                        <span>{{ owner.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <a href="{% url 'accounts:hotel_owner_edit' owner.user_id %}" 
+                       class="flex-1 bg-royal-50 text-royal-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-royal-100 transition-colors text-center">
+                        <i class="fas fa-edit mr-1"></i>Edit
+                    </a>
+                    <a href="{% url 'accounts:hotel_owner_delete' owner.user_id %}" 
+                       class="flex-1 bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors text-center"
+                       onclick="return confirm('Are you sure you want to delete this owner?')">
+                        <i class="fas fa-trash mr-1"></i>Delete
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full">
+                <div class="bg-white rounded-2xl luxury-shadow p-12 text-center">
+                    <i class="fas fa-crown text-6xl text-luxury-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-luxury-600 mb-2">No Hotel Owners</h3>
+                    <p class="text-luxury-500 mb-6">Create your first hotel owner to get started</p>
+                    <a href="{% url 'accounts:hotel_owner_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors">
+                        Create First Owner
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
+
+<script>
+function toggleView(viewType) {
+    const listView = document.getElementById('listView');
+    const kanbanView = document.getElementById('kanbanView');
+    const listBtn = document.getElementById('listViewBtn');
+    const kanbanBtn = document.getElementById('kanbanViewBtn');
+    
+    if (viewType === 'list') {
+        listView.classList.remove('hidden');
+        kanbanView.classList.add('hidden');
+        listBtn.classList.add('bg-royal-600', 'text-white');
+        listBtn.classList.remove('text-luxury-600', 'hover:bg-luxury-50');
+        kanbanBtn.classList.remove('bg-royal-600', 'text-white');
+        kanbanBtn.classList.add('text-luxury-600', 'hover:bg-luxury-50');
+    } else {
+        listView.classList.add('hidden');
+        kanbanView.classList.remove('hidden');
+        kanbanBtn.classList.add('bg-royal-600', 'text-white');
+        kanbanBtn.classList.remove('text-luxury-600', 'hover:bg-luxury-50');
+        listBtn.classList.remove('bg-royal-600', 'text-white');
+        listBtn.classList.add('text-luxury-600', 'hover:bg-luxury-50');
+    }
+}
+</script>
 {% endblock %}

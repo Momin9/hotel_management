@@ -123,22 +123,28 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden lg:flex items-center space-x-1">
-                    {% if request.resolver_match.url_name == 'landing' or request.resolver_match.url_name == 'about' %}
-                    <a href="#features" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
-                        Features
-                    </a>
-                    <a href="#pricing" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
-                        Pricing
-                    </a>
-                    <a href="{% url 'accounts:about' %}" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
-                        About Us
-                    </a>
-                    <a href="{% url 'accounts:login' %}" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
-                        Login
-                    </a>
-                    <a href="#contact" class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-6 py-2 rounded-xl font-semibold hover:from-royal-600 hover:to-royal-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                        Start Free Trial
-                    </a>
+                    {% if not user.is_authenticated %}
+                        {% if request.resolver_match.url_name == 'landing' %}
+                        <a href="#features" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
+                            Features
+                        </a>
+                        <a href="#pricing" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
+                            Pricing
+                        </a>
+                        <a href="{% url 'accounts:about' %}" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
+                            About Us
+                        </a>
+                        {% elif request.resolver_match.url_name == 'about' %}
+                        <a href="{% url 'accounts:landing' %}" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
+                            Home
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'accounts:login' %}" class="px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 font-medium">
+                            Login
+                        </a>
+                        <a href="#contact" class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-6 py-2 rounded-xl font-semibold hover:from-royal-600 hover:to-royal-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                            Start Free Trial
+                        </a>
                     {% else %}
                     <a href="{% url 'accounts:dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-tachometer-alt mr-2 group-hover:scale-110 transition-transform"></i>
@@ -165,23 +171,37 @@
                         <i class="fas fa-chart-line mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Analytics</span>
                     </a>
-                    {% elif user.role == 'Owner' %}
+                    {% else %}
+                    {% if can_view_hotels %}
                     <a href="{% url 'hotels:hotel_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-building mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Hotels</span>
                     </a>
+                    {% endif %}
+                    {% if can_view_staff %}
                     <a href="{% url 'staff:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Staff</span>
                     </a>
+                    {% endif %}
+                    {% if can_view_reservations %}
                     <a href="{% url 'reservations:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-calendar-check mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Reservations</span>
                     </a>
+                    {% endif %}
+                    {% if can_view_guests %}
+                    <a href="{% url 'crm:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                        <i class="fas fa-address-book mr-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Guests</span>
+                    </a>
+                    {% endif %}
+                    {% if can_view_reports %}
                     <a href="{% url 'reporting:dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-chart-bar mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Reports</span>
                     </a>
+                    {% endif %}
                     {% endif %}
                     {% endif %}
                 </div>
@@ -277,7 +297,7 @@
                             <div class="hidden sm:block">
                                 <p class="text-sm font-semibold text-luxury-800">{{ user.get_full_name|default:user.email }}</p>
                                 <p class="text-xs text-luxury-600">
-                                    {% if user.is_superuser %}Super Admin{% elif user.is_staff %}Staff Member{% else %}Hotel Owner{% endif %}
+                                    {% if user.is_superuser %}Super Admin{% elif user.role == 'Owner' %}Hotel Owner{% else %}{{ user.role }}{% endif %}
                                 </p>
                             </div>
                             <i class="fas fa-chevron-down text-luxury-600 transition-transform" :class="{ 'rotate-180': open }"></i>
@@ -315,10 +335,46 @@
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div class="text-center">
                     <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-fade-in">
-                        {% block page_title %}Welcome to AuraStay{% endblock %}
+                        {% block page_title %}
+                            {% if page_contents.super_admin_dashboard and request.resolver_match.url_name == 'super_admin_dashboard' %}
+                                {{ page_contents.super_admin_dashboard.page_title }}
+                            {% elif page_contents.owner_dashboard and request.resolver_match.url_name == 'owner_dashboard' %}
+                                {{ page_contents.owner_dashboard.page_title }}
+                            {% elif page_contents.employee_dashboard and request.resolver_match.url_name == 'employee_dashboard' %}
+                                {{ page_contents.employee_dashboard.page_title }}
+                            {% elif page_contents.profile and request.resolver_match.url_name == 'profile' %}
+                                {{ page_contents.profile.page_title }}
+                            {% elif page_contents.about and request.resolver_match.url_name == 'about_page' %}
+                                {{ page_contents.about.page_title }}
+                            {% elif page_contents.landing and request.resolver_match.url_name == 'landing_page' %}
+                                {{ page_contents.landing.page_title }}
+                            {% elif page_contents.login and request.resolver_match.url_name == 'custom_login' %}
+                                {{ page_contents.login.page_title }}
+                            {% else %}
+                                Welcome to AuraStay
+                            {% endif %}
+                        {% endblock %}
                     </h1>
                     <p class="text-xl text-royal-100 max-w-2xl mx-auto animate-fade-in">
-                        {% block page_subtitle %}Experience the future of hotel management with our premium platform{% endblock %}
+                        {% block page_subtitle %}
+                            {% if page_contents.super_admin_dashboard and request.resolver_match.url_name == 'super_admin_dashboard' %}
+                                {{ page_contents.super_admin_dashboard.page_subtitle }}
+                            {% elif page_contents.owner_dashboard and request.resolver_match.url_name == 'owner_dashboard' %}
+                                {{ page_contents.owner_dashboard.page_subtitle }}
+                            {% elif page_contents.employee_dashboard and request.resolver_match.url_name == 'employee_dashboard' %}
+                                {{ page_contents.employee_dashboard.page_subtitle }}
+                            {% elif page_contents.profile and request.resolver_match.url_name == 'profile' %}
+                                {{ page_contents.profile.page_subtitle }}
+                            {% elif page_contents.about and request.resolver_match.url_name == 'about_page' %}
+                                {{ page_contents.about.page_subtitle }}
+                            {% elif page_contents.landing and request.resolver_match.url_name == 'landing_page' %}
+                                {{ page_contents.landing.page_subtitle }}
+                            {% elif page_contents.login and request.resolver_match.url_name == 'custom_login' %}
+                                {{ page_contents.login.page_subtitle }}
+                            {% else %}
+                                Experience the future of hotel management with our premium platform
+                            {% endif %}
+                        {% endblock %}
                     </p>
                     
                     <!-- Extra Navigation -->
@@ -370,21 +426,32 @@
                 <div class="col-span-1 md:col-span-2">
                     <a href="{% url 'accounts:landing' %}" class="flex items-center space-x-3 mb-4 hover:opacity-80 transition-opacity">
                         <div class="bg-white rounded-xl p-2">
-                            <img src="{% static 'images/logo/aurastay-logo.png' %}" alt="AuraStay Logo" class="w-24 h-24 object-contain">
+                            <img src="{% static 'images/logo/aurastay-logo.png' %}" alt="{{ footer.company_name|default:'AuraStay' }} Logo" class="w-24 h-24 object-contain">
                         </div>
-                        <h3 class="text-2xl font-bold text-white">AuraStay</h3>
+                        <h3 class="text-2xl font-bold text-white">{{ footer.company_name|default:'AuraStay' }}</h3>
                     </a>
-                    <p class="text-luxury-300 mb-4">The world's most advanced hotel management platform, designed for luxury hospitality.</p>
+                    <p class="text-luxury-300 mb-4">{{ footer.company_description|default:'The world\'s most advanced hotel management platform, designed for luxury hospitality.' }}</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-luxury-700 rounded-xl flex items-center justify-center hover:bg-royal-600 transition-colors">
+                        {% if footer.twitter_url %}
+                        <a href="{{ footer.twitter_url }}" class="w-10 h-10 bg-luxury-700 rounded-xl flex items-center justify-center hover:bg-royal-600 transition-colors">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-luxury-700 rounded-xl flex items-center justify-center hover:bg-royal-600 transition-colors">
+                        {% endif %}
+                        {% if footer.linkedin_url %}
+                        <a href="{{ footer.linkedin_url }}" class="w-10 h-10 bg-luxury-700 rounded-xl flex items-center justify-center hover:bg-royal-600 transition-colors">
                             <i class="fab fa-linkedin"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-luxury-700 rounded-xl flex items-center justify-center hover:bg-royal-600 transition-colors">
+                        {% endif %}
+                        {% if footer.instagram_url %}
+                        <a href="{{ footer.instagram_url }}" class="w-10 h-10 bg-luxury-700 rounded-xl flex items-center justify-center hover:bg-royal-600 transition-colors">
                             <i class="fab fa-instagram"></i>
                         </a>
+                        {% endif %}
+                        {% if footer.facebook_url %}
+                        <a href="{{ footer.facebook_url }}" class="w-10 h-10 bg-luxury-700 rounded-xl flex items-center justify-center hover:bg-royal-600 transition-colors">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
                 <div>
@@ -399,15 +466,15 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Contact</h4>
                     <ul class="space-y-2 text-luxury-300">
-                        <li><span class="text-luxury-300">Email: info@aurastay.com</span></li>
-                        <li><span class="text-luxury-300">Phone: +1 (555) 123-4567</span></li>
-                        <li><span class="text-luxury-300">Address: 123 Business Ave</span></li>
-                        <li><span class="text-luxury-300">New York, NY 10001</span></li>
+                        <li><span class="text-luxury-300">Email: {{ footer.email|default:'info@aurastay.com' }}</span></li>
+                        <li><span class="text-luxury-300">Phone: {{ footer.phone|default:'+1 (555) 123-4567' }}</span></li>
+                        <li><span class="text-luxury-300">{{ footer.address_line1|default:'123 Business Ave' }}</span></li>
+                        <li><span class="text-luxury-300">{{ footer.address_line2|default:'New York, NY 10001' }}</span></li>
                     </ul>
                 </div>
             </div>
             <div class="border-t border-luxury-700 mt-8 pt-8 text-center">
-                <p class="text-luxury-400">© 2024 AuraStay Management Suite. All rights reserved.</p>
+                <p class="text-luxury-400">{{ footer.copyright_text|default:'© 2024 AuraStay Management Suite. All rights reserved.' }}</p>
             </div>
         </div>
     </footer>

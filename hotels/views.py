@@ -1,6 +1,6 @@
 from datetime import date
 
-from accounts.decorators import role_required, hotel_owner_required
+from accounts.decorators import owner_or_permission_required
 from accounts.roles import RoleManager
 from billing.models import Payment
 from django.contrib import messages
@@ -30,7 +30,7 @@ def hotel_dashboard(request):
         return redirect('accounts:employee_dashboard')
 
 
-@role_required('HOTEL_OWNER', 'HOTEL_MANAGER', 'SUPER_ADMIN')
+@owner_or_permission_required('view_hotel')
 def hotel_overview(request):
     """Role-based dashboard with real data"""
 
@@ -107,21 +107,27 @@ def hotel_overview(request):
     return render(request, 'hotels/dashboard_luxury.html', context)
 
 
-@role_required('HOTEL_OWNER', 'HOTEL_MANAGER', 'SUPER_ADMIN')
+@owner_or_permission_required('view_hotel')
 def hotel_list(request):
     """List hotels based on user role"""
     user_role = RoleManager.get_user_role(request.user)
     
     if user_role == 'SUPER_ADMIN':
         hotels = Hotel.objects.filter(deleted_at__isnull=True)
-    else:
+    elif request.user.role == 'Owner':
         # Hotel owners see only their hotels
         hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
+    else:
+        # Staff see only their assigned hotel
+        if request.user.assigned_hotel:
+            hotels = Hotel.objects.filter(hotel_id=request.user.assigned_hotel.hotel_id, deleted_at__isnull=True)
+        else:
+            hotels = Hotel.objects.none()
     
     return render(request, 'hotels/hotel_list.html', {'hotels': hotels})
 
 
-@hotel_owner_required
+@owner_or_permission_required('add_hotel')
 def hotel_create(request):
     """Create new hotel"""
     if request.method == 'POST':
@@ -140,7 +146,7 @@ def hotel_create(request):
     return render(request, 'hotels/hotel_form.html')
 
 
-@role_required('HOTEL_OWNER', 'HOTEL_MANAGER', 'SUPER_ADMIN')
+@owner_or_permission_required('view_hotel')
 @csrf_protect
 def hotel_detail(request, hotel_id):
     """Hotel detail/settings page"""
@@ -168,7 +174,7 @@ def hotel_detail(request, hotel_id):
     return render(request, 'hotels/hotel_detail.html', {'hotel': hotel_obj})
 
 
-@role_required('HOTEL_OWNER', 'HOTEL_MANAGER', 'FRONT_DESK', 'HOUSEKEEPING', 'SUPER_ADMIN')
+@owner_or_permission_required('view_room')
 def room_list(request, hotel_id):
     """List rooms for a hotel with modern UI"""
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
@@ -185,7 +191,7 @@ def room_list(request, hotel_id):
     })
 
 
-@role_required('HOTEL_OWNER', 'HOTEL_MANAGER', 'SUPER_ADMIN')
+@owner_or_permission_required('add_room')
 def room_create(request, hotel_id):
     """Create new room"""
     from django.db import IntegrityError
@@ -227,7 +233,7 @@ def room_create(request, hotel_id):
         'hotel': hotel_obj
     })
 
-@role_required('HOTEL_OWNER', 'HOTEL_MANAGER', 'SUPER_ADMIN')
+@owner_or_permission_required('view_room')
 def room_detail(request, hotel_id, room_id):
     """Room detail view"""
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
@@ -244,7 +250,7 @@ def room_detail(request, hotel_id, room_id):
         'room': room
     })
 
-@role_required('HOTEL_OWNER', 'HOTEL_MANAGER', 'SUPER_ADMIN')
+@owner_or_permission_required('change_room')
 def room_edit(request, hotel_id, room_id):
     """Edit room"""
     from django.db import IntegrityError

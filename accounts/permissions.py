@@ -113,20 +113,23 @@ def assign_default_permissions(user):
     # Clear existing permissions
     user.user_permissions.clear()
     
+    # Get or create content type for custom permissions
+    content_type = ContentType.objects.get_for_model(user)
+    
     # Assign default permissions
     for perm_codename in default_perms:
         try:
+            # Try to find existing permission
             permission = Permission.objects.get(codename=perm_codename)
-            user.user_permissions.add(permission)
         except Permission.DoesNotExist:
             # Create custom permission if it doesn't exist
-            content_type = ContentType.objects.get_for_model(user)
             permission = Permission.objects.create(
                 codename=perm_codename,
                 name=perm_codename.replace('_', ' ').title(),
                 content_type=content_type
             )
-            user.user_permissions.add(permission)
+        
+        user.user_permissions.add(permission)
 
 def check_user_permission(user, permission_codename):
     """Check if user has specific permission"""
@@ -136,7 +139,8 @@ def check_user_permission(user, permission_codename):
     if user.role == 'Owner':
         return True  # Hotel owners have all permissions for their hotels
     
-    return user.has_perm(f'auth.{permission_codename}') or user.user_permissions.filter(codename=permission_codename).exists()
+    # Check if user has the permission directly assigned
+    return user.user_permissions.filter(codename=permission_codename).exists()
 
 def get_user_permissions(user):
     """Get all permissions for a user"""

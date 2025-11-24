@@ -1,9 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Billing Dashboard - AuraStay{% endblock %}
+{% block title %}
+    {% if page_contents.billing_dashboard %}
+        {{ page_contents.billing_dashboard.page_title }}
+    {% else %}
+        Billing Dashboard
+    {% endif %} - AuraStay
+{% endblock %}
 
-{% block page_title %}Billing Dashboard{% endblock %}
-{% block page_subtitle %}Monitor revenue, invoices, and financial performance{% endblock %}
+{% block page_title %}
+    {% if page_contents.billing_dashboard %}
+        {{ page_contents.billing_dashboard.page_title }}
+    {% else %}
+        Billing Dashboard
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.billing_dashboard %}
+        {{ page_contents.billing_dashboard.page_subtitle }}
+    {% else %}
+        Overview of billing, invoices, and financial transactions
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="space-y-8">

@@ -1,8 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Hotels - AuraStay{% endblock %}
-{% block page_title %}Hotels Management{% endblock %}
-{% block page_subtitle %}Manage your hotels{% endblock %}
+{% block title %}
+    {% if page_contents.hotel_management %}
+        {{ page_contents.hotel_management.page_title }}
+    {% else %}
+        Hotels Management
+    {% endif %} - AuraStay
+{% endblock %}
+
+{% block page_title %}
+    {% if page_contents.hotel_management %}
+        {{ page_contents.hotel_management.page_title }}
+    {% else %}
+        Hotels Management
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.hotel_management %}
+        {{ page_contents.hotel_management.page_subtitle }}
+    {% else %}
+        Manage your hotel properties, rooms, and facilities
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="space-y-8">
@@ -67,12 +87,16 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex space-x-2">
+                                    {% if can_view_rooms %}
                                     <a href="{% url 'hotels:room_list' hotel.hotel_id %}" class="text-royal-600 hover:text-royal-800 transition-colors" title="View Rooms">
                                         <i class="fas fa-bed"></i>
                                     </a>
+                                    {% endif %}
+                                    {% if can_view_hotels %}
                                     <a href="{% url 'hotels:hotel_detail' hotel.hotel_id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors" title="Settings">
                                         <i class="fas fa-cog"></i>
                                     </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -137,13 +161,17 @@
             </div>
             
             <div class="flex space-x-2">
+                {% if can_view_rooms %}
                 <a href="{% url 'hotels:room_list' hotel.hotel_id %}" 
                    class="flex-1 bg-royal-500 text-white py-2 rounded-xl text-center text-sm font-semibold hover:bg-royal-600 transition-colors">
                     View Rooms
                 </a>
+                {% endif %}
+                {% if can_view_hotels %}
                 <a href="{% url 'hotels:hotel_detail' hotel.hotel_id %}" class="flex-1 bg-luxury-200 text-luxury-700 py-2 rounded-xl text-center text-sm font-semibold hover:bg-luxury-300 transition-colors">
                     Settings
                 </a>
+                {% endif %}
             </div>
         </div>
         {% empty %}

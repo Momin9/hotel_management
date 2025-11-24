@@ -1,9 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Guest Management - AuraStay{% endblock %}
+{% block title %}
+    {% if page_contents.guest_management %}
+        {{ page_contents.guest_management.page_title }}
+    {% else %}
+        Guest Management
+    {% endif %} - AuraStay
+{% endblock %}
 
-{% block page_title %}Guest Management{% endblock %}
-{% block page_subtitle %}Manage your valued guests and their preferences{% endblock %}
+{% block page_title %}
+    {% if page_contents.guest_management %}
+        {{ page_contents.guest_management.page_title }}
+    {% else %}
+        Guest Management
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.guest_management %}
+        {{ page_contents.guest_management.page_subtitle }}
+    {% else %}
+        Manage guest profiles, preferences, and history
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="space-y-8">
@@ -28,11 +47,13 @@
                     <i class="fas fa-columns mr-2"></i>Kanban View
                 </button>
             </div>
+            {% if can_add_guest %}
             <a href="{% url 'crm:create' %}" 
                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-2xl hover-lift transition-all duration-300 group">
                 <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
                 Add New Guest
             </a>
+            {% endif %}
         </div>
     </div>
 
@@ -77,12 +98,16 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex space-x-2">
+                                        {% if can_view_guests %}
                                         <a href="{% url 'crm:detail' guest.id %}" class="text-royal-600 hover:text-royal-800 transition-colors" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        {% endif %}
+                                        {% if can_change_guest %}
                                         <a href="{% url 'crm:edit' guest.id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -158,16 +183,20 @@
 
                     <!-- Action Buttons -->
                     <div class="flex space-x-3 pt-4 border-t border-luxury-100">
+                        {% if can_view_guests %}
                         <a href="{% url 'crm:detail' guest.id %}" 
                            class="flex-1 bg-gradient-to-r from-royal-500 to-royal-600 text-white py-3 rounded-2xl font-semibold text-center hover-lift transition-all duration-300 group">
                             <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
                             View
                         </a>
+                        {% endif %}
+                        {% if can_change_guest %}
                         <a href="{% url 'crm:edit' guest.id %}" 
                            class="flex-1 bg-luxury-100 text-luxury-700 py-3 rounded-2xl font-semibold text-center hover:bg-luxury-200 transition-all duration-300 group">
                             <i class="fas fa-edit mr-2 group-hover:scale-110 transition-transform"></i>
                             Edit
                         </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -186,11 +215,13 @@
                     Start building your guest database by adding your first guest profile. 
                     Track preferences, stay history, and provide personalized service.
                 </p>
+                {% if can_add_guest %}
                 <a href="{% url 'crm:create' %}" 
                    class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-2xl hover-lift transition-all duration-300 group">
                     <i class="fas fa-plus mr-3 group-hover:rotate-90 transition-transform duration-300"></i>
                     Add Your First Guest
                 </a>
+                {% endif %}
             </div>
         </div>
     {% endif %}

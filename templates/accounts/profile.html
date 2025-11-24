@@ -1,8 +1,8 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Profile{% endblock %}
-{% block page_title %}User Profile{% endblock %}
-{% block page_subtitle %}Manage your account settings and information{% endblock %}
+{% block title %}{{ page_contents.profile.page_title|default:"Profile" }}{% endblock %}
+{% block page_title %}{{ page_contents.profile.page_title|default:"User Profile" }}{% endblock %}
+{% block page_subtitle %}{{ page_contents.profile.page_subtitle|default:"Manage your account settings and information" }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto space-y-8">
@@ -89,20 +89,16 @@
             <h3 class="text-xl font-bold text-luxury-900 mb-6">Personal Information</h3>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-1">Full Name</label>
-                    <p class="text-luxury-900">{{ user.get_full_name|default:"Not provided" }}</p>
+                    <p class="text-sm text-luxury-900"><strong>Full Name:</strong> {{ user.get_full_name|default:"Not provided" }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-1">Username</label>
-                    <p class="text-luxury-900">{{ user.username }}</p>
+                    <p class="text-sm text-luxury-900"><strong>Username:</strong> {{ user.username }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-1">Email Address</label>
-                    <p class="text-luxury-900">{{ user.email }}</p>
+                    <p class="text-sm text-luxury-900"><strong>Email Address:</strong> {{ user.email }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-1">Phone Number</label>
-                    <p class="text-luxury-900">{{ user.phone|default:"Not provided" }}</p>
+                    <p class="text-sm text-luxury-900"><strong>Phone Number:</strong> {{ user.phone|default:"Not provided" }}</p>
                 </div>
             </div>
         </div>
@@ -112,13 +108,13 @@
             <h3 class="text-xl font-bold text-luxury-900 mb-6">Account Status</h3>
             <div class="space-y-4">
                 <div class="flex justify-between items-center">
-                    <span class="text-luxury-700">Account Status</span>
+                    <span class="text-sm text-luxury-700"><strong>Account Status:</strong></span>
                     <span class="px-3 py-1 rounded-full text-sm font-medium {% if user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
                         {% if user.is_active %}Active{% else %}Inactive{% endif %}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-luxury-700">Role</span>
+                    <span class="text-sm text-luxury-700"><strong>Role:</strong></span>
                     <span class="px-3 py-1 bg-royal-100 text-royal-800 rounded-full text-sm font-medium">
                         {% if user.is_superuser %}
                             Super Admin
@@ -132,12 +128,12 @@
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-luxury-700">Last Login</span>
-                    <span class="text-luxury-600">{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
+                    <span class="text-sm text-luxury-700"><strong>Last Login:</strong></span>
+                    <span class="text-sm text-luxury-600">{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-luxury-700">Date Joined</span>
-                    <span class="text-luxury-600">{{ user.date_joined|date:"M d, Y" }}</span>
+                    <span class="text-sm text-luxury-700"><strong>Date Joined:</strong></span>
+                    <span class="text-sm text-luxury-600">{{ user.date_joined|date:"M d, Y" }}</span>
                 </div>
             </div>
         </div>

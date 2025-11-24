@@ -1,8 +1,8 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}{% if plan %}Edit Plan{% else %}Create Plan{% endif %}{% endblock %}
-{% block page_title %}{% if plan %}Edit Subscription Plan{% else %}Create Subscription Plan{% endif %}{% endblock %}
-{% block page_subtitle %}{% if plan %}Update plan details{% else %}Create a new subscription plan{% endif %}{% endblock %}
+{% block title %}{% if plan %}{{ page_contents.subscription_plans_edit.page_title|default:'Edit Plan' }}{% else %}{{ page_contents.subscription_plans_create.page_title|default:'Create Plan' }}{% endif %}{% endblock %}
+{% block page_title %}{% if plan %}{{ page_contents.subscription_plans_edit.page_title|default:'Edit Subscription Plan' }}{% else %}{{ page_contents.subscription_plans_create.page_title|default:'Create Subscription Plan' }}{% endif %}{% endblock %}
+{% block page_subtitle %}{% if plan %}{{ page_contents.subscription_plans_edit.page_subtitle|default:'Update plan details' }}{% else %}{{ page_contents.subscription_plans_create.page_subtitle|default:'Create a new subscription plan' }}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto">
@@ -37,35 +37,52 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Monthly Price ($) *</label>
-                    <input type="number" name="price_monthly" value="{{ plan.price_monthly|default:'' }}" step="0.01" required
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Monthly Price ($)</label>
+                    <input type="number" name="price_monthly" value="{{ plan.price_monthly|default:'0' }}" step="0.01"
                            class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-luxury-700 mb-2">Yearly Price ($)</label>
-                    <input type="number" name="price_yearly" value="{{ plan.price_yearly|default:'' }}" step="0.01"
+                    <input type="number" name="price_yearly" value="{{ plan.price_yearly|default:'0' }}" step="0.01"
                            class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Max Rooms *</label>
-                    <input type="number" name="max_rooms" value="{{ plan.max_rooms|default:'' }}" required
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Max Rooms</label>
+                    <input type="number" name="max_rooms" value="{{ plan.max_rooms|default:'50' }}"
                            class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Max Managers *</label>
-                    <input type="number" name="max_managers" value="{{ plan.max_managers|default:'' }}" required
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Max Managers</label>
+                    <input type="number" name="max_managers" value="{{ plan.max_managers|default:'5' }}"
                            class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-luxury-700 mb-2">Max Reports</label>
-                    <input type="number" name="max_reports" value="{{ plan.max_reports|default:10 }}"
+                    <input type="number" name="max_reports" value="{{ plan.max_reports|default:'10' }}"
                            class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
+                </div>
+            </div>
+
+            <div class="bg-luxury-50 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4">Features</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="has_advanced_analytics" {% if plan.has_advanced_analytics %}checked{% endif %}
+                               class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                        <span class="ml-3 text-sm text-luxury-700">Advanced Analytics</span>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" name="has_priority_support" {% if plan.has_priority_support %}checked{% endif %}
+                               class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                        <span class="ml-3 text-sm text-luxury-700">24/7 Priority Support</span>
+                    </div>
                 </div>
             </div>
 

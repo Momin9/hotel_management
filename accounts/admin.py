@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import User, AboutUs
+from .models import User, AboutUs, Footer, PageContent
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
@@ -28,7 +28,7 @@ class AboutUsAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'is_active', 'updated_at')
     fieldsets = (
         ('Mission & Purpose', {
-            'fields': ('mission_statement', 'problem_description', 'solution_description', 'problem_icon', 'solution_icon', 'mission_icon')
+            'fields': ('mission_statement', 'mission_description', 'problem_description', 'solution_description', 'problem_icon', 'solution_icon', 'mission_icon')
         }),
         ('Trust & Reliability', {
             'fields': ('global_architecture_text', 'data_security_text', 'modern_tech_text')
@@ -51,6 +51,51 @@ class AboutUsAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Don't allow deletion
         return False
+
+@admin.register(Footer)
+class FooterAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Company Information', {
+            'fields': ('company_name', 'company_description')
+        }),
+        ('Contact Details', {
+            'fields': ('email', 'phone', 'address_line1', 'address_line2')
+        }),
+        ('Social Media', {
+            'fields': ('twitter_url', 'linkedin_url', 'instagram_url', 'facebook_url')
+        }),
+        ('Copyright', {
+            'fields': ('copyright_text',)
+        })
+    )
+    
+    list_display = ('company_name', 'email', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    def has_add_permission(self, request):
+        # Only allow adding if no instance exists
+        return not Footer.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        # Don't allow deletion
+        return False
+
+@admin.register(PageContent)
+class PageContentAdmin(admin.ModelAdmin):
+    list_display = ('page_name', 'page_title', 'updated_at')
+    list_filter = ('page_name', 'created_at')
+    search_fields = ('page_title', 'page_subtitle')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Page Information', {
+            'fields': ('page_name', 'page_title', 'page_subtitle')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
 
 # Unregister the default Group admin_dashboard to prevent conflicts
 admin.site.unregister(Group)

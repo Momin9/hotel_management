@@ -1,35 +1,129 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Subscription Plans{% endblock %}
-{% block page_title %}Subscription Plans{% endblock %}
-{% block page_subtitle %}Manage subscription plans for hotels{% endblock %}
+{% block title %}{{ page_contents.subscription_plans.page_title|default:'Subscription Plans' }}{% endblock %}
+{% block page_title %}{{ page_contents.subscription_plans.page_title|default:'Subscription Plans' }}{% endblock %}
+{% block page_subtitle %}{{ page_contents.subscription_plans.page_subtitle|default:'Manage subscription plans for hotels' }}{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
     <!-- Header Actions -->
     <div class="flex justify-between items-center">
         <div>
-            <h2 class="text-2xl font-bold text-luxury-900">All Subscription Plans</h2>
+            <h2 class="text-2xl font-bold text-luxury-900">All Subscription Plans ({{ plans.count }})</h2>
             <p class="text-luxury-600">Create and manage subscription plans for hotels</p>
         </div>
-        <a href="{% url 'accounts:subscription_plan_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
-            <i class="fas fa-plus mr-2"></i>
-            Create New Plan
-        </a>
+        <div class="flex items-center space-x-4">
+            <!-- View Toggle -->
+            <div class="flex bg-luxury-100 rounded-xl p-1">
+                <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm">
+                    <i class="fas fa-list mr-2"></i>List
+                </button>
+                <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:text-luxury-700">
+                    <i class="fas fa-th-large mr-2"></i>Cards
+                </button>
+            </div>
+            <a href="{% url 'accounts:subscription_plan_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Create New Plan
+            </a>
+        </div>
     </div>
 
-    <!-- Plans Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- List View -->
+    <div id="listView" class="bg-white rounded-2xl luxury-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-luxury-50 border-b border-luxury-200">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-900">Plan Name</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-900">Pricing</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-900">Limits</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-900">Features</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-900">Status</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-900">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-luxury-200">
+                    {% for plan in plans %}
+                    <tr class="hover:bg-luxury-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div>
+                                <h3 class="font-semibold text-luxury-900">{{ plan.name }}</h3>
+                                <p class="text-sm text-luxury-600">{{ plan.description|default:"No description"|truncatechars:50 }}</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">
+                                <div class="font-medium text-luxury-900">${{ plan.price_monthly }}/month</div>
+                                {% if plan.price_yearly %}
+                                <div class="text-luxury-600">${{ plan.price_yearly }}/year</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-luxury-600">
+                                <div>{{ plan.max_rooms }} rooms</div>
+                                <div>{{ plan.max_managers }} managers</div>
+                                <div>{{ plan.max_reports }} reports</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col space-y-1">
+                                <div class="flex items-center text-sm">
+                                    {% if plan.has_advanced_analytics %}
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-times text-red-500 mr-2"></i>
+                                    {% endif %}
+                                    <span class="text-luxury-700">Analytics</span>
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    {% if plan.has_priority_support %}
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-times text-red-500 mr-2"></i>
+                                    {% endif %}
+                                    <span class="text-luxury-700">Priority Support</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium {% if plan.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <a href="{% url 'accounts:subscription_plan_edit' plan.plan_id %}" class="text-royal-600 hover:text-royal-700 p-2 rounded-lg hover:bg-royal-50">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'accounts:subscription_plan_delete' plan.plan_id %}" class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50" onclick="return confirm('Are you sure?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <i class="fas fa-credit-card text-6xl text-luxury-300 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-luxury-600 mb-2">No Subscription Plans</h3>
+                            <p class="text-luxury-500 mb-6">Create your first subscription plan to get started</p>
+                            <a href="{% url 'accounts:subscription_plan_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors">
+                                Create First Plan
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Kanban View -->
+    <div id="kanbanView" class="grid grid-cols-1 md:grid-cols-3 gap-6 hidden">
         {% for plan in plans %}
-        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300 {% if plan.name == 'Premium' %}ring-2 ring-royal-500 bg-royal-50{% endif %}">
-            {% if plan.name == 'Premium' %}
-            <div class="text-center mb-4">
-                <span class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    Most Popular
-                </span>
-            </div>
-            {% endif %}
-            
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift transition-all duration-300">
             <div class="flex items-start justify-between mb-4">
                 <div>
                     <h3 class="text-xl font-bold text-luxury-900">{{ plan.name }}</h3>
@@ -38,49 +132,50 @@
                     </span>
                 </div>
                 <div class="flex space-x-2">
-                    <a href="{% url 'accounts:subscription_plan_edit' plan.plan_id %}" class="text-royal-600 hover:text-royal-700">
+                    <a href="{% url 'accounts:subscription_plan_edit' plan.plan_id %}" class="text-royal-600 hover:text-royal-700 p-2 rounded-lg hover:bg-royal-50">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <a href="{% url 'accounts:subscription_plan_delete' plan.plan_id %}" class="text-red-600 hover:text-red-700" onclick="return confirm('Are you sure?')">
+                    <a href="{% url 'accounts:subscription_plan_delete' plan.plan_id %}" class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50" onclick="return confirm('Are you sure?')">
                         <i class="fas fa-trash"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-4">
                 <p class="text-luxury-600">{{ plan.description|default:"No description" }}</p>
                 
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-luxury-600">Monthly Price</span>
-                    <span class="text-lg font-bold text-royal-600">${{ plan.price_monthly }}</span>
+                <div class="bg-luxury-50 rounded-xl p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-luxury-600">Monthly Price</span>
+                        <span class="text-lg font-bold text-royal-600">${{ plan.price_monthly }}</span>
+                    </div>
+                    {% if plan.price_yearly %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-luxury-600">Yearly Price</span>
+                        <span class="text-lg font-bold text-green-600">${{ plan.price_yearly }}</span>
+                    </div>
+                    {% endif %}
                 </div>
-                
-                {% if plan.price_yearly %}
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-luxury-600">Yearly Price</span>
-                    <span class="text-lg font-bold text-green-600">${{ plan.price_yearly }}</span>
-                </div>
-                {% endif %}
 
-                <div class="space-y-3 mb-6">
+                <div class="space-y-3">
                     <div class="flex items-center text-sm">
-                        <i class="fas fa-check text-green-600 mr-2"></i>
+                        <i class="fas fa-building text-luxury-400 mr-2"></i>
                         <span>Up to {{ plan.max_rooms }} rooms</span>
                     </div>
                     <div class="flex items-center text-sm">
-                        <i class="fas fa-check text-green-600 mr-2"></i>
+                        <i class="fas fa-users text-luxury-400 mr-2"></i>
                         <span>{{ plan.max_managers }} manager{{ plan.max_managers|pluralize }}</span>
                     </div>
                     <div class="flex items-center text-sm">
-                        {% if plan.name == 'Basic' %}
-                            <i class="fas fa-times text-red-500 mr-2"></i>
-                        {% else %}
+                        {% if plan.has_advanced_analytics %}
                             <i class="fas fa-check text-green-600 mr-2"></i>
+                        {% else %}
+                            <i class="fas fa-times text-red-500 mr-2"></i>
                         {% endif %}
                         <span>Advanced Analytics</span>
                     </div>
                     <div class="flex items-center text-sm">
-                        {% if plan.name == 'Enterprise' %}
+                        {% if plan.has_priority_support %}
                             <i class="fas fa-check text-green-600 mr-2"></i>
                         {% else %}
                             <i class="fas fa-times text-red-500 mr-2"></i>
@@ -89,10 +184,10 @@
                     </div>
                 </div>
                 
-                <div class="border-t border-luxury-200 pt-3 space-y-2">
-                    <div class="flex justify-between">
-                        <span class="text-sm text-luxury-600">Max Reports</span>
-                        <span class="text-sm font-medium">{{ plan.max_reports|default:"Unlimited" }}</span>
+                <div class="border-t border-luxury-200 pt-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Max Reports</span>
+                        <span class="font-medium">{{ plan.max_reports|default:"Unlimited" }}</span>
                     </div>
                 </div>
             </div>
@@ -109,4 +204,25 @@
         {% endfor %}
     </div>
 </div>
+
+<script>
+function toggleView(viewType) {
+    const listView = document.getElementById('listView');
+    const kanbanView = document.getElementById('kanbanView');
+    const listBtn = document.getElementById('listViewBtn');
+    const kanbanBtn = document.getElementById('kanbanViewBtn');
+    
+    if (viewType === 'list') {
+        listView.classList.remove('hidden');
+        kanbanView.classList.add('hidden');
+        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm';
+        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:text-luxury-700';
+    } else {
+        listView.classList.add('hidden');
+        kanbanView.classList.remove('hidden');
+        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:text-luxury-700';
+        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm';
+    }
+}
+</script>
 {% endblock %}

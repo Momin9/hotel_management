@@ -2,14 +2,31 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import GuestProfile
+from accounts.decorators import owner_or_permission_required
+from hotels.models import Hotel
+from reservations.models import Reservation
 
-@login_required
+@owner_or_permission_required('view_guest')
 def guest_list(request):
-    """List all guests"""
-    guests = GuestProfile.objects.all().order_by('-created_at')
+    """List guests based on user role"""
+    if request.user.is_superuser:
+        guests = GuestProfile.objects.all().order_by('-created_at')
+    elif request.user.role == 'Owner':
+        # Hotel owners see guests from their hotels' reservations
+        owned_hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
+        guest_ids = Reservation.objects.filter(hotel__in=owned_hotels).values_list('guest_id', flat=True).distinct()
+        guests = GuestProfile.objects.filter(id__in=guest_ids).order_by('-created_at')
+    else:
+        # Staff see guests from their assigned hotel's reservations
+        if request.user.assigned_hotel:
+            guest_ids = Reservation.objects.filter(hotel=request.user.assigned_hotel).values_list('guest_id', flat=True).distinct()
+            guests = GuestProfile.objects.filter(id__in=guest_ids).order_by('-created_at')
+        else:
+            guests = GuestProfile.objects.none()
+    
     return render(request, 'crm/list.html', {'guests': guests})
 
-@login_required
+@owner_or_permission_required('add_guest')
 def guest_create(request):
     """Create new guest"""
     if request.method == 'POST':
@@ -38,7 +55,7 @@ def guest_create(request):
     
     return render(request, 'crm/create_modern.html')
 
-@login_required
+@owner_or_permission_required('change_guest')
 def guest_edit(request, guest_id):
     """Edit guest"""
     guest = get_object_or_404(GuestProfile, id=guest_id)
@@ -58,7 +75,7 @@ def guest_edit(request, guest_id):
     
     return render(request, 'crm/edit.html', {'guest': guest})
 
-@login_required
+@owner_or_permission_required('view_guest')
 def guest_detail(request, guest_id):
     """Guest detail view"""
     guest = get_object_or_404(GuestProfile, id=guest_id)

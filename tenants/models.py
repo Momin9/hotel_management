@@ -11,6 +11,11 @@ class SubscriptionPlan(models.Model):
     max_rooms = models.PositiveIntegerField(default=50)
     max_managers = models.PositiveIntegerField(default=5)
     max_reports = models.PositiveIntegerField(default=10)
+    
+    # Feature flags
+    has_advanced_analytics = models.BooleanField(default=False, help_text='Advanced Analytics feature')
+    has_priority_support = models.BooleanField(default=False, help_text='24/7 Priority Support feature')
+    
     is_active = models.BooleanField(default=True)
     deleted_at = models.DateTimeField(null=True, blank=True, help_text='Soft delete timestamp')
     created_at = models.DateTimeField(auto_now_add=True)

@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class UserManager(BaseUserManager):
@@ -87,6 +88,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class AboutUs(models.Model):
     """About Us page content model"""
     mission_statement = models.TextField(help_text='Main mission statement')
+    mission_description = models.TextField(help_text='Description of our mission', blank=True)
     problem_description = models.TextField(help_text='Description of the problem we solve')
     solution_description = models.TextField(help_text='Description of our solution')
     
@@ -119,5 +121,64 @@ class AboutUs(models.Model):
         verbose_name = 'About Us'
         verbose_name_plural = 'About Us'
     
+    def save(self, *args, **kwargs):
+        # Ensure only one instance exists
+        if not self.pk and AboutUs.objects.exists():
+            raise ValidationError('Only one About Us page can exist.')
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return f'About Us Content (Updated: {self.updated_at.strftime("%Y-%m-%d")})'
+
+
+class Footer(models.Model):
+    # Company Info
+    company_name = models.CharField(max_length=100, default="AuraStay")
+    company_description = models.TextField(default="The world's most advanced hotel management platform, designed for luxury hospitality.")
+    
+    # Contact Information
+    email = models.EmailField(default="info@aurastay.com")
+    phone = models.CharField(max_length=20, default="+1 (555) 123-4567")
+    address_line1 = models.CharField(max_length=100, default="123 Business Ave")
+    address_line2 = models.CharField(max_length=100, default="New York, NY 10001")
+    
+    # Social Media Links
+    twitter_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)
+    instagram_url = models.URLField(blank=True, null=True)
+    facebook_url = models.URLField(blank=True, null=True)
+    
+    # Copyright
+    copyright_text = models.CharField(max_length=200, default="© 2024 AuraStay Management Suite. All rights reserved.")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Footer Content"
+        verbose_name_plural = "Footer Content"
+    
+    def __str__(self):
+        return f"Footer - {self.company_name}"
+    
+    def save(self, *args, **kwargs):
+        # Ensure only one instance exists
+        if not self.pk and Footer.objects.exists():
+            raise ValidationError('Only one Footer configuration can exist.')
+        super().save(*args, **kwargs)
+
+
+class PageContent(models.Model):
+    page_name = models.CharField(max_length=50, unique=True, help_text="Unique identifier for the page (e.g., 'profile', 'subscription_plans_create')")
+    page_title = models.CharField(max_length=200, help_text="Main page title")
+    page_subtitle = models.TextField(help_text="Page subtitle/description")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Page Content"
+        verbose_name_plural = "Page Contents"
+    
+    def __str__(self):
+        return f"{self.page_name} - {self.page_title}"

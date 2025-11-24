@@ -1,8 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Staff Management - AuraStay{% endblock %}
-{% block page_title %}Staff Management{% endblock %}
-{% block page_subtitle %}Manage your team members{% endblock %}
+{% block title %}
+    {% if page_contents.staff_management %}
+        {{ page_contents.staff_management.page_title }}
+    {% else %}
+        Staff Management
+    {% endif %} - AuraStay
+{% endblock %}
+
+{% block page_title %}
+    {% if page_contents.staff_management %}
+        {{ page_contents.staff_management.page_title }}
+    {% else %}
+        Staff Management
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.staff_management %}
+        {{ page_contents.staff_management.page_subtitle }}
+    {% else %}
+        Manage your hotel staff, roles, and permissions
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="space-y-8">
@@ -16,14 +36,16 @@
                 <i class="fas fa-columns mr-2"></i>Kanban View
             </button>
         </div>
+        {% if can_add_staff %}
         <a href="{% url 'staff:create' %}" class="bg-royal-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-royal-600 transition-colors flex items-center space-x-2">
             <i class="fas fa-plus"></i>
             <span>Add New Staff</span>
         </a>
+        {% endif %}
     </div>
 
     <!-- List View -->
-    <div id="listView" class="hidden">
+    <div id="listView">
         <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -74,12 +96,21 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex space-x-2">
+                                    {% if can_view_staff %}
                                     <a href="{% url 'staff:detail' staff.user_id %}" class="text-royal-600 hover:text-royal-800 transition-colors">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    {% endif %}
+                                    {% if can_change_staff %}
                                     <a href="{% url 'staff:edit' staff.user_id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    {% endif %}
+                                    {% if user.role == 'Owner' %}
+                                    <a href="{% url 'staff:permissions' staff.user_id %}" class="text-green-600 hover:text-green-800 transition-colors">
+                                        <i class="fas fa-key"></i>
+                                    </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -101,7 +132,7 @@
     </div>
 
     <!-- Kanban View -->
-    <div id="kanbanView" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div id="kanbanView" class="hidden grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {% for staff in staff_list %}
         <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
@@ -166,13 +197,17 @@
             </div>
             
             <div class="flex space-x-2">
+                {% if can_view_staff %}
                 <a href="{% url 'staff:detail' staff.user_id %}" 
                    class="flex-1 bg-royal-500 text-white py-2 rounded-xl text-center text-sm font-semibold hover:bg-royal-600 transition-colors">
                     View Details
                 </a>
+                {% endif %}
+                {% if can_change_staff %}
                 <a href="{% url 'staff:edit' staff.user_id %}" class="flex-1 bg-luxury-200 text-luxury-700 py-2 rounded-xl text-center text-sm font-semibold hover:bg-luxury-300 transition-colors">
                     Edit
                 </a>
+                {% endif %}
             </div>
         </div>
         {% empty %}

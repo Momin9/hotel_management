@@ -32,5 +32,4 @@ local_settings.py
 # Ignore pipenv virtual environment
 Pipfile
 Pipfile.lock
-static
 staticfiles

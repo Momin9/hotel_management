@@ -1,9 +1,28 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Reservations - AuraStay{% endblock %}
+{% block title %}
+    {% if page_contents.reservations_management %}
+        {{ page_contents.reservations_management.page_title }}
+    {% else %}
+        Reservations Management
+    {% endif %} - AuraStay
+{% endblock %}
 
-{% block page_title %}Reservations{% endblock %}
-{% block page_subtitle %}Manage guest bookings and stays{% endblock %}
+{% block page_title %}
+    {% if page_contents.reservations_management %}
+        {{ page_contents.reservations_management.page_title }}
+    {% else %}
+        Reservations Management
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.reservations_management %}
+        {{ page_contents.reservations_management.page_subtitle }}
+    {% else %}
+        View and manage hotel reservations and bookings
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="space-y-8">
@@ -15,29 +34,26 @@
             </div>
             <div>
                 <h2 class="text-3xl font-bold text-luxury-800">Reservations</h2>
-                <p class="text-luxury-600 font-medium">3 Active Reservation{{ 3|pluralize }}</p>
+                <p class="text-luxury-600 font-medium">{{ reservations.count|default:"0" }} Active Reservation{{ reservations.count|pluralize }}</p>
             </div>
         </div>
         
         <div class="flex flex-col sm:flex-row gap-4">
-            <div class="flex items-center space-x-2 bg-luxury-50 rounded-xl p-1">
-                <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-white">
-                    <i class="fas fa-list mr-2"></i>List View
+            <div class="bg-white rounded-xl p-1 luxury-shadow">
+                <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-luxury-600 hover:bg-luxury-50">
+                    <i class="fas fa-list mr-2"></i>List
                 </button>
-                <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm">
-                    <i class="fas fa-columns mr-2"></i>Kanban View
+                <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-royal-600 text-white">
+                    <i class="fas fa-th-large mr-2"></i>Kanban
                 </button>
             </div>
+            {% if can_add_reservation %}
             <a href="{% url 'reservations:create' %}" 
                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-2xl hover-lift transition-all duration-300 group">
                 <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
                 New Reservation
             </a>
-            <a href="{% url 'accounts:dashboard' %}" 
-               class="inline-flex items-center px-6 py-3 bg-luxury-100 text-luxury-700 font-semibold rounded-2xl hover:bg-luxury-200 transition-all duration-300">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Back to Dashboard
-            </a>
+            {% endif %}
         </div>
     </div>
 
@@ -92,21 +108,115 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex space-x-2">
-                                    <a href="{% url 'reservations:detail' reservation.id %}" class="text-royal-600 hover:text-royal-800 transition-colors" title="View Details">
+                                    {% if can_view_reservations %}
+                                    <a href="{% url 'reservations:detail' reservation.id %}" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{% url 'reservations:edit' reservation.id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors" title="Edit">
+                                    {% endif %}
+                                    {% if can_checkin %}
+                                    {% if reservation.status == 'confirmed' %}
+                                    <button onclick="quickCheckIn('{{ reservation.id }}')" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Check In">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if can_checkout %}
+                                    {% if reservation.status == 'checked_in' %}
+                                    <button onclick="quickCheckOut('{{ reservation.id }}')" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Check Out">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if can_change_reservation %}
+                                    <a href="{% url 'reservations:edit' reservation.id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors p-2 rounded-lg hover:bg-luxury-50" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <!-- Sample Data -->
+                        <tr class="hover:bg-luxury-25 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-royal-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-luxury-800">John Smith</p>
+                                        <p class="text-sm text-luxury-600">john.smith@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-luxury-700">Room 101 - Deluxe Suite</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-luxury-700">Nov 20 - Nov 23, 2024</p>
+                                <p class="text-sm text-luxury-600">3 nights</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-lg font-bold text-luxury-800">$897.00</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    Confirmed
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex space-x-2">
+                                    <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button onclick="quickCheckIn('sample-1')" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Check In">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </button>
+                                    <a href="#" class="text-luxury-600 hover:text-luxury-800 transition-colors p-2 rounded-lg hover:bg-luxury-50" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 </div>
                             </td>
                         </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-luxury-600">
-                                <i class="fas fa-calendar-times text-4xl mb-4 text-luxury-300"></i>
-                                <p class="text-lg">No reservations found</p>
-                                <p class="text-sm">Create your first reservation to get started</p>
+                        <tr class="hover:bg-luxury-25 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-royal-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-luxury-800">Emma Johnson</p>
+                                        <p class="text-sm text-luxury-600">emma.j@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-luxury-700">Room 205 - Premium Room</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-luxury-700">Nov 22 - Nov 25, 2024</p>
+                                <p class="text-sm text-luxury-600">3 nights</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-lg font-bold text-luxury-800">$747.00</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    Checked In
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex space-x-2">
+                                    <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button onclick="quickCheckOut('sample-2')" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Check Out">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </button>
+                                    <a href="#" class="text-luxury-600 hover:text-luxury-800 transition-colors p-2 rounded-lg hover:bg-luxury-50" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -117,89 +227,320 @@
     </div>
 
     <!-- Kanban View -->
-    <div id="kanbanView" class="grid grid-cols-1 gap-6">
+    <div id="kanbanView" class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
         {% for reservation in reservations %}
-        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group">
-            <div class="bg-gradient-to-r 
-                      {% if reservation.status == 'confirmed' %}from-green-500 to-green-600
-                      {% elif reservation.status == 'pending' %}from-orange-500 to-orange-600
-                      {% elif reservation.status == 'checked_in' %}from-blue-500 to-blue-600
-                      {% elif reservation.status == 'checked_out' %}from-gray-500 to-gray-600
-                      {% else %}from-red-500 to-red-600{% endif %} p-6 relative overflow-hidden">
-                <div class="absolute inset-0 bg-black/10"></div>
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
-                <div class="relative flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                            <i class="fas fa-user text-white text-xl"></i>
+        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group transition-all duration-300">
+            <!-- Header with gradient background -->
+            <div class="bg-gradient-to-br 
+                      {% if reservation.status == 'confirmed' %}from-emerald-500 via-emerald-600 to-green-700
+                      {% elif reservation.status == 'pending' %}from-amber-500 via-orange-500 to-orange-600
+                      {% elif reservation.status == 'checked_in' %}from-blue-500 via-blue-600 to-indigo-700
+                      {% elif reservation.status == 'checked_out' %}from-slate-500 via-gray-600 to-gray-700
+                      {% else %}from-red-500 via-red-600 to-red-700{% endif %} p-8 relative overflow-hidden">
+                
+                <!-- Decorative elements -->
+                <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+                <div class="absolute -bottom-5 -left-5 w-20 h-20 bg-white/5 rounded-full"></div>
+                
+                <div class="relative">
+                    <!-- Guest Info -->
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-1">{{ reservation.guest.full_name }}</h3>
+                                <p class="text-white/80 text-sm">{{ reservation.guest.email }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-white">{{ reservation.guest.full_name }}</h3>
-                            <p class="{% if reservation.status == 'confirmed' %}text-green-100
-                                    {% elif reservation.status == 'pending' %}text-orange-100
-                                    {% elif reservation.status == 'checked_in' %}text-blue-100
-                                    {% elif reservation.status == 'checked_out' %}text-gray-100
-                                    {% else %}text-red-100{% endif %}">{{ reservation.guest.email }}</p>
+                        <div class="text-right">
+                            <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-semibold text-sm border border-white/30">
+                                {{ reservation.status|title }}
+                            </span>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <span class="{% if reservation.status == 'confirmed' %}bg-green-200 text-green-800
-                                    {% elif reservation.status == 'pending' %}bg-orange-200 text-orange-800
-                                    {% elif reservation.status == 'checked_in' %}bg-blue-200 text-blue-800
-                                    {% elif reservation.status == 'checked_out' %}bg-gray-200 text-gray-800
-                                    {% else %}bg-red-200 text-red-800{% endif %} px-4 py-2 rounded-full font-semibold">{{ reservation.status|title }}</span>
+                    
+                    <!-- Room & Dates Info -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-bed text-white/80 text-lg"></i>
+                                <div>
+                                    <p class="text-white font-semibold">{{ reservation.room.room_number }}</p>
+                                    <p class="text-white/70 text-sm">{{ reservation.room.type }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-dollar-sign text-white/80 text-lg"></i>
+                                <div>
+                                    <p class="text-white font-semibold">${{ reservation.total_amount|default:reservation.rate }}</p>
+                                    <p class="text-white/70 text-sm">Total Amount</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
-                        <i class="fas fa-bed text-royal-500 text-xl mb-2"></i>
-                        <p class="font-semibold text-luxury-800">{{ reservation.room.room_number }} - {{ reservation.room.type }}</p>
-                        <p class="text-luxury-600 text-sm">{{ reservation.room.category }}</p>
+            <!-- Card Body -->
+            <div class="p-8">
+                <!-- Date Information -->
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-plus text-white text-lg"></i>
+                        </div>
+                        <p class="font-bold text-luxury-800 text-lg">{{ reservation.check_in|date:"M d" }}</p>
+                        <p class="text-luxury-600 text-sm font-medium">Check-in</p>
                     </div>
-                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
-                        <i class="fas fa-calendar text-royal-500 text-xl mb-2"></i>
-                        <p class="font-semibold text-luxury-800">{{ reservation.check_in|date:"M d, Y" }}</p>
-                        <p class="text-luxury-600 text-sm">Check-in</p>
-                    </div>
-                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
-                        <i class="fas fa-calendar-times text-royal-500 text-xl mb-2"></i>
-                        <p class="font-semibold text-luxury-800">{{ reservation.check_out|date:"M d, Y" }}</p>
-                        <p class="text-luxury-600 text-sm">Check-out</p>
-                    </div>
-                    <div class="text-center p-4 bg-luxury-50 rounded-2xl">
-                        <i class="fas fa-dollar-sign text-royal-500 text-xl mb-2"></i>
-                        <p class="font-semibold text-luxury-800">${{ reservation.total_amount|default:reservation.rate }}</p>
-                        <p class="text-luxury-600 text-sm">Total</p>
+                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-minus text-white text-lg"></i>
+                        </div>
+                        <p class="font-bold text-luxury-800 text-lg">{{ reservation.check_out|date:"M d" }}</p>
+                        <p class="text-luxury-600 text-sm font-medium">Check-out</p>
                     </div>
                 </div>
                 
-                <div class="flex space-x-3">
-                    <a href="{% url 'reservations:detail' reservation.id %}" class="flex-1 bg-gradient-to-r from-royal-500 to-royal-600 text-white py-3 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center">
+                <!-- Duration Info -->
+                <div class="bg-gradient-to-r from-royal-50 to-royal-100 rounded-2xl p-6 mb-8 border border-royal-200">
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-royal-500 to-royal-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-moon text-white"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-royal-800">{{ reservation.nights|default:"3" }}</p>
+                            <p class="text-royal-600 text-sm font-medium">Night{{ reservation.nights|pluralize }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    {% if can_view_reservations %}
+                    <a href="{% url 'reservations:detail' reservation.id %}" 
+                       class="w-full bg-gradient-to-r from-royal-500 to-royal-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
                         <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
                         View Details
                     </a>
-                    {% if reservation.status == 'checked_in' %}
-                    <button class="flex-1 bg-gold-100 text-gold-700 py-3 rounded-2xl font-semibold hover:bg-gold-200 transition-all duration-300 group">
-                        <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
-                        Check Out
+                    {% endif %}
+                    
+                    {% if can_checkin %}
+                    {% if reservation.status == 'confirmed' %}
+                    <button onclick="quickCheckIn('{{ reservation.id }}')" 
+                            class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                        <i class="fas fa-sign-in-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                        Check In Guest
                     </button>
-                    {% else %}
-                    <a href="{% url 'reservations:edit' reservation.id %}" class="flex-1 bg-luxury-100 text-luxury-700 py-3 rounded-2xl font-semibold hover:bg-luxury-200 transition-all duration-300 group text-center">
+                    {% endif %}
+                    {% endif %}
+                    
+                    {% if can_checkout %}
+                    {% if reservation.status == 'checked_in' %}
+                    <button onclick="quickCheckOut('{{ reservation.id }}')" 
+                            class="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                        <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                        Check Out & Bill
+                    </button>
+                    {% endif %}
+                    {% endif %}
+                    
+                    {% if can_change_reservation %}
+                    {% if reservation.status not in 'confirmed,checked_in' %}
+                    <a href="{% url 'reservations:edit' reservation.id %}" 
+                       class="w-full bg-gradient-to-r from-luxury-500 to-luxury-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
                         <i class="fas fa-edit mr-2 group-hover:scale-110 transition-transform"></i>
-                        Edit
+                        Edit Reservation
                     </a>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="bg-white rounded-3xl p-8 luxury-shadow text-center">
-            <i class="fas fa-calendar-times text-4xl mb-4 text-luxury-300"></i>
-            <p class="text-lg text-luxury-600">No reservations found</p>
-            <p class="text-sm text-luxury-500">Create your first reservation to get started</p>
+        <!-- Sample Reservation Cards -->
+        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group transition-all duration-300">
+            <div class="bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-700 p-8 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+                <div class="absolute -bottom-5 -left-5 w-20 h-20 bg-white/5 rounded-full"></div>
+                
+                <div class="relative">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-1">John Smith</h3>
+                                <p class="text-white/80 text-sm">john.smith@email.com</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-semibold text-sm border border-white/30">
+                                Confirmed
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-bed text-white/80 text-lg"></i>
+                                <div>
+                                    <p class="text-white font-semibold">Room 101</p>
+                                    <p class="text-white/70 text-sm">Deluxe Suite</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-dollar-sign text-white/80 text-lg"></i>
+                                <div>
+                                    <p class="text-white font-semibold">$897.00</p>
+                                    <p class="text-white/70 text-sm">Total Amount</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-plus text-white text-lg"></i>
+                        </div>
+                        <p class="font-bold text-luxury-800 text-lg">Nov 20</p>
+                        <p class="text-luxury-600 text-sm font-medium">Check-in</p>
+                    </div>
+                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-minus text-white text-lg"></i>
+                        </div>
+                        <p class="font-bold text-luxury-800 text-lg">Nov 23</p>
+                        <p class="text-luxury-600 text-sm font-medium">Check-out</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-royal-50 to-royal-100 rounded-2xl p-6 mb-8 border border-royal-200">
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-royal-500 to-royal-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-moon text-white"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-royal-800">3</p>
+                            <p class="text-royal-600 text-sm font-medium">Nights</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <a href="#" class="w-full bg-gradient-to-r from-royal-500 to-royal-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
+                        <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
+                        View Details
+                    </a>
+                    <button onclick="quickCheckIn('sample-1')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                        <i class="fas fa-sign-in-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                        Check In Guest
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group transition-all duration-300">
+            <div class="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 p-8 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+                <div class="absolute -bottom-5 -left-5 w-20 h-20 bg-white/5 rounded-full"></div>
+                
+                <div class="relative">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-1">Emma Johnson</h3>
+                                <p class="text-white/80 text-sm">emma.j@email.com</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-semibold text-sm border border-white/30">
+                                Checked In
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-bed text-white/80 text-lg"></i>
+                                <div>
+                                    <p class="text-white font-semibold">Room 205</p>
+                                    <p class="text-white/70 text-sm">Premium Room</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-dollar-sign text-white/80 text-lg"></i>
+                                <div>
+                                    <p class="text-white font-semibold">$747.00</p>
+                                    <p class="text-white/70 text-sm">Total Amount</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-plus text-white text-lg"></i>
+                        </div>
+                        <p class="font-bold text-luxury-800 text-lg">Nov 22</p>
+                        <p class="text-luxury-600 text-sm font-medium">Check-in</p>
+                    </div>
+                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-minus text-white text-lg"></i>
+                        </div>
+                        <p class="font-bold text-luxury-800 text-lg">Nov 25</p>
+                        <p class="text-luxury-600 text-sm font-medium">Check-out</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-royal-50 to-royal-100 rounded-2xl p-6 mb-8 border border-royal-200">
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-royal-500 to-royal-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-moon text-white"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-royal-800">3</p>
+                            <p class="text-royal-600 text-sm font-medium">Nights</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <a href="#" class="w-full bg-gradient-to-r from-royal-500 to-royal-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
+                        <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
+                        View Details
+                    </a>
+                    <button onclick="quickCheckOut('sample-2')" class="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                        <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                        Check Out & Bill
+                    </button>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>
@@ -215,13 +556,92 @@ function toggleView(viewType) {
     if (viewType === 'list') {
         listView.classList.remove('hidden');
         kanbanView.classList.add('hidden');
-        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm';
-        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-white';
+        listBtn.classList.add('bg-royal-600', 'text-white');
+        listBtn.classList.remove('text-luxury-600', 'hover:bg-luxury-50');
+        kanbanBtn.classList.remove('bg-royal-600', 'text-white');
+        kanbanBtn.classList.add('text-luxury-600', 'hover:bg-luxury-50');
     } else {
         listView.classList.add('hidden');
         kanbanView.classList.remove('hidden');
-        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-white';
-        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-luxury-700 shadow-sm';
+        kanbanBtn.classList.add('bg-royal-600', 'text-white');
+        kanbanBtn.classList.remove('text-luxury-600', 'hover:bg-luxury-50');
+        listBtn.classList.remove('bg-royal-600', 'text-white');
+        listBtn.classList.add('text-luxury-600', 'hover:bg-luxury-50');
+    }
+}
+
+// CSRF token for AJAX requests
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function quickCheckIn(reservationId) {
+    if (reservationId.startsWith('sample')) {
+        alert('This is a demo reservation. Check-in functionality works with real reservations.');
+        return;
+    }
+    
+    fetch(`/reservations/${reservationId}/quick-check-in/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+    });
+}
+
+function quickCheckOut(reservationId) {
+    if (reservationId.startsWith('sample')) {
+        alert('This is a demo reservation. Check-out functionality works with real reservations.');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to check out this guest? This will generate an invoice with Pakistan taxes (17% Sales Tax + 10% Service Charges).')) {
+        fetch(`/reservations/${reservationId}/quick-check-out/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                if (data.invoice_url) {
+                    window.open(data.invoice_url, '_blank');
+                }
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
     }
 }
 </script>

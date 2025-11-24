@@ -1,8 +1,8 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Super Admin Dashboard{% endblock %}
-{% block page_title %}Super Admin Dashboard{% endblock %}
-{% block page_subtitle %}Manage your hotel management platform{% endblock %}
+{% block title %}{{ page_contents.super_admin_dashboard.page_title|default:"Super Admin Dashboard" }}{% endblock %}
+{% block page_title %}{{ page_contents.super_admin_dashboard.page_title|default:"Super Admin Dashboard" }}{% endblock %}
+{% block page_subtitle %}{{ page_contents.super_admin_dashboard.page_subtitle|default:"Manage your hotel management platform" }}{% endblock %}
 
 {% block content %}
 <div class="space-y-8">

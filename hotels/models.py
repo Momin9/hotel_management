@@ -12,6 +12,8 @@ class Hotel(models.Model):
     country = models.CharField(max_length=50, blank=True)
     phone = models.CharField(max_length=25, blank=True)
     email = models.EmailField(blank=True)
+    image = models.ImageField(upload_to='hotel_images/', blank=True, null=True)
+    icon = models.ImageField(upload_to='hotel_icons/', blank=True, null=True, help_text='Hotel icon/logo')
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(null=True, blank=True, help_text='Soft delete timestamp')
     is_active = models.BooleanField(default=True)
