@@ -212,7 +212,9 @@
                     <div class="relative" x-data="{ notificationOpen: false }">
                         <button @click="notificationOpen = !notificationOpen" class="relative p-2 text-luxury-600 hover:text-royal-600 transition-colors">
                             <i class="fas fa-bell text-lg"></i>
-                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold animate-pulse">3</span>
+                            {% if user.notifications.filter(status__in=['pending', 'sent']).count > 0 %}
+                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold animate-pulse">{{ user.notifications.filter(status__in=['pending', 'sent']).count }}</span>
+                            {% endif %}
                         </button>
                         
                         <!-- Notifications Dropdown -->
@@ -227,55 +229,37 @@
                             
                             <div class="px-4 py-3 border-b border-luxury-200">
                                 <h3 class="font-semibold text-luxury-900">Notifications</h3>
-                                <p class="text-sm text-luxury-600">You have 3 unread notifications</p>
+                                <p class="text-sm text-luxury-600">You have {{ user.notifications.filter(status__in=['pending', 'sent']).count }} unread notifications</p>
                             </div>
                             
                             <!-- Notification Items -->
                             <div class="divide-y divide-luxury-100">
+                                {% for notification in user.notifications.all|slice:":5" %}
                                 <div class="px-4 py-3 hover:bg-luxury-50 transition-colors">
                                     <div class="flex items-start space-x-3">
-                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-check text-green-600 text-sm"></i>
+                                        <div class="w-8 h-8 {% if notification.type == 'system' %}bg-blue-100{% elif 'success' in notification.subject.lower %}bg-green-100{% elif 'warning' in notification.subject.lower or 'reminder' in notification.subject.lower %}bg-yellow-100{% else %}bg-gray-100{% endif %} rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas {% if notification.type == 'system' %}fa-info{% elif 'success' in notification.subject.lower %}fa-check{% elif 'warning' in notification.subject.lower %}fa-exclamation-triangle{% elif 'user' in notification.subject.lower %}fa-user-plus{% else %}fa-bell{% endif %} {% if notification.type == 'system' %}text-blue-600{% elif 'success' in notification.subject.lower %}text-green-600{% elif 'warning' in notification.subject.lower %}text-yellow-600{% else %}text-gray-600{% endif %} text-sm"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-sm font-medium text-luxury-900">New hotel subscription activated</p>
-                                            <p class="text-xs text-luxury-600">Royal Palace Hotel has activated Premium plan</p>
-                                            <p class="text-xs text-luxury-500 mt-1">2 minutes ago</p>
+                                            <p class="text-sm font-medium text-luxury-900">{{ notification.subject }}</p>
+                                            <p class="text-xs text-luxury-600">{{ notification.message|truncatechars:60 }}</p>
+                                            <p class="text-xs text-luxury-500 mt-1">{{ notification.created_at|timesince }} ago</p>
                                         </div>
+                                        {% if notification.status in 'pending,sent' %}
                                         <div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                                        {% endif %}
                                     </div>
                                 </div>
-                                
-                                <div class="px-4 py-3 hover:bg-luxury-50 transition-colors">
-                                    <div class="flex items-start space-x-3">
-                                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-exclamation-triangle text-yellow-600 text-sm"></i>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="text-sm font-medium text-luxury-900">Payment reminder</p>
-                                            <p class="text-xs text-luxury-600">Grand Hotel subscription expires in 3 days</p>
-                                            <p class="text-xs text-luxury-500 mt-1">1 hour ago</p>
-                                        </div>
-                                        <div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
-                                    </div>
+                                {% empty %}
+                                <div class="px-4 py-8 text-center">
+                                    <i class="fas fa-bell-slash text-luxury-400 text-2xl mb-2"></i>
+                                    <p class="text-sm text-luxury-500">No notifications yet</p>
                                 </div>
-                                
-                                <div class="px-4 py-3 hover:bg-luxury-50 transition-colors">
-                                    <div class="flex items-start space-x-3">
-                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-user-plus text-blue-600 text-sm"></i>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="text-sm font-medium text-luxury-900">New hotel owner registered</p>
-                                            <p class="text-xs text-luxury-600">John Smith created account for Seaside Resort</p>
-                                            <p class="text-xs text-luxury-500 mt-1">3 hours ago</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endfor %}
                             </div>
                             
                             <div class="px-4 py-3 border-t border-luxury-200">
-                                <a href="#" class="text-sm text-royal-600 hover:text-royal-700 font-medium">View all notifications</a>
+                                <a href="{% url 'notifications:list' %}" class="text-sm text-royal-600 hover:text-royal-700 font-medium">View all notifications</a>
                             </div>
                         </div>
                     </div>
