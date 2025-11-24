@@ -58,7 +58,7 @@ def forgot_password(request):
             otp_record = PasswordResetOTP.objects.create(
                 user=user,
                 otp=otp,
-                expires_at=timezone.now() + timedelta(minutes=10)
+                expires_at=timezone.now() + timedelta(minutes=30)
             )
             
             # Send email
@@ -73,7 +73,7 @@ You requested a password reset for your AuraStay account.
 
 Your OTP is: {otp}
 
-This OTP will expire in 10 minutes.
+This OTP will expire in 30 minutes.
 
 If you didn't request this, please ignore this email.
 
