@@ -203,6 +203,51 @@ class PasswordResetOTP(models.Model):
         return f"OTP for {self.user.email} - {self.otp}"
 
 
+class Feature(models.Model):
+    """Features section for landing page"""
+    
+    ICON_CHOICES = [
+        ('fas fa-calendar-check', 'Calendar Check'),
+        ('fas fa-users', 'Users'),
+        ('fas fa-chart-line', 'Chart Line'),
+        ('fas fa-broom', 'Broom'),
+        ('fas fa-credit-card', 'Credit Card'),
+        ('fas fa-mobile-alt', 'Mobile'),
+        ('fas fa-shield-alt', 'Shield'),
+        ('fas fa-cog', 'Settings'),
+        ('fas fa-bell', 'Bell'),
+        ('fas fa-database', 'Database'),
+    ]
+    
+    COLOR_CHOICES = [
+        ('blue', 'Blue'),
+        ('green', 'Green'),
+        ('purple', 'Purple'),
+        ('red', 'Red'),
+        ('yellow', 'Yellow'),
+        ('indigo', 'Indigo'),
+        ('pink', 'Pink'),
+        ('gray', 'Gray'),
+    ]
+    
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    icon = models.CharField(max_length=50, choices=ICON_CHOICES, default='fas fa-cog')
+    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default='blue')
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = 'Feature'
+        verbose_name_plural = 'Features'
+    
+    def __str__(self):
+        return self.title
+
+
 class ContactInquiry(models.Model):
     """Contact form submissions from landing page"""
     

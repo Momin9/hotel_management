@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP
+from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP, Feature
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
@@ -108,6 +108,15 @@ class PasswordResetOTPAdmin(admin.ModelAdmin):
         return obj.is_expired()
     is_expired.boolean = True
     is_expired.short_description = 'Expired'
+
+@admin.register(Feature)
+class FeatureAdmin(admin.ModelAdmin):
+    list_display = ['title', 'icon', 'color', 'is_active', 'order', 'created_at']
+    list_filter = ['is_active', 'color', 'created_at']
+    search_fields = ['title', 'description']
+    list_editable = ['is_active', 'order']
+    ordering = ['order', 'created_at']
+
 
 @admin.register(ContactInquiry)
 class ContactInquiryAdmin(admin.ModelAdmin):

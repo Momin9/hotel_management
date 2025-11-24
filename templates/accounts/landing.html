@@ -46,65 +46,21 @@
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for feature in features %}
         <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
             <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mb-3">
-                    <i class="fas fa-calendar-check text-white"></i>
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-{{ feature.color }}-500 to-{{ feature.color }}-600 rounded-full mb-3">
+                    <i class="{{ feature.icon }} text-white"></i>
                 </div>
-                <h3 class="text-xl font-bold text-luxury-800 mb-3">Reservation Management</h3>
+                <h3 class="text-xl font-bold text-luxury-800 mb-3">{{ feature.title }}</h3>
             </div>
-            <p class="text-luxury-600 text-center">Streamline bookings with our intuitive reservation system. Real-time availability, automated confirmations, and seamless guest communication.</p>
+            <p class="text-luxury-600 text-center">{{ feature.description }}</p>
         </div>
-        
-        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
-            <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full mb-3">
-                    <i class="fas fa-users text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold text-luxury-800 mb-3">Staff Management</h3>
-            </div>
-            <p class="text-luxury-600 text-center">Efficiently manage your team with role-based access, scheduling tools, and performance tracking. Keep everyone organized and productive.</p>
+        {% empty %}
+        <div class="col-span-3 text-center py-8">
+            <p class="text-luxury-500">No features available at the moment.</p>
         </div>
-        
-        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
-            <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full mb-3">
-                    <i class="fas fa-chart-line text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold text-luxury-800 mb-3">Analytics & Reports</h3>
-            </div>
-            <p class="text-luxury-600 text-center">Make data-driven decisions with comprehensive analytics. Track revenue, occupancy rates, and guest satisfaction metrics.</p>
-        </div>
-        
-        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
-            <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full mb-3">
-                    <i class="fas fa-broom text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold text-luxury-800 mb-3">Housekeeping</h3>
-            </div>
-            <p class="text-luxury-600 text-center">Coordinate housekeeping operations with real-time room status updates, task assignments, and maintenance tracking.</p>
-        </div>
-        
-        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
-            <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full mb-3">
-                    <i class="fas fa-credit-card text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold text-luxury-800 mb-3">Billing & Payments</h3>
-            </div>
-            <p class="text-luxury-600 text-center">Streamline financial operations with automated billing, payment processing, and comprehensive financial reporting.</p>
-        </div>
-        
-        <div class="bg-luxury-50 rounded-2xl p-6 hover-lift transition-all duration-300">
-            <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full mb-3">
-                    <i class="fas fa-mobile-alt text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold text-luxury-800 mb-3">Mobile Access</h3>
-            </div>
-            <p class="text-luxury-600 text-center">Access your hotel management system anywhere, anytime. Responsive design ensures seamless operation on all devices.</p>
-        </div>
+        {% endfor %}
     </div>
 </div>
 

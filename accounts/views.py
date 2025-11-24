@@ -17,9 +17,15 @@ User = get_user_model()
 def landing_page(request):
     """Landing page for AuraStay"""
     from .forms import ContactForm
+    from .models import Feature
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price_monthly')
+    features = Feature.objects.filter(is_active=True).order_by('order', 'created_at')
     contact_form = ContactForm()
-    return render(request, 'accounts/landing.html', {'plans': plans, 'contact_form': contact_form})
+    return render(request, 'accounts/landing.html', {
+        'plans': plans, 
+        'contact_form': contact_form,
+        'features': features
+    })
 
 def about_page(request):
     """About Us page for AuraStay"""
