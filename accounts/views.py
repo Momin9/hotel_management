@@ -107,11 +107,11 @@ def contact_form(request):
                 pass  # Fail silently if notifications not available
             
             messages.success(request, 'Thank you for your interest! Our team will contact you soon.')
-            return redirect('accounts:landing_page')
+            return redirect('accounts:landing')
         else:
             messages.error(request, 'Please correct the errors in the form.')
     
-    return redirect('accounts:landing_page')
+    return redirect('accounts:landing')
 
 def custom_login(request):
     """Custom login view with subscription access control"""
