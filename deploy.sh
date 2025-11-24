@@ -5,7 +5,7 @@ set -e  # Exit on any error
 echo "🚀 Starting hotel management deployment..."
 
 # Navigate to project directory
-cd /home/ec2-user/hotel_software_deliverable
+cd /home/ec2-user/hotel_management
 
 # Check if virtual environment exists, create if not
 if [ ! -d "venv" ]; then
