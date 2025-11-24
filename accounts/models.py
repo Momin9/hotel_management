@@ -184,6 +184,25 @@ class PageContent(models.Model):
         return f"{self.page_name} - {self.page_title}"
 
 
+class PasswordResetOTP(models.Model):
+    """OTP for password reset"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+    expires_at = models.DateTimeField()
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+    
+    def __str__(self):
+        return f"OTP for {self.user.email} - {self.otp}"
+
+
 class ContactInquiry(models.Model):
     """Contact form submissions from landing page"""
     

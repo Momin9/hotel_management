@@ -35,6 +35,114 @@ def terms_of_service(request):
     """Terms of Service page"""
     return render(request, 'accounts/terms_of_service.html')
 
+def forgot_password(request):
+    """Forgot password - send OTP to email"""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            
+            # Generate OTP
+            import random
+            otp = str(random.randint(100000, 999999))
+            
+            # Create OTP record
+            from django.utils import timezone
+            from datetime import timedelta
+            from .models import PasswordResetOTP
+            
+            # Delete old OTPs
+            PasswordResetOTP.objects.filter(user=user).delete()
+            
+            # Create new OTP
+            otp_record = PasswordResetOTP.objects.create(
+                user=user,
+                otp=otp,
+                expires_at=timezone.now() + timedelta(minutes=10)
+            )
+            
+            # Send email
+            from django.core.mail import send_mail
+            from django.conf import settings
+            
+            subject = 'Password Reset OTP - AuraStay'
+            message = f'''
+Hello {user.get_full_name()},
+
+You requested a password reset for your AuraStay account.
+
+Your OTP is: {otp}
+
+This OTP will expire in 10 minutes.
+
+If you didn't request this, please ignore this email.
+
+Best regards,
+AuraStay Team
+'''
+            
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+            
+            messages.success(request, f'OTP sent to {email}. Please check your email.')
+            return redirect('accounts:verify_otp')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'No account found with this email address.')
+    
+    return render(request, 'accounts/forgot_password.html')
+
+def verify_otp(request):
+    """Verify OTP and reset password"""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        otp = request.POST.get('otp')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'accounts/verify_otp.html')
+        
+        try:
+            user = User.objects.get(email=email)
+            from .models import PasswordResetOTP
+            
+            otp_record = PasswordResetOTP.objects.filter(
+                user=user,
+                otp=otp,
+                is_used=False
+            ).first()
+            
+            if not otp_record:
+                messages.error(request, 'Invalid OTP.')
+                return render(request, 'accounts/verify_otp.html')
+            
+            if otp_record.is_expired():
+                messages.error(request, 'OTP has expired. Please request a new one.')
+                return redirect('accounts:forgot_password')
+            
+            # Reset password
+            user.set_password(new_password)
+            user.save()
+            
+            # Mark OTP as used
+            otp_record.is_used = True
+            otp_record.save()
+            
+            messages.success(request, 'Password reset successfully. You can now login with your new password.')
+            return redirect('accounts:login')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'Invalid email address.')
+    
+    return render(request, 'accounts/verify_otp.html')
+
 
 def footer_context(request):
     """Context processor to add footer data to all templates"""
