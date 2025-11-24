@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Hotel Management Platform</title>
+    <title>AuraStay - Hotel Management Login</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo/aurastay-logo.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -107,13 +109,13 @@
             <!-- Logo Section -->
             <div class="text-center mb-8 animate-fade-in">
                 <div class="relative inline-block">
-                    <div class="w-20 h-20 mx-auto bg-gradient-to-r from-gold-400 to-gold-600 rounded-2xl flex items-center justify-center luxury-shadow animate-glow">
-                        <i class="fas fa-crown text-3xl text-white"></i>
+                    <div class="w-20 h-20 mx-auto bg-white rounded-2xl flex items-center justify-center luxury-shadow animate-glow p-2">
+                        <img src="{% static 'images/logo/aurastay-logo.png' %}" alt="AuraStay" class="w-full h-full object-contain">
                     </div>
                     <div class="absolute -top-2 -right-2 w-6 h-6 bg-royal-500 rounded-full animate-pulse"></div>
                 </div>
-                <h1 class="mt-6 text-4xl font-bold text-white">Hotel Management</h1>
-                <p class="mt-2 text-lg text-royal-200 font-medium">Super Admin Portal</p>
+                <h1 class="mt-6 text-4xl font-bold text-white">AuraStay</h1>
+                <p class="mt-2 text-lg text-royal-200 font-medium" id="portalTitle">Hotel Management Portal</p>
                 <p class="mt-1 text-sm text-luxury-300">Comprehensive hotel and subscription management</p>
             </div>
 
@@ -122,16 +124,17 @@
                 <!-- Role Selector -->
                 <div class="mb-6">
                     <div class="flex rounded-2xl bg-luxury-800/30 p-1">
-                        <button class="flex-1 py-3 px-4 rounded-xl text-luxury-300 hover:text-white font-medium transition-all duration-200">
+                        <button type="button" data-role="owner" class="role-btn flex-1 py-3 px-4 rounded-xl text-luxury-300 hover:text-white font-medium transition-all duration-200">
                             <i class="fas fa-crown mr-2"></i>Owner
                         </button>
-                        <button class="flex-1 py-3 px-4 rounded-xl text-luxury-300 hover:text-white font-medium transition-all duration-200">
+                        <button type="button" data-role="staff" class="role-btn flex-1 py-3 px-4 rounded-xl text-luxury-300 hover:text-white font-medium transition-all duration-200">
                             <i class="fas fa-user-tie mr-2"></i>Staff
                         </button>
-                        <button class="flex-1 py-3 px-4 rounded-xl bg-royal-600 text-white font-medium transition-all duration-200">
+                        <button type="button" data-role="admin" class="role-btn flex-1 py-3 px-4 rounded-xl bg-royal-600 text-white font-medium transition-all duration-200">
                             <i class="fas fa-cog mr-2"></i>Super Admin
                         </button>
                     </div>
+                    <input type="hidden" name="login_role" id="loginRole" value="admin">
                 </div>
 
                 <!-- Messages -->
@@ -260,10 +263,18 @@
         }
 
         // Role selector functionality
-        document.querySelectorAll('.flex.rounded-2xl button').forEach(button => {
+        const roleTitles = {
+            'owner': 'Hotel Owner Portal',
+            'staff': 'Staff Management Portal', 
+            'admin': 'Super Admin Portal'
+        };
+        
+        document.querySelectorAll('.role-btn').forEach(button => {
             button.addEventListener('click', function() {
+                const role = this.getAttribute('data-role');
+                
                 // Remove active class from all buttons
-                document.querySelectorAll('.flex.rounded-2xl button').forEach(btn => {
+                document.querySelectorAll('.role-btn').forEach(btn => {
                     btn.classList.remove('bg-royal-600', 'text-white');
                     btn.classList.add('text-luxury-300');
                 });
@@ -271,6 +282,10 @@
                 // Add active class to clicked button
                 this.classList.add('bg-royal-600', 'text-white');
                 this.classList.remove('text-luxury-300');
+                
+                // Update hidden input and portal title
+                document.getElementById('loginRole').value = role;
+                document.getElementById('portalTitle').textContent = roleTitles[role];
             });
         });
     </script>

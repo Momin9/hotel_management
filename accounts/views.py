@@ -114,22 +114,33 @@ def contact_form(request):
     return redirect('accounts:landing')
 
 def custom_login(request):
-    """Custom login view with subscription access control"""
+    """Custom login view with role-based access control"""
     if request.user.is_authenticated:
         return redirect('accounts:dashboard')
     
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        login_role = request.POST.get('login_role', 'admin')
         
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            # Role-based access validation
+            if login_role == 'admin' and not user.is_superuser:
+                messages.error(request, 'Access denied. Super Admin credentials required.')
+                return render(request, 'accounts/login_luxury.html')
+            elif login_role == 'owner' and user.role != 'Owner':
+                messages.error(request, 'Access denied. Hotel Owner credentials required.')
+                return render(request, 'accounts/login_luxury.html')
+            elif login_role == 'staff' and user.role not in ['Staff', 'Manager']:
+                messages.error(request, 'Access denied. Staff credentials required.')
+                return render(request, 'accounts/login_luxury.html')
+            
             # Check subscription status for non-superusers
             if not user.is_superuser:
                 subscription_active = check_user_subscription_status(user)
                 if not subscription_active:
                     messages.error(request, 'Your subscription has expired or is inactive. Please contact administrator.')
-                    # Create notification for admin
                     create_admin_notification(
                         f'Login attempt blocked: {user.get_full_name()} - Inactive subscription',
                         'warning'
@@ -137,7 +148,14 @@ def custom_login(request):
                     return render(request, 'accounts/login_luxury.html')
             
             login(request, user)
-            return redirect('accounts:dashboard')
+            
+            # Role-based redirect
+            if user.is_superuser:
+                return redirect('accounts:super_admin_dashboard')
+            elif user.role == 'Owner':
+                return redirect('accounts:owner_dashboard')
+            else:
+                return redirect('accounts:employee_dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
     
