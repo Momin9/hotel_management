@@ -19,5 +19,5 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd /home/momin-ali/Projects/Django/hotel_software_deliverable
+          cd /home/ec2-user/hotel_software_deliverable
           ./deploy.sh
