@@ -10,7 +10,14 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = [
+    '51.20.5.40',           # Your EC2 public IP
+    'localhost',
+    '127.0.0.1',
+    '172.31.33.193',        # Your EC2 private IP
+    '.eu-north-1.compute.amazonaws.com',  # AWS domain pattern
+    '.compute.amazonaws.com',             # General AWS pattern
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -75,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'hotel_software'),
-        'USER': os.getenv('DB_USER', 'momin-ali'),
+        'USER': os.getenv('DB_USER', 'momin_ali'),
         'PASSWORD': os.getenv('DB_PASSWORD', '123'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
@@ -105,17 +112,18 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-    BASE_DIR / 'staticfiles',
+    os.path.join(BASE_DIR, 'static'),
 ]
-STATIC_ROOT = BASE_DIR / 'collected_static'
 
-# Media files (User uploads)
+# Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
