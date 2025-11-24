@@ -40,3 +40,11 @@ chmod 755 media/profile_images/
 # sudo systemctl restart nginx
 
 echo "Hotel management system deployment completed successfully!"
+
+# Collect static files
+echo "Collecting static files..."
+python manage.py collectstatic --noinput --clear
+
+# Set proper permissions for static files
+sudo chown -R ec2-user:nginx /home/ec2-user/hotel_management/staticfiles/
+sudo chmod -R 755 /home/ec2-user/hotel_management/staticfiles/
