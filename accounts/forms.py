@@ -58,26 +58,62 @@ class ContactForm(forms.ModelForm):
         fields = ['full_name', 'work_email', 'phone_number', 'hotel_name', 'job_title', 
                  'number_of_rooms', 'subject', 'message', 'hear_about_us', 'privacy_consent']
         widgets = {
-            'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your full name'}),
-            'work_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'your.email@hotel.com'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+1 (555) 123-4567'}),
-            'hotel_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your hotel/property name'}),
-            'job_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'General Manager, Owner, etc.'}),
-            'number_of_rooms': forms.Select(attrs={'class': 'form-select'}),
-            'subject': forms.Select(attrs={'class': 'form-select'}),
-            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Tell us about your needs...'}),
-            'hear_about_us': forms.Select(attrs={'class': 'form-select'}),
-            'privacy_consent': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'full_name': forms.TextInput(attrs={
+                'class': 'advanced-input', 
+                'placeholder': 'Enter your full name',
+                'required': True
+            }),
+            'work_email': forms.EmailInput(attrs={
+                'class': 'advanced-input', 
+                'placeholder': 'your.email@hotel.com',
+                'required': True
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'advanced-input', 
+                'placeholder': '+1 (555) 123-4567',
+                'required': True
+            }),
+            'hotel_name': forms.TextInput(attrs={
+                'class': 'advanced-input', 
+                'placeholder': 'Your hotel or property name',
+                'required': True
+            }),
+            'job_title': forms.TextInput(attrs={
+                'class': 'advanced-input', 
+                'placeholder': 'General Manager, Owner, Director, etc.',
+                'required': True
+            }),
+            'number_of_rooms': forms.Select(attrs={
+                'class': 'advanced-select',
+                'required': True
+            }),
+            'subject': forms.Select(attrs={
+                'class': 'advanced-select',
+                'required': True
+            }),
+            'message': forms.Textarea(attrs={
+                'class': 'advanced-textarea', 
+                'rows': 5, 
+                'placeholder': 'Tell us about your specific needs, challenges, or goals. The more details you provide, the better we can assist you.',
+                'required': True
+            }),
+            'hear_about_us': forms.Select(attrs={
+                'class': 'advanced-select'
+            }),
+            'privacy_consent': forms.CheckboxInput(attrs={
+                'class': 'advanced-checkbox',
+                'required': True
+            }),
         }
         labels = {
             'full_name': 'Full Name *',
-            'work_email': 'Work Email *',
+            'work_email': 'Work Email Address *',
             'phone_number': 'Phone Number *',
             'hotel_name': 'Hotel/Property Name *',
-            'job_title': 'Job Title *',
+            'job_title': 'Your Job Title *',
             'number_of_rooms': 'Number of Rooms *',
-            'subject': 'Subject / Goal *',
-            'message': 'Your Message *',
-            'hear_about_us': 'How did you hear about us?',
-            'privacy_consent': 'I agree to the privacy policy and terms of service *',
+            'subject': 'What brings you here today? *',
+            'message': 'Tell us more about your needs *',
+            'hear_about_us': 'How did you discover AuraStay?',
+            'privacy_consent': 'Privacy Agreement *',
         }

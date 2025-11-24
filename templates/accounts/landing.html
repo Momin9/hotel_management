@@ -173,108 +173,249 @@
 </div>
 
 <!-- Contact Us Section -->
-<div id="contact" class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
-    <div class="text-center mb-8">
-        <h2 class="text-3xl font-bold text-luxury-800 mb-4">Contact Us</h2>
-        <p class="text-lg text-luxury-600">Ready to transform your hotel management? Get in touch!</p>
-    </div>
+<div id="contact" class="relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-gradient-to-br from-royal-50 via-white to-gold-50 opacity-60"></div>
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(79, 70, 229, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(251, 191, 36, 0.1) 0%, transparent 50%);"></div>
     
-    <div class="max-w-4xl mx-auto">
-        <form method="post" action="{% url 'accounts:contact_form' %}" class="space-y-6">
-            {% csrf_token %}
-            
-            <!-- Essential Contact Section -->
-            <div class="bg-luxury-50 rounded-2xl p-6">
-                <h3 class="text-xl font-semibold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-user text-royal-500 mr-2"></i>
-                    Essential Contact Information
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        {{ contact_form.full_name.label_tag }}
-                        {{ contact_form.full_name }}
-                    </div>
-                    <div>
-                        {{ contact_form.work_email.label_tag }}
-                        {{ contact_form.work_email }}
-                    </div>
-                    <div>
-                        {{ contact_form.phone_number.label_tag }}
-                        {{ contact_form.phone_number }}
-                    </div>
-                </div>
+    <div class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 luxury-shadow mb-8 border border-white/20">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-full mb-6">
+                <i class="fas fa-envelope text-white text-2xl"></i>
             </div>
-            
-            <!-- Business Context Section -->
-            <div class="bg-luxury-50 rounded-2xl p-6">
-                <h3 class="text-xl font-semibold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-building text-royal-500 mr-2"></i>
-                    Business Context
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        {{ contact_form.hotel_name.label_tag }}
-                        {{ contact_form.hotel_name }}
-                    </div>
-                    <div>
-                        {{ contact_form.job_title.label_tag }}
-                        {{ contact_form.job_title }}
-                    </div>
-                    <div>
-                        {{ contact_form.number_of_rooms.label_tag }}
-                        {{ contact_form.number_of_rooms }}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Inquiry Details Section -->
-            <div class="bg-luxury-50 rounded-2xl p-6">
-                <h3 class="text-xl font-semibold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-comment-dots text-royal-500 mr-2"></i>
-                    Inquiry Details
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        {{ contact_form.subject.label_tag }}
-                        {{ contact_form.subject }}
-                    </div>
-                    <div>
-                        {{ contact_form.hear_about_us.label_tag }}
-                        {{ contact_form.hear_about_us }}
-                    </div>
-                </div>
-                <div>
-                    {{ contact_form.message.label_tag }}
-                    {{ contact_form.message }}
-                </div>
-            </div>
-            
-            <!-- Privacy Consent -->
-            <div class="bg-luxury-50 rounded-2xl p-6">
-                <div class="flex items-start">
-                    {{ contact_form.privacy_consent }}
-                    <label for="{{ contact_form.privacy_consent.id_for_label }}" class="ml-2 text-sm text-luxury-700">
-                        I agree to the <a href="#" class="text-royal-600 hover:underline">privacy policy</a> and <a href="#" class="text-royal-600 hover:underline">terms of service</a> *
-                    </label>
-                </div>
-            </div>
-            
-            <div class="text-center">
-                <button type="submit" 
-                        class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
-                    <i class="fas fa-paper-plane mr-2"></i>
-                    Send Message
-                </button>
-            </div>
-        </form>
+            <h2 class="text-4xl font-bold bg-gradient-to-r from-royal-600 to-gold-600 bg-clip-text text-transparent mb-4">
+                Let's Transform Your Hotel Together
+            </h2>
+            <p class="text-xl text-luxury-600 max-w-2xl mx-auto leading-relaxed">
+                Ready to revolutionize your hotel management? Our experts are here to help you succeed.
+            </p>
+        </div>
         
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mt-4 p-4 rounded-xl {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
-                    {{ message }}
+        <div class="max-w-5xl mx-auto">
+            <form method="post" action="{% url 'accounts:contact_form' %}" class="space-y-8" id="advancedContactForm">
+                {% csrf_token %}
+                
+                <!-- Progress Indicator -->
+                <div class="flex justify-center mb-8">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-royal-500 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                1
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-royal-600">Contact</span>
+                        </div>
+                        <div class="w-12 h-0.5 bg-royal-200"></div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-royal-200 text-royal-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                                2
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-luxury-500">Business</span>
+                        </div>
+                        <div class="w-12 h-0.5 bg-royal-200"></div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-royal-200 text-royal-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                                3
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-luxury-500">Details</span>
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
-        {% endif %}
+                
+                <!-- Form Steps -->
+                <div class="form-step active" id="step1">
+                    <div class="bg-gradient-to-r from-white to-royal-50/30 rounded-3xl p-8 border border-royal-100/50 shadow-lg">
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mb-4">
+                                <i class="fas fa-user-circle text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-luxury-800 mb-2">Your Contact Information</h3>
+                            <p class="text-luxury-600">Let's start with how we can reach you</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                    <i class="fas fa-user text-royal-500 mr-2"></i>
+                                    {{ contact_form.full_name.label }}
+                                </label>
+                                <div class="relative">
+                                    {{ contact_form.full_name }}
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-check text-green-500 hidden validation-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                    <i class="fas fa-envelope text-royal-500 mr-2"></i>
+                                    {{ contact_form.work_email.label }}
+                                </label>
+                                <div class="relative">
+                                    {{ contact_form.work_email }}
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-check text-green-500 hidden validation-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                    <i class="fas fa-phone text-royal-500 mr-2"></i>
+                                    {{ contact_form.phone_number.label }}
+                                </label>
+                                <div class="relative">
+                                    {{ contact_form.phone_number }}
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-check text-green-500 hidden validation-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end mt-8">
+                            <button type="button" class="next-step bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-3 rounded-xl font-semibold hover-lift transition-all duration-300 flex items-center">
+                                Next Step
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-step" id="step2">
+                    <div class="bg-gradient-to-r from-white to-green-50/30 rounded-3xl p-8 border border-green-100/50 shadow-lg">
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full mb-4">
+                                <i class="fas fa-building text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-luxury-800 mb-2">Your Business Details</h3>
+                            <p class="text-luxury-600">Tell us about your hotel or property</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                    <i class="fas fa-hotel text-royal-500 mr-2"></i>
+                                    {{ contact_form.hotel_name.label }}
+                                </label>
+                                <div class="relative">
+                                    {{ contact_form.hotel_name }}
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-check text-green-500 hidden validation-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                    <i class="fas fa-briefcase text-royal-500 mr-2"></i>
+                                    {{ contact_form.job_title.label }}
+                                </label>
+                                <div class="relative">
+                                    {{ contact_form.job_title }}
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-check text-green-500 hidden validation-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                    <i class="fas fa-bed text-royal-500 mr-2"></i>
+                                    {{ contact_form.number_of_rooms.label }}
+                                </label>
+                                <div class="relative">
+                                    {{ contact_form.number_of_rooms }}
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-check text-green-500 hidden validation-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between mt-8">
+                            <button type="button" class="prev-step bg-luxury-200 text-luxury-700 px-8 py-3 rounded-xl font-semibold hover:bg-luxury-300 transition-all duration-300 flex items-center">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Previous
+                            </button>
+                            <button type="button" class="next-step bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-3 rounded-xl font-semibold hover-lift transition-all duration-300 flex items-center">
+                                Next Step
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-step" id="step3">
+                    <div class="bg-gradient-to-r from-white to-purple-50/30 rounded-3xl p-8 border border-purple-100/50 shadow-lg">
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full mb-4">
+                                <i class="fas fa-comments text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-luxury-800 mb-2">Your Inquiry Details</h3>
+                            <p class="text-luxury-600">How can we help you succeed?</p>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                        <i class="fas fa-bullseye text-royal-500 mr-2"></i>
+                                        {{ contact_form.subject.label }}
+                                    </label>
+                                    {{ contact_form.subject }}
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                        <i class="fas fa-lightbulb text-royal-500 mr-2"></i>
+                                        {{ contact_form.hear_about_us.label }}
+                                    </label>
+                                    {{ contact_form.hear_about_us }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="block text-sm font-semibold text-luxury-700 mb-3 flex items-center">
+                                    <i class="fas fa-comment-alt text-royal-500 mr-2"></i>
+                                    {{ contact_form.message.label }}
+                                </label>
+                                {{ contact_form.message }}
+                            </div>
+                            
+                            <div class="bg-royal-50/50 rounded-2xl p-6 border border-royal-100">
+                                <div class="flex items-start">
+                                    {{ contact_form.privacy_consent }}
+                                    <label for="{{ contact_form.privacy_consent.id_for_label }}" class="ml-3 text-sm text-luxury-700 leading-relaxed">
+                                        I agree to the <a href="#" class="text-royal-600 hover:text-royal-800 font-semibold underline">privacy policy</a> and <a href="#" class="text-royal-600 hover:text-royal-800 font-semibold underline">terms of service</a> *
+                                        <span class="block text-xs text-luxury-500 mt-1">We respect your privacy and will never share your information.</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between mt-8">
+                            <button type="button" class="prev-step bg-luxury-200 text-luxury-700 px-8 py-3 rounded-xl font-semibold hover:bg-luxury-300 transition-all duration-300 flex items-center">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Previous
+                            </button>
+                            <button type="submit" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-10 py-4 rounded-xl font-bold hover-lift transition-all duration-300 flex items-center text-lg shadow-lg">
+                                <i class="fas fa-paper-plane mr-3"></i>
+                                Send My Message
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Success/Error Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mt-6 p-6 rounded-2xl border-l-4 {% if message.tags == 'success' %}bg-green-50 border-green-500 text-green-800{% else %}bg-red-50 border-red-500 text-red-800{% endif %} shadow-lg">
+                        <div class="flex items-center">
+                            <i class="fas {% if message.tags == 'success' %}fa-check-circle text-green-500{% else %}fa-exclamation-triangle text-red-500{% endif %} mr-3 text-xl"></i>
+                            <span class="font-semibold">{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
 </div>
 
@@ -315,66 +456,242 @@
 
 
 
-<script>
-// Plan selection handling
-document.querySelectorAll('.plan-select').forEach(button => {
-    button.addEventListener('click', function(e) {
-        const planName = this.getAttribute('data-plan');
-        document.getElementById('selectedPlan').value = planName;
-        document.getElementById('message').value = `I'm interested in the ${planName} plan. Please contact me with more details.`;
-    });
-});
+<style>
+/* Advanced Contact Form Styles */
+.form-step {
+    display: none;
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.5s ease-in-out;
+}
 
-// Contact form handling
-document.getElementById('contactForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+.form-step.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-group input.valid {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.form-group input.invalid {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.luxury-shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.progress-step.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.form-step.active {
+    animation: slideIn 0.5s ease-out;
+}
+</style>
+
+<script>
+// Advanced Multi-Step Form Handler
+class AdvancedContactForm {
+    constructor() {
+        this.currentStep = 1;
+        this.totalSteps = 3;
+        this.form = document.getElementById('advancedContactForm');
+        this.init();
+    }
     
-    const formData = new FormData(this);
-    const messageDiv = document.getElementById('contactMessage');
+    init() {
+        this.bindEvents();
+        this.setupValidation();
+        this.updateProgress();
+    }
     
-    try {
-        const response = await fetch('{% url "accounts:contact_form" %}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+    bindEvents() {
+        // Next step buttons
+        document.querySelectorAll('.next-step').forEach(btn => {
+            btn.addEventListener('click', () => this.nextStep());
+        });
+        
+        // Previous step buttons
+        document.querySelectorAll('.prev-step').forEach(btn => {
+            btn.addEventListener('click', () => this.prevStep());
+        });
+        
+        // Plan selection
+        document.querySelectorAll('.plan-select').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const planName = button.getAttribute('data-plan');
+                const messageField = document.querySelector('[name="message"]');
+                if (messageField) {
+                    messageField.value = `I'm interested in the ${planName} plan. Please contact me with more details about pricing, features, and implementation.`;
+                }
+                this.scrollToContact();
+            });
+        });
+    }
+    
+    setupValidation() {
+        const inputs = this.form.querySelectorAll('input[required], select[required], textarea[required]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', () => this.validateField(input));
+            input.addEventListener('input', () => this.validateField(input));
+        });
+    }
+    
+    validateField(field) {
+        const isValid = field.checkValidity() && field.value.trim() !== '';
+        const icon = field.parentElement.querySelector('.validation-icon');
+        
+        if (isValid) {
+            field.classList.add('valid');
+            field.classList.remove('invalid');
+            if (icon) icon.classList.remove('hidden');
+        } else {
+            field.classList.add('invalid');
+            field.classList.remove('valid');
+            if (icon) icon.classList.add('hidden');
+        }
+        
+        return isValid;
+    }
+    
+    validateStep(step) {
+        const stepElement = document.getElementById(`step${step}`);
+        const requiredFields = stepElement.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!this.validateField(field)) {
+                isValid = false;
             }
         });
         
-        const data = await response.json();
-        
-        if (data.success) {
-            messageDiv.className = 'mt-4 text-center text-green-600 font-semibold';
-            messageDiv.textContent = data.message;
-            this.reset();
-            document.getElementById('selectedPlan').value = '';
-        } else {
-            messageDiv.className = 'mt-4 text-center text-red-600 font-semibold';
-            messageDiv.textContent = data.message;
-        }
-        
-        messageDiv.classList.remove('hidden');
-        setTimeout(() => {
-            messageDiv.classList.add('hidden');
-        }, 5000);
-        
-    } catch (error) {
-        messageDiv.className = 'mt-4 text-center text-red-600 font-semibold';
-        messageDiv.textContent = 'An error occurred. Please try again.';
-        messageDiv.classList.remove('hidden');
+        return isValid;
     }
-});
-
-// Set trial message function
-function setTrialMessage() {
-    document.getElementById('message').value = 'I would like to start a free trial of AuraStay. Please contact me with setup details and access information.';
+    
+    nextStep() {
+        if (this.validateStep(this.currentStep) && this.currentStep < this.totalSteps) {
+            this.showStep(this.currentStep + 1);
+        } else if (!this.validateStep(this.currentStep)) {
+            this.showValidationError();
+        }
+    }
+    
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.showStep(this.currentStep - 1);
+        }
+    }
+    
+    showStep(step) {
+        // Hide current step
+        document.getElementById(`step${this.currentStep}`).classList.remove('active');
+        
+        // Show new step
+        setTimeout(() => {
+            document.getElementById(`step${step}`).classList.add('active');
+            this.currentStep = step;
+            this.updateProgress();
+        }, 200);
+    }
+    
+    updateProgress() {
+        const progressSteps = document.querySelectorAll('.flex.items-center');
+        progressSteps.forEach((step, index) => {
+            const circle = step.querySelector('div');
+            const text = step.querySelector('span');
+            
+            if (index + 1 <= this.currentStep) {
+                circle.className = 'w-8 h-8 bg-royal-500 text-white rounded-full flex items-center justify-center text-sm font-semibold';
+                text.className = 'ml-2 text-sm font-medium text-royal-600';
+            } else {
+                circle.className = 'w-8 h-8 bg-royal-200 text-royal-600 rounded-full flex items-center justify-center text-sm font-semibold';
+                text.className = 'ml-2 text-sm font-medium text-luxury-500';
+            }
+        });
+    }
+    
+    showValidationError() {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Please fill in all required fields';
+        document.body.appendChild(errorDiv);
+        
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 3000);
+    }
+    
+    scrollToContact() {
+        document.getElementById('contact').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 }
 
-// Check for trial message from About Us page
-window.addEventListener('load', function() {
+// Initialize form when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    new AdvancedContactForm();
+    
+    // Set trial message function
+    window.setTrialMessage = function() {
+        const messageField = document.querySelector('[name="message"]');
+        if (messageField) {
+            messageField.value = 'I would like to start a free trial of AuraStay. Please contact me with setup details and access information.';
+        }
+        document.getElementById('contact').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    };
+    
+    // Check for trial message from About Us page
     const trialMessage = sessionStorage.getItem('trialMessage');
     if (trialMessage) {
-        document.getElementById('message').value = trialMessage;
+        const messageField = document.querySelector('[name="message"]');
+        if (messageField) {
+            messageField.value = trialMessage;
+        }
         sessionStorage.removeItem('trialMessage');
     }
 });
