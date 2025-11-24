@@ -1,0 +1,43 @@
+<div class="bg-luxury-50 rounded-lg p-4 border border-luxury-200 hover:shadow-md transition-shadow">
+    <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-gradient-to-r from-royal-400 to-royal-600 rounded-lg flex items-center justify-center text-white text-sm">
+                <i class="fas fa-building"></i>
+            </div>
+            <div>
+                <h4 class="font-semibold text-luxury-900 text-sm">{{ subscription.hotel.name }}</h4>
+                <p class="text-xs text-luxury-600">{{ subscription.hotel.owner.get_full_name }}</p>
+            </div>
+        </div>
+        <div class="flex space-x-1">
+            <a href="{% url 'accounts:hotel_subscription_edit' subscription.id %}" 
+               class="text-royal-600 hover:text-royal-700 p-1 rounded hover:bg-royal-50">
+                <i class="fas fa-edit text-xs"></i>
+            </a>
+            <a href="{% url 'accounts:hotel_subscription_delete' subscription.id %}" 
+               class="text-red-600 hover:text-red-700 p-1 rounded hover:bg-red-50"
+               onclick="return confirm('Are you sure?')">
+                <i class="fas fa-trash text-xs"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="space-y-2">
+        <div>
+            <p class="text-sm font-medium text-luxury-900">{{ subscription.plan.name }}</p>
+            <p class="text-xs text-luxury-600">${{ subscription.plan.price_monthly }}/month</p>
+        </div>
+        
+        <div>
+            <p class="text-xs text-luxury-600">{{ subscription.start_date|date:"M d" }} - {{ subscription.end_date|date:"M d, Y" }}</p>
+            <p class="text-xs text-luxury-500 capitalize">{{ subscription.billing_cycle }} billing</p>
+        </div>
+        
+        {% if subscription.auto_renew %}
+        <div class="flex items-center space-x-1">
+            <i class="fas fa-sync-alt text-blue-500 text-xs"></i>
+            <span class="text-xs text-blue-600">Auto-renew</span>
+        </div>
+        {% endif %}
+    </div>
+</div>

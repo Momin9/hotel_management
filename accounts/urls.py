@@ -52,4 +52,8 @@ urlpatterns = [
     path('analytics/', views.analytics_dashboard, name='analytics_dashboard'),
     path('analytics/guests/', views.guests_analytics, name='guests_analytics'),
     path('analytics/dining/', views.dining_analytics, name='dining_analytics'),
+    path('check-trial-status/', views.check_trial_status, name='check_trial_status'),
+    path('download/hotels-pdf/', views.download_hotels_pdf, name='download_hotels_pdf'),
+    path('download/subscriptions-pdf/', views.download_subscriptions_pdf, name='download_subscriptions_pdf'),
+    path('download/plans-pdf/', views.download_plans_pdf, name='download_plans_pdf'),
 ]

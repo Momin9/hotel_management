@@ -8,6 +8,7 @@ class SubscriptionPlan(models.Model):
     description = models.TextField(blank=True)
     price_monthly = models.DecimalField(max_digits=10, decimal_places=2)
     price_yearly = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    is_free_trial = models.BooleanField(default=False, help_text='Free trial plan with booking restrictions')
     max_rooms = models.PositiveIntegerField(default=50)
     max_managers = models.PositiveIntegerField(default=5)
     max_reports = models.PositiveIntegerField(default=10)

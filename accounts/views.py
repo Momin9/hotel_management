@@ -177,11 +177,18 @@ def page_content_context(request):
     return {'page_contents': page_contents}
 
 def navigation_context(request):
-    """Context processor to add navigation permissions"""
+    """Context processor to add navigation permissions and notification count"""
     if not request.user.is_authenticated:
         return {}
     
     from .permissions import check_user_permission
+    
+    # Get unread notification count
+    unread_notifications_count = 0
+    try:
+        unread_notifications_count = request.user.notifications.filter(status__in=['pending', 'sent']).count()
+    except:
+        pass
     
     nav_permissions = {
         'can_view_hotels': request.user.role == 'Owner' or check_user_permission(request.user, 'view_hotel'),
@@ -198,6 +205,7 @@ def navigation_context(request):
         'can_checkin': request.user.role == 'Owner' or check_user_permission(request.user, 'add_checkin'),
         'can_checkout': request.user.role == 'Owner' or check_user_permission(request.user, 'change_checkin'),
         'can_view_rooms': request.user.role == 'Owner' or check_user_permission(request.user, 'view_room'),
+        'unread_notifications_count': unread_notifications_count,
     }
     
     return nav_permissions
@@ -252,13 +260,13 @@ def custom_login(request):
         if user is not None:
             # Role-based access validation
             if login_role == 'admin' and not user.is_superuser:
-                messages.error(request, 'Access denied. Super Admin credentials required.')
+                messages.error(request, 'Given credentials is not valid')
                 return render(request, 'accounts/login_luxury.html')
             elif login_role == 'owner' and user.role != 'Owner':
-                messages.error(request, 'Access denied. Hotel Owner credentials required.')
+                messages.error(request, 'Given credentials is not valid')
                 return render(request, 'accounts/login_luxury.html')
             elif login_role == 'staff' and user.role not in ['Staff', 'Manager']:
-                messages.error(request, 'Access denied. Staff credentials required.')
+                messages.error(request, 'Given credentials is not valid')
                 return render(request, 'accounts/login_luxury.html')
             
             # Check subscription status for non-superusers
@@ -282,7 +290,7 @@ def custom_login(request):
             else:
                 return redirect('accounts:employee_dashboard')
         else:
-            messages.error(request, 'Invalid username or password.')
+            messages.error(request, 'Given credentials is not valid')
     
     return render(request, 'accounts/login_luxury.html')
 
@@ -463,6 +471,7 @@ def subscription_plan_create(request):
             description=request.POST.get('description', ''),
             price_monthly=request.POST.get('price_monthly') or 0,
             price_yearly=request.POST.get('price_yearly') or 0,
+            is_free_trial='is_free_trial' in request.POST,
             max_rooms=request.POST.get('max_rooms') or 50,
             max_managers=request.POST.get('max_managers') or 5,
             max_reports=request.POST.get('max_reports') or 10,
@@ -491,6 +500,7 @@ def subscription_plan_edit(request, plan_id):
         plan.max_reports = request.POST.get('max_reports') or 10
         
         # Handle checkbox values properly - if not checked, they won't be in POST data
+        plan.is_free_trial = 'is_free_trial' in request.POST
         plan.has_advanced_analytics = 'has_advanced_analytics' in request.POST
         plan.has_priority_support = 'has_priority_support' in request.POST
         
@@ -667,8 +677,9 @@ def hotel_create(request):
             country=request.POST.get('country'),
             phone=request.POST.get('phone', ''),
             email=request.POST.get('email', ''),
+            currency=request.POST.get('currency', 'USD'),
             owner=owner,
-            is_active=True
+            is_active=False
         )
         messages.success(request, f'Hotel "{hotel.name}" created successfully!')
         return redirect('accounts:hotel_list')
@@ -691,6 +702,7 @@ def hotel_edit(request, hotel_id):
         hotel.country = request.POST.get('country')
         hotel.phone = request.POST.get('phone', '')
         hotel.email = request.POST.get('email', '')
+        hotel.currency = request.POST.get('currency', 'USD')
         hotel.owner = owner
         hotel.is_active = request.POST.get('is_active') == 'on'
         hotel.save()
@@ -734,9 +746,45 @@ def hotel_subscription_delete(request, subscription_id):
 # CRUD Views for Hotel Subscriptions
 @super_admin_required
 def hotel_subscription_list(request):
-    """List all hotel subscriptions"""
-    subscriptions = HotelSubscription.objects.select_related('hotel', 'plan').order_by('-created_at')
-    return render(request, 'accounts/hotel_subscriptions/list.html', {'subscriptions': subscriptions})
+    """List all hotel subscriptions with filters and view options"""
+    view_type = request.GET.get('view', 'list')  # 'list' or 'kanban'
+    status_filter = request.GET.get('status', '')
+    plan_filter = request.GET.get('plan', '')
+    hotel_filter = request.GET.get('hotel', '')
+    
+    subscriptions = HotelSubscription.objects.select_related('hotel', 'plan')
+    
+    # Apply filters
+    if status_filter:
+        subscriptions = subscriptions.filter(status=status_filter)
+    if plan_filter:
+        subscriptions = subscriptions.filter(plan__plan_id=plan_filter)
+    if hotel_filter:
+        subscriptions = subscriptions.filter(hotel__name__icontains=hotel_filter)
+    
+    subscriptions = subscriptions.order_by('-created_at')
+    
+    # Get filter options
+    plans = SubscriptionPlan.objects.filter(is_active=True)
+    
+    context = {
+        'subscriptions': subscriptions,
+        'view_type': view_type,
+        'status_filter': status_filter,
+        'plan_filter': plan_filter,
+        'hotel_filter': hotel_filter,
+        'plans': plans,
+        'status_choices': HotelSubscription._meta.get_field('status').choices,
+    }
+    
+    if view_type == 'kanban':
+        # Group subscriptions by status for kanban view
+        context['active_subscriptions'] = subscriptions.filter(status='active')
+        context['expired_subscriptions'] = subscriptions.filter(status='expired')
+        context['cancelled_subscriptions'] = subscriptions.filter(status='cancelled')
+        context['pending_subscriptions'] = subscriptions.filter(status='pending')
+    
+    return render(request, 'accounts/hotel_subscriptions/list.html', context)
 
 @super_admin_required
 def hotel_subscription_create(request):
@@ -772,6 +820,10 @@ def hotel_subscription_create(request):
             status='active',
             auto_renew=request.POST.get('auto_renew') == 'on'
         )
+        
+        # Activate the hotel when subscription is created
+        hotel.is_active = True
+        hotel.save()
         
         # Create payment record
         amount = plan.price_yearly if billing_cycle == 'yearly' else plan.price_monthly
@@ -1003,6 +1055,34 @@ def guests_analytics(request):
         'occupancy_rate': round((occupied_rooms / total_rooms * 100) if total_rooms > 0 else 0, 1)
     }
     return render(request, 'accounts/analytics/guests.html', context)
+
+@login_required
+def check_trial_status(request):
+    """Check free trial status via AJAX"""
+    from .utils import check_free_trial_restrictions
+    trial_info = check_free_trial_restrictions(request.user)
+    return JsonResponse(trial_info)
+
+@super_admin_required
+def download_hotels_pdf(request):
+    """Download hotels report as PDF"""
+    from .pdf_utils import hotels_pdf_report
+    hotels = Hotel.objects.filter(deleted_at__isnull=True).select_related('owner')
+    return hotels_pdf_report(hotels)
+
+@super_admin_required
+def download_subscriptions_pdf(request):
+    """Download subscriptions report as PDF"""
+    from .pdf_utils import subscriptions_pdf_report
+    subscriptions = HotelSubscription.objects.select_related('hotel', 'plan')
+    return subscriptions_pdf_report(subscriptions)
+
+@super_admin_required
+def download_plans_pdf(request):
+    """Download plans report as PDF"""
+    from .pdf_utils import plans_pdf_report
+    plans = SubscriptionPlan.objects.filter(deleted_at__isnull=True)
+    return plans_pdf_report(plans)
 
 @super_admin_required
 def dining_analytics(request):

@@ -9,16 +9,145 @@
     <!-- Header Actions -->
     <div class="flex justify-between items-center">
         <div>
-            <h2 class="text-2xl font-bold text-luxury-900">All Hotel Subscriptions</h2>
-            <p class="text-luxury-600">Assign and manage hotel subscription plans</p>
+            <h2 class="text-2xl font-bold text-luxury-900">Hotel Subscriptions</h2>
+            <p class="text-luxury-600">Manage hotel subscriptions and billing</p>
         </div>
-        <a href="{% url 'accounts:hotel_subscription_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
-            <i class="fas fa-plus mr-2"></i>
-            Create Subscription
-        </a>
+        <div class="flex items-center space-x-4">
+            <!-- View Toggle -->
+            <div class="flex bg-luxury-100 rounded-lg p-1">
+                <a href="?view=list{% if status_filter %}&status={{ status_filter }}{% endif %}{% if plan_filter %}&plan={{ plan_filter }}{% endif %}{% if hotel_filter %}&hotel={{ hotel_filter }}{% endif %}" 
+                   class="px-3 py-2 rounded-md text-sm font-medium transition-colors {% if view_type == 'list' %}bg-white text-luxury-900 shadow-sm{% else %}text-luxury-600 hover:text-luxury-900{% endif %}">
+                    <i class="fas fa-list mr-2"></i>List
+                </a>
+                <a href="?view=kanban{% if status_filter %}&status={{ status_filter }}{% endif %}{% if plan_filter %}&plan={{ plan_filter }}{% endif %}{% if hotel_filter %}&hotel={{ hotel_filter }}{% endif %}" 
+                   class="px-3 py-2 rounded-md text-sm font-medium transition-colors {% if view_type == 'kanban' %}bg-white text-luxury-900 shadow-sm{% else %}text-luxury-600 hover:text-luxury-900{% endif %}">
+                    <i class="fas fa-th-large mr-2"></i>Cards
+                </a>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{% url 'accounts:download_subscriptions_pdf' %}" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors flex items-center">
+                    <i class="fas fa-download mr-2"></i>
+                    PDF
+                </a>
+                <a href="{% url 'accounts:hotel_subscription_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Create Subscription
+                </a>
+            </div>
+        </div>
     </div>
 
-    <!-- Subscriptions Table -->
+    <!-- Filters -->
+    <div class="bg-white rounded-xl p-6 luxury-shadow">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <input type="hidden" name="view" value="{{ view_type }}">
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                <select name="status" class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
+                    <option value="">All Statuses</option>
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Plan</label>
+                <select name="plan" class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
+                    <option value="">All Plans</option>
+                    {% for plan in plans %}
+                    <option value="{{ plan.plan_id }}" {% if plan_filter == plan.plan_id %}selected{% endif %}>{{ plan.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Hotel</label>
+                <input type="text" name="hotel" value="{{ hotel_filter }}" placeholder="Search hotels..." 
+                       class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
+            </div>
+            <div class="flex items-end space-x-2">
+                <button type="submit" class="bg-royal-600 text-white px-4 py-2 rounded-lg hover:bg-royal-700 transition-colors">
+                    <i class="fas fa-search mr-2"></i>Filter
+                </button>
+                <a href="?view={{ view_type }}" class="bg-luxury-200 text-luxury-700 px-4 py-2 rounded-lg hover:bg-luxury-300 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if view_type == 'kanban' %}
+    <!-- Card View -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for subscription in subscriptions %}
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift border {% if subscription.status == 'active' %}border-green-200{% elif subscription.status == 'expired' %}border-red-200{% elif subscription.status == 'cancelled' %}border-gray-200{% else %}border-yellow-200{% endif %}">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-royal-400 to-royal-600 rounded-xl flex items-center justify-center text-white">
+                        <i class="fas fa-file-contract text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-luxury-900">{{ subscription.hotel.name }}</h3>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium {% if subscription.status == 'active' %}bg-green-100 text-green-800{% elif subscription.status == 'expired' %}bg-red-100 text-red-800{% elif subscription.status == 'cancelled' %}bg-gray-100 text-gray-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {{ subscription.status|title }}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <a href="{% url 'accounts:hotel_subscription_edit' subscription.id %}" class="text-royal-600 hover:text-royal-700 p-2 rounded-lg hover:bg-royal-50">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'accounts:hotel_subscription_delete' subscription.id %}" class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50" onclick="return confirm('Are you sure?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <p class="text-sm text-luxury-600">Plan</p>
+                    <p class="text-luxury-900 font-semibold">{{ subscription.plan.name }}</p>
+                    <p class="text-sm text-luxury-600">${{ subscription.plan.price_monthly }}/month</p>
+                </div>
+                
+                <div class="border-t border-luxury-200 pt-3">
+                    <p class="text-sm text-luxury-600">Owner</p>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <div class="w-6 h-6 bg-gold-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-crown text-gold-600 text-xs"></i>
+                        </div>
+                        <p class="text-luxury-900 font-medium">{{ subscription.hotel.owner.get_full_name }}</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-luxury-200 pt-3">
+                    <p class="text-sm text-luxury-600">Period</p>
+                    <p class="text-sm text-luxury-900">{{ subscription.start_date|date:"M d, Y" }} - {{ subscription.end_date|date:"M d, Y" }}</p>
+                    <p class="text-xs text-luxury-500 capitalize">{{ subscription.billing_cycle }} billing</p>
+                </div>
+
+                {% if subscription.auto_renew %}
+                <div class="border-t border-luxury-200 pt-3">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-sync-alt text-blue-500 text-sm"></i>
+                        <span class="text-sm text-blue-600">Auto-renew enabled</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <i class="fas fa-file-contract text-6xl text-luxury-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-luxury-600 mb-2">No Subscriptions</h3>
+            <p class="text-luxury-500 mb-6">Create your first hotel subscription to get started</p>
+            <a href="{% url 'accounts:hotel_subscription_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors">
+                Create First Subscription
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- List View -->
     <div class="bg-white rounded-2xl luxury-shadow overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -107,5 +236,6 @@
             </table>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

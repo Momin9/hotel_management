@@ -13,14 +13,16 @@ def notification_list(request):
 @login_required
 def mark_as_read(request, notification_id):
     """Mark a specific notification as read"""
-    notification = get_object_or_404(Notification, id=notification_id, recipient_user=request.user)
-    notification.status = 'read'
-    notification.read_at = timezone.now()
-    notification.save()
-    
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'status': 'success'})
-    return redirect('notifications:list')
+    if request.method == 'POST':
+        try:
+            notification = get_object_or_404(Notification, id=notification_id, recipient_user=request.user)
+            notification.status = 'read'
+            notification.read_at = timezone.now()
+            notification.save()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @login_required
 def mark_all_as_read(request):

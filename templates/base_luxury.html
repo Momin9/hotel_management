@@ -152,24 +152,37 @@
                     {% if user.is_superuser %}
                     <a href="{% url 'accounts:subscription_plan_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-credit-card mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Subscription Plans</span>
+                        <span class="font-medium">Plans</span>
+                    </a>
+                    <a href="{% url 'accounts:hotel_subscription_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                        <i class="fas fa-file-contract mr-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Subscription</span>
                     </a>
                     <a href="{% url 'accounts:hotel_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-building mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Hotels</span>
                     </a>
-                    <a href="{% url 'accounts:guests_analytics' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Guests</span>
-                    </a>
-                    <a href="{% url 'accounts:dining_analytics' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-utensils mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Dining</span>
-                    </a>
-                    <a href="{% url 'accounts:analytics_dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-chart-line mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Analytics</span>
-                    </a>
+                    <div class="relative" x-data="{ analyticsOpen: false }">
+                        <button @click="analyticsOpen = !analyticsOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-chart-line mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Analytics</span>
+                            <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': analyticsOpen }"></i>
+                        </button>
+                        <div x-show="analyticsOpen" @click.away="analyticsOpen = false" x-transition class="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl luxury-shadow py-2 z-50">
+                            <a href="{% url 'accounts:analytics_dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                <i class="fas fa-chart-bar mr-3 text-luxury-500"></i>
+                                Dashboard
+                            </a>
+                            <a href="{% url 'accounts:guests_analytics' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                <i class="fas fa-users mr-3 text-luxury-500"></i>
+                                Guests
+                            </a>
+                            <a href="{% url 'accounts:dining_analytics' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                <i class="fas fa-utensils mr-3 text-luxury-500"></i>
+                                Dining
+                            </a>
+                        </div>
+                    </div>
                     {% else %}
                     {% if can_view_hotels %}
                     <a href="{% url 'hotels:hotel_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
@@ -212,8 +225,8 @@
                     <div class="relative" x-data="{ notificationOpen: false }">
                         <button @click="notificationOpen = !notificationOpen" class="relative p-2 text-luxury-600 hover:text-royal-600 transition-colors">
                             <i class="fas fa-bell text-lg"></i>
-                            {% if user.notifications.filter(status__in=['pending', 'sent']).count > 0 %}
-                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold animate-pulse">{{ user.notifications.filter(status__in=['pending', 'sent']).count }}</span>
+                            {% if unread_notifications_count > 0 %}
+                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold animate-pulse">{{ unread_notifications_count }}</span>
                             {% endif %}
                         </button>
                         
@@ -229,23 +242,23 @@
                             
                             <div class="px-4 py-3 border-b border-luxury-200">
                                 <h3 class="font-semibold text-luxury-900">Notifications</h3>
-                                <p class="text-sm text-luxury-600">You have {{ user.notifications.filter(status__in=['pending', 'sent']).count }} unread notifications</p>
+                                <p class="text-sm text-luxury-600">You have {{ unread_notifications_count }} unread notifications</p>
                             </div>
                             
                             <!-- Notification Items -->
                             <div class="divide-y divide-luxury-100">
                                 {% for notification in user.notifications.all|slice:":5" %}
-                                <div class="px-4 py-3 hover:bg-luxury-50 transition-colors">
+                                <div class="px-4 py-3 hover:bg-luxury-50 transition-colors cursor-pointer" onclick="markAsRead({{ notification.id }})">
                                     <div class="flex items-start space-x-3">
-                                        <div class="w-8 h-8 {% if notification.type == 'system' %}bg-blue-100{% elif 'success' in notification.subject.lower %}bg-green-100{% elif 'warning' in notification.subject.lower or 'reminder' in notification.subject.lower %}bg-yellow-100{% else %}bg-gray-100{% endif %} rounded-full flex items-center justify-center flex-shrink-0">
-                                            <i class="fas {% if notification.type == 'system' %}fa-info{% elif 'success' in notification.subject.lower %}fa-check{% elif 'warning' in notification.subject.lower %}fa-exclamation-triangle{% elif 'user' in notification.subject.lower %}fa-user-plus{% else %}fa-bell{% endif %} {% if notification.type == 'system' %}text-blue-600{% elif 'success' in notification.subject.lower %}text-green-600{% elif 'warning' in notification.subject.lower %}text-yellow-600{% else %}text-gray-600{% endif %} text-sm"></i>
+                                        <div class="w-8 h-8 {% if notification.notification_type == 'system' %}bg-blue-100{% elif 'success' in notification.title.lower %}bg-green-100{% elif 'warning' in notification.title.lower or 'reminder' in notification.title.lower %}bg-yellow-100{% else %}bg-gray-100{% endif %} rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas {% if notification.notification_type == 'system' %}fa-info{% elif 'success' in notification.title.lower %}fa-check{% elif 'warning' in notification.title.lower %}fa-exclamation-triangle{% elif 'user' in notification.title.lower %}fa-user-plus{% else %}fa-bell{% endif %} {% if notification.notification_type == 'system' %}text-blue-600{% elif 'success' in notification.title.lower %}text-green-600{% elif 'warning' in notification.title.lower %}text-yellow-600{% else %}text-gray-600{% endif %} text-sm"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-sm font-medium text-luxury-900">{{ notification.subject }}</p>
+                                            <p class="text-sm font-medium text-luxury-900">{{ notification.title }}</p>
                                             <p class="text-xs text-luxury-600">{{ notification.message|truncatechars:60 }}</p>
                                             <p class="text-xs text-luxury-500 mt-1">{{ notification.created_at|timesince }} ago</p>
                                         </div>
-                                        {% if notification.status in 'pending,sent' %}
+                                        {% if notification.status != 'read' %}
                                         <div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                                         {% endif %}
                                     </div>
@@ -470,5 +483,44 @@
         </button>
     </div>
     {% endif %}
+
+    <!-- Include upgrade modal for authenticated users -->
+    {% if user.is_authenticated %}
+    {% include 'modals/upgrade_modal.html' %}
+    {% endif %}
+
+    <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    function markAsRead(notificationId) {
+        fetch(`/notifications/mark-read/${notificationId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    </script>
 </body>
 </html>

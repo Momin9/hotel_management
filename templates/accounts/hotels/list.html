@@ -22,10 +22,16 @@
                     <i class="fas fa-th-large mr-2"></i>Cards
                 </button>
             </div>
-            <a href="{% url 'accounts:hotel_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
-                <i class="fas fa-plus mr-2"></i>
-                Create New Hotel
-            </a>
+            <div class="flex space-x-3">
+                <a href="{% url 'accounts:download_hotels_pdf' %}" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors flex items-center">
+                    <i class="fas fa-download mr-2"></i>
+                    PDF
+                </a>
+                <a href="{% url 'accounts:hotel_create' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Create New Hotel
+                </a>
+            </div>
         </div>
     </div>
 

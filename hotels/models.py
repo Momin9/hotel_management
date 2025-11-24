@@ -4,6 +4,33 @@ import uuid
 
 class Hotel(models.Model):
     """Hotel model"""
+    CURRENCY_CHOICES = [
+        ('USD', 'US Dollar ($)'),
+        ('EUR', 'Euro (€)'),
+        ('GBP', 'British Pound (£)'),
+        ('JPY', 'Japanese Yen (¥)'),
+        ('AUD', 'Australian Dollar (A$)'),
+        ('CAD', 'Canadian Dollar (C$)'),
+        ('CHF', 'Swiss Franc (CHF)'),
+        ('CNY', 'Chinese Yuan (¥)'),
+        ('SEK', 'Swedish Krona (kr)'),
+        ('NZD', 'New Zealand Dollar (NZ$)'),
+        ('MXN', 'Mexican Peso ($)'),
+        ('SGD', 'Singapore Dollar (S$)'),
+        ('HKD', 'Hong Kong Dollar (HK$)'),
+        ('NOK', 'Norwegian Krone (kr)'),
+        ('INR', 'Indian Rupee (₹)'),
+        ('PKR', 'Pakistani Rupee (₨)'),
+        ('BRL', 'Brazilian Real (R$)'),
+        ('RUB', 'Russian Ruble (₽)'),
+        ('KRW', 'South Korean Won (₩)'),
+        ('TRY', 'Turkish Lira (₺)'),
+        ('ZAR', 'South African Rand (R)'),
+        ('AED', 'UAE Dirham (د.إ)'),
+        ('SAR', 'Saudi Riyal (﷼)'),
+        ('EGP', 'Egyptian Pound (£)'),
+    ]
+    
     hotel_id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='owned_hotels')
     name = models.CharField(max_length=100)
@@ -12,6 +39,7 @@ class Hotel(models.Model):
     country = models.CharField(max_length=50, blank=True)
     phone = models.CharField(max_length=25, blank=True)
     email = models.EmailField(blank=True)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='USD')
     image = models.ImageField(upload_to='hotel_images/', blank=True, null=True)
     icon = models.ImageField(upload_to='hotel_icons/', blank=True, null=True, help_text='Hotel icon/logo')
     created_at = models.DateTimeField(auto_now_add=True)
