@@ -16,8 +16,10 @@ User = get_user_model()
 
 def landing_page(request):
     """Landing page for AuraStay"""
+    from .forms import ContactForm
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price_monthly')
-    return render(request, 'accounts/landing.html', {'plans': plans})
+    contact_form = ContactForm()
+    return render(request, 'accounts/landing.html', {'plans': plans, 'contact_form': contact_form})
 
 def about_page(request):
     """About Us page for AuraStay"""
@@ -70,43 +72,38 @@ def navigation_context(request):
 @csrf_protect
 def contact_form(request):
     """Handle contact form submission"""
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        company = request.POST.get('company', '')
-        message = request.POST.get('message')
-        selected_plan = request.POST.get('selected_plan', '')
-        
-        # Create notification for admin users
-        try:
-            from notifications.models import Notification
-            admin_users = User.objects.filter(is_superuser=True)
-            
-            notification_title = 'New Contact Request'
-            if selected_plan:
-                notification_title = f'New {selected_plan} Plan Interest'
-            
-            notification_message = f'Name: {name}\nEmail: {email}'
-            if company:
-                notification_message += f'\nCompany: {company}'
-            if selected_plan:
-                notification_message += f'\nInterested Plan: {selected_plan}'
-            notification_message += f'\nMessage: {message}'
-            
-            for admin in admin_users:
-                Notification.objects.create(
-                    user=admin,
-                    title=notification_title,
-                    message=notification_message,
-                    notification_type='info',
-                    is_read=False
-                )
-        except Exception as e:
-            pass  # Fail silently if notifications not available
-        
-        return JsonResponse({'success': True, 'message': 'Thank you for your interest! Our team will contact you soon.'})
+    from .forms import ContactForm
     
-    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            contact_inquiry = form.save()
+            
+            # Create notification for admin users
+            try:
+                from notifications.models import Notification
+                admin_users = User.objects.filter(is_superuser=True)
+                
+                notification_title = f'New {contact_inquiry.get_subject_display()} Request'
+                notification_message = f'Name: {contact_inquiry.full_name}\nEmail: {contact_inquiry.work_email}\nHotel: {contact_inquiry.hotel_name}\nPhone: {contact_inquiry.phone_number}\nRooms: {contact_inquiry.get_number_of_rooms_display()}\nMessage: {contact_inquiry.message}'
+                
+                for admin in admin_users:
+                    Notification.objects.create(
+                        user=admin,
+                        title=notification_title,
+                        message=notification_message,
+                        notification_type='info',
+                        is_read=False
+                    )
+            except Exception as e:
+                pass  # Fail silently if notifications not available
+            
+            messages.success(request, 'Thank you for your interest! Our team will contact you soon.')
+            return redirect('accounts:landing_page')
+        else:
+            messages.error(request, 'Please correct the errors in the form.')
+    
+    return redirect('accounts:landing_page')
 
 def custom_login(request):
     """Custom login view with subscription access control"""

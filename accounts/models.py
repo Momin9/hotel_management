@@ -182,3 +182,62 @@ class PageContent(models.Model):
     
     def __str__(self):
         return f"{self.page_name} - {self.page_title}"
+
+
+class ContactInquiry(models.Model):
+    """Contact form submissions from landing page"""
+    
+    ROOM_COUNT_CHOICES = [
+        ('1-50', '1-50 rooms'),
+        ('51-150', '51-150 rooms'),
+        ('151-300', '151-300 rooms'),
+        ('300+', '300+ rooms'),
+    ]
+    
+    SUBJECT_CHOICES = [
+        ('demo', 'Request a Demo'),
+        ('general', 'General Inquiry'),
+        ('support', 'Support'),
+        ('pricing', 'Pricing Information'),
+        ('partnership', 'Partnership Opportunity'),
+    ]
+    
+    HEAR_ABOUT_CHOICES = [
+        ('google', 'Google Search'),
+        ('social_media', 'Social Media'),
+        ('referral', 'Referral'),
+        ('advertisement', 'Advertisement'),
+        ('conference', 'Conference/Event'),
+        ('other', 'Other'),
+    ]
+    
+    # Essential Contact
+    full_name = models.CharField(max_length=100)
+    work_email = models.EmailField()
+    phone_number = models.CharField(max_length=20)
+    
+    # Business Context
+    hotel_name = models.CharField(max_length=200)
+    job_title = models.CharField(max_length=100)
+    number_of_rooms = models.CharField(max_length=20, choices=ROOM_COUNT_CHOICES)
+    
+    # Inquiry Details
+    subject = models.CharField(max_length=50, choices=SUBJECT_CHOICES)
+    message = models.TextField()
+    
+    # Optional
+    hear_about_us = models.CharField(max_length=50, choices=HEAR_ABOUT_CHOICES, blank=True)
+    privacy_consent = models.BooleanField(default=False)
+    
+    # System fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_processed = models.BooleanField(default=False)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Contact Inquiry"
+        verbose_name_plural = "Contact Inquiries"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.full_name} - {self.hotel_name} ({self.get_subject_display()})"

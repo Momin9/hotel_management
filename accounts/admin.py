@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import User, AboutUs, Footer, PageContent
+from .models import User, AboutUs, Footer, PageContent, ContactInquiry
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
@@ -96,6 +96,41 @@ class PageContentAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         })
     )
+
+@admin.register(ContactInquiry)
+class ContactInquiryAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'work_email', 'hotel_name', 'subject', 'number_of_rooms', 'created_at', 'is_processed')
+    list_filter = ('subject', 'number_of_rooms', 'hear_about_us', 'is_processed', 'created_at')
+    search_fields = ('full_name', 'work_email', 'hotel_name', 'job_title')
+    readonly_fields = ('created_at',)
+    list_editable = ('is_processed',)
+    
+    fieldsets = (
+        ('Contact Information', {
+            'fields': ('full_name', 'work_email', 'phone_number')
+        }),
+        ('Business Details', {
+            'fields': ('hotel_name', 'job_title', 'number_of_rooms')
+        }),
+        ('Inquiry', {
+            'fields': ('subject', 'message', 'hear_about_us')
+        }),
+        ('Consent & Processing', {
+            'fields': ('privacy_consent', 'is_processed', 'processed_at')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        })
+    )
+    
+    actions = ['mark_as_processed']
+    
+    def mark_as_processed(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(is_processed=True, processed_at=timezone.now())
+        self.message_user(request, f'{updated} inquiries marked as processed.')
+    mark_as_processed.short_description = 'Mark selected inquiries as processed'
 
 # Unregister the default Group admin_dashboard to prevent conflicts
 admin.site.unregister(Group)
