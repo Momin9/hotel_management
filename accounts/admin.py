@@ -28,7 +28,7 @@ class AboutUsAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'is_active', 'updated_at')
     fieldsets = (
         ('Mission & Purpose', {
-            'fields': ('mission_statement', 'mission_description', 'problem_description', 'solution_description', 'problem_icon', 'solution_icon', 'mission_icon')
+            'fields': ('purpose_title', 'purpose_icon', 'mission_statement', 'mission_description', 'problem_description', 'solution_description', 'problem_icon', 'solution_icon', 'mission_icon')
         }),
         ('Trust & Reliability', {
             'fields': ('global_architecture_text', 'data_security_text', 'modern_tech_text')

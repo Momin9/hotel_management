@@ -87,6 +87,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class AboutUs(models.Model):
     """About Us page content model"""
+    # Purpose Section
+    purpose_title = models.CharField(max_length=200, default="Our Purpose: Why AuraStay Exists", help_text='Title for the purpose section')
+    purpose_icon = models.CharField(max_length=50, default='fas fa-rocket', help_text='FontAwesome icon class for purpose section')
+    
     mission_statement = models.TextField(help_text='Main mission statement')
     mission_description = models.TextField(help_text='Description of our mission', blank=True)
     problem_description = models.TextField(help_text='Description of the problem we solve')

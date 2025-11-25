@@ -10,9 +10,9 @@
 <div class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
     <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-full mb-4">
-            <i class="fas fa-rocket text-white text-2xl"></i>
+            <i class="{{ about_us.purpose_icon|default:'fas fa-rocket' }} text-white text-2xl"></i>
         </div>
-        <h2 class="text-3xl font-bold text-luxury-800 mb-4">Our Purpose: Why AuraStay Exists</h2>
+        <h2 class="text-3xl font-bold text-luxury-800 mb-4">{{ about_us.purpose_title|default:'Our Purpose: Why AuraStay Exists' }}</h2>
     </div>
     
     <div class="max-w-4xl mx-auto">
