@@ -672,6 +672,11 @@ def hotel_create(request):
             owner=owner,
             is_active=False
         )
+        
+        # Handle logo upload
+        if 'icon' in request.FILES:
+            hotel.icon = request.FILES['icon']
+            hotel.save()
         messages.success(request, f'Hotel "{hotel.name}" created successfully!')
         return redirect('accounts:hotel_list')
     
@@ -696,6 +701,11 @@ def hotel_edit(request, hotel_id):
         hotel.currency = request.POST.get('currency', 'USD')
         hotel.owner = owner
         hotel.is_active = request.POST.get('is_active') == 'on'
+        
+        # Handle logo upload
+        if 'icon' in request.FILES:
+            hotel.icon = request.FILES['icon']
+        
         hotel.save()
         
         messages.success(request, f'Hotel "{hotel.name}" updated successfully!')
