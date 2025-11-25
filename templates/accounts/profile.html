@@ -30,7 +30,7 @@
                     <label for="profile_image" class="absolute -bottom-2 -right-2 w-8 h-8 bg-royal-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-royal-700 transition-colors hidden" id="imageLabel">
                         <i class="fas fa-camera text-white text-sm"></i>
                     </label>
-                    <input type="file" id="profile_image" name="profile_image" accept="image/*" class="hidden" disabled>
+                    <input type="file" id="profile_image" name="profile_image" accept="image/*" class="hidden" disabled onchange="previewImage(event)">
                 </div>
                 <div class="flex-1">
                     <div class="grid grid-cols-2 gap-4 mb-4">
@@ -64,7 +64,7 @@
                             Employee
                         {% endif %}
                     </p>
-                    <p class="text-sm text-luxury-500">Member since {{ user.date_joined|date:"F Y" }}</p>
+                    <p class="text-sm text-luxury-500">Member since {{ user.created_at|date:"F Y" }}</p>
                 </div>
             </div>
             
@@ -133,7 +133,7 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-luxury-700"><strong>Date Joined:</strong></span>
-                    <span class="text-sm text-luxury-600">{{ user.date_joined|date:"M d, Y" }}</span>
+                    <span class="text-sm text-luxury-600">{{ user.created_at|date:"M d, Y" }}</span>
                 </div>
             </div>
         </div>
@@ -251,6 +251,21 @@ function toggleEdit() {
         imageLabel.classList.add('hidden');
         editBtn.innerHTML = '<i class="fas fa-edit mr-2"></i>Edit';
         editBtn.onclick = toggleEdit;
+    }
+}
+
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgElement = document.querySelector('.w-24.h-24.rounded-2xl.object-cover, .w-24.h-24.bg-gradient-to-r');
+            if (imgElement) {
+                // Replace with new image
+                imgElement.outerHTML = `<img src="${e.target.result}" alt="Profile Preview" class="w-24 h-24 rounded-2xl object-cover">`;
+            }
+        };
+        reader.readAsDataURL(file);
     }
 }
 

@@ -1,16 +1,80 @@
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
 from reportlab.lib.units import inch
+from reportlab.platypus.frames import Frame
+from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
 from django.http import HttpResponse
 from datetime import datetime
 import io
 
+class AuraStayDocTemplate(BaseDocTemplate):
+    """Custom document template with AuraStay header and footer"""
+    
+    def __init__(self, filename, **kwargs):
+        BaseDocTemplate.__init__(self, filename, **kwargs)
+        
+        # Define frame for content
+        frame = Frame(
+            0.75*inch, 0.75*inch,  # x, y
+            self.pagesize[0] - 1.5*inch, self.pagesize[1] - 1.5*inch,  # width, height
+            leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0
+        )
+        
+        # Create page template
+        template = PageTemplate(id='normal', frames=[frame], onPage=self.add_page_decorations)
+        self.addPageTemplates([template])
+    
+    def add_page_decorations(self, canvas, doc):
+        """Add header and footer to each page"""
+        from accounts.models import Footer
+        
+        # Get footer info
+        footer_info = Footer.objects.first()
+        company_name = footer_info.company_name if footer_info else "AuraStay"
+        
+        # Header
+        canvas.saveState()
+        canvas.setFont('Helvetica-Bold', 16)
+        canvas.setFillColor(colors.HexColor('#0284c7'))  # Royal blue
+        canvas.drawCentredText(doc.pagesize[0]/2, doc.pagesize[1] - 0.5*inch, company_name)
+        
+        canvas.setFont('Helvetica', 10)
+        canvas.setFillColor(colors.grey)
+        canvas.drawCentredText(doc.pagesize[0]/2, doc.pagesize[1] - 0.7*inch, "Hotel Management System")
+        
+        # Header line
+        canvas.setStrokeColor(colors.HexColor('#0284c7'))
+        canvas.setLineWidth(2)
+        canvas.line(0.75*inch, doc.pagesize[1] - 0.85*inch, doc.pagesize[0] - 0.75*inch, doc.pagesize[1] - 0.85*inch)
+        
+        # Footer
+        canvas.setFont('Helvetica', 8)
+        canvas.setFillColor(colors.grey)
+        
+        # Footer info
+        if footer_info:
+            footer_text = f"{footer_info.copyright_line1} | {footer_info.copyright_line2}"
+        else:
+            footer_text = "© 2025 AuraStay. All rights reserved. | Design: MA Qureshi | Development: Momin Ali"
+        
+        canvas.drawCentredText(doc.pagesize[0]/2, 0.5*inch, footer_text)
+        
+        # Page number
+        canvas.drawRightString(doc.pagesize[0] - 0.75*inch, 0.3*inch, f"Page {doc.page}")
+        
+        # Footer line
+        canvas.setStrokeColor(colors.HexColor('#0284c7'))
+        canvas.setLineWidth(1)
+        canvas.line(0.75*inch, 0.7*inch, doc.pagesize[0] - 0.75*inch, 0.7*inch)
+        
+        canvas.restoreState()
+
 def generate_pdf_report(title, data, headers, filename):
-    """Generate PDF report with table data"""
+    """Generate PDF report with AuraStay header and footer"""
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    doc = AuraStayDocTemplate(buffer, pagesize=A4)
     elements = []
     
     # Styles
@@ -18,10 +82,14 @@ def generate_pdf_report(title, data, headers, filename):
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Heading1'],
-        fontSize=18,
-        spaceAfter=30,
-        alignment=1  # Center alignment
+        fontSize=20,
+        spaceAfter=20,
+        alignment=1,  # Center alignment
+        textColor=colors.HexColor('#0284c7')
     )
+    
+    # Add some space from header
+    elements.append(Spacer(1, 20))
     
     # Title
     elements.append(Paragraph(title, title_style))
@@ -39,14 +107,16 @@ def generate_pdf_report(title, data, headers, filename):
         
         # Table style
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0284c7')),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafc')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e2e8f0')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
         ]))
         
         elements.append(table)
