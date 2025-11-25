@@ -702,8 +702,10 @@ def hotel_edit(request, hotel_id):
         hotel.owner = owner
         hotel.is_active = request.POST.get('is_active') == 'on'
         
-        # Handle logo upload
-        if 'icon' in request.FILES:
+        # Handle logo upload/removal
+        if 'clear_logo' in request.POST:
+            hotel.icon = None
+        elif 'icon' in request.FILES:
             hotel.icon = request.FILES['icon']
         
         hotel.save()

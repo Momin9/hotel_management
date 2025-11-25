@@ -30,6 +30,14 @@
                         <input type="file" name="icon" accept="image/*" 
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-royal-500">
                         <p class="text-xs text-luxury-500 mt-1">Upload hotel logo (recommended: 200x200px)</p>
+                        {% if hotel.icon %}
+                        <div class="mt-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="clear_logo" class="rounded border-luxury-300 text-red-600 focus:ring-red-500">
+                                <span class="ml-2 text-sm text-red-600">Clear current logo</span>
+                            </label>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
