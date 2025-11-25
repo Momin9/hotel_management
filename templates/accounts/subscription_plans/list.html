@@ -167,27 +167,29 @@
                         <span>{{ plan.max_managers }} manager{{ plan.max_managers|pluralize }}</span>
                     </div>
                     <div class="flex items-center text-sm">
-                        {% if plan.has_advanced_analytics %}
-                            <i class="fas fa-check text-green-600 mr-2"></i>
-                        {% else %}
-                            <i class="fas fa-times text-red-500 mr-2"></i>
-                        {% endif %}
-                        <span>Advanced Analytics</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        {% if plan.has_priority_support %}
-                            <i class="fas fa-check text-green-600 mr-2"></i>
-                        {% else %}
-                            <i class="fas fa-times text-red-500 mr-2"></i>
-                        {% endif %}
-                        <span>24/7 Priority Support</span>
+                        <i class="fas fa-chart-bar text-luxury-400 mr-2"></i>
+                        <span>{{ plan.max_reports|default:"Unlimited" }} reports</span>
                     </div>
                 </div>
                 
                 <div class="border-t border-luxury-200 pt-3">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-luxury-600">Max Reports</span>
-                        <span class="font-medium">{{ plan.max_reports|default:"Unlimited" }}</span>
+                    <div class="space-y-2">
+                        <div class="flex items-center text-sm">
+                            {% if plan.has_advanced_analytics %}
+                                <i class="fas fa-check text-green-600 mr-2"></i>
+                            {% else %}
+                                <i class="fas fa-times text-red-500 mr-2"></i>
+                            {% endif %}
+                            <span>Advanced Analytics</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            {% if plan.has_priority_support %}
+                                <i class="fas fa-check text-green-600 mr-2"></i>
+                            {% else %}
+                                <i class="fas fa-times text-red-500 mr-2"></i>
+                            {% endif %}
+                            <span>24/7 Priority Support</span>
+                        </div>
                     </div>
                 </div>
             </div>
