@@ -53,10 +53,10 @@
 <div class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
     <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full mb-4">
-            <i class="fas fa-shield-alt text-white text-2xl"></i>
+            <i class="{{ about_us.trust_icon|default:'fas fa-shield-alt' }} text-white text-2xl"></i>
         </div>
-        <h2 class="text-3xl font-bold text-luxury-800 mb-4">Trust & Reliability</h2>
-        <p class="text-lg text-luxury-600">Built for the modern hospitality industry</p>
+        <h2 class="text-3xl font-bold text-luxury-800 mb-4">{{ about_us.trust_title|default:'Trust & Reliability' }}</h2>
+        <p class="text-lg text-luxury-600">{{ about_us.trust_subtitle|default:'Built for the modern hospitality industry' }}</p>
     </div>
     
     <div class="max-w-5xl mx-auto">

@@ -91,6 +91,11 @@ class AboutUs(models.Model):
     purpose_title = models.CharField(max_length=200, default="Our Purpose: Why AuraStay Exists", help_text='Title for the purpose section')
     purpose_icon = models.CharField(max_length=50, default='fas fa-rocket', help_text='FontAwesome icon class for purpose section')
     
+    # Trust & Reliability Section
+    trust_title = models.CharField(max_length=200, default="Trust & Reliability", help_text='Title for the trust section')
+    trust_subtitle = models.CharField(max_length=200, default="Built for the modern hospitality industry", help_text='Subtitle for the trust section')
+    trust_icon = models.CharField(max_length=50, default='fas fa-shield-alt', help_text='FontAwesome icon class for trust section')
+    
     mission_statement = models.TextField(help_text='Main mission statement')
     mission_description = models.TextField(help_text='Description of our mission', blank=True)
     problem_description = models.TextField(help_text='Description of the problem we solve')

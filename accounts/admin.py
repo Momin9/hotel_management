@@ -31,7 +31,7 @@ class AboutUsAdmin(admin.ModelAdmin):
             'fields': ('purpose_title', 'purpose_icon', 'mission_statement', 'mission_description', 'problem_description', 'solution_description', 'problem_icon', 'solution_icon', 'mission_icon')
         }),
         ('Trust & Reliability', {
-            'fields': ('global_architecture_text', 'data_security_text', 'modern_tech_text')
+            'fields': ('trust_title', 'trust_subtitle', 'trust_icon', 'global_architecture_text', 'data_security_text', 'modern_tech_text')
         }),
         ('Trust Indicators', {
             'fields': ('uptime_percentage', 'security_monitoring', 'security_certification', 'compliance_standard')
