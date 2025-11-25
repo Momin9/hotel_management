@@ -150,17 +150,17 @@
                         <span class="font-medium">Dashboard</span>
                     </a>
                     {% if user.is_superuser %}
-                    <a href="{% url 'accounts:subscription_plan_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-credit-card mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Plans</span>
-                    </a>
-                    <a href="{% url 'accounts:hotel_subscription_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-file-contract mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Subscription</span>
-                    </a>
                     <a href="{% url 'accounts:hotel_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-building mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Hotels</span>
+                    </a>
+                    <a href="{% url 'accounts:hotel_subscription_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                        <i class="fas fa-file-contract mr-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Subscriptions</span>
+                    </a>
+                    <a href="{% url 'accounts:subscription_plan_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                        <i class="fas fa-credit-card mr-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Plans</span>
                     </a>
                     <div class="relative" x-data="{ analyticsOpen: false }">
                         <button @click="analyticsOpen = !analyticsOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
