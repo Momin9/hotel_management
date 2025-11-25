@@ -134,6 +134,7 @@ class AboutUs(models.Model):
 class Footer(models.Model):
     # Company Info
     company_name = models.CharField(max_length=100, default="AuraStay")
+    company_logo = models.ImageField(upload_to='logos/', blank=True, null=True, help_text='Upload company logo (recommended: 200x200px)')
     company_description = models.TextField(default="The world's most advanced hotel management platform, designed for luxury hospitality.")
     
     # Contact Information
@@ -149,7 +150,8 @@ class Footer(models.Model):
     facebook_url = models.URLField(blank=True, null=True)
     
     # Copyright
-    copyright_text = models.CharField(max_length=200, default="© 2024 AuraStay Management Suite. All rights reserved.")
+    copyright_line1 = models.CharField(max_length=200, default="© 2025 AuraStay. All rights reserved.")
+    copyright_line2 = models.CharField(max_length=200, default="Design: MA Qureshi | Development: Momin Ali")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

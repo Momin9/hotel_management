@@ -56,7 +56,7 @@ class AboutUsAdmin(admin.ModelAdmin):
 class FooterAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Company Information', {
-            'fields': ('company_name', 'company_description')
+            'fields': ('company_name', 'company_logo', 'company_description')
         }),
         ('Contact Details', {
             'fields': ('email', 'phone', 'address_line1', 'address_line2')
@@ -65,7 +65,7 @@ class FooterAdmin(admin.ModelAdmin):
             'fields': ('twitter_url', 'linkedin_url', 'instagram_url', 'facebook_url')
         }),
         ('Copyright', {
-            'fields': ('copyright_text',)
+            'fields': ('copyright_line1', 'copyright_line2')
         })
     )
     

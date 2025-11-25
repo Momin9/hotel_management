@@ -58,18 +58,17 @@ def staff_create(request):
                 return render(request, 'staff/create.html', {'available_hotels': available_hotels})
         
         # Create user account
-        password = 'password123'  # Default password
+        password = request.POST.get('password', 'password123')  # Use form password or default
         role = request.POST.get('role', 'Staff')
         user = User.objects.create_user(
             username=username,
             email=email,
+            password=password,
             first_name=first_name,
             last_name=last_name,
             role=role,
             assigned_hotel=assigned_hotel
         )
-        user.set_password(password)
-        user.save()
         
         # Assign default permissions based on role
         assign_default_permissions(user)

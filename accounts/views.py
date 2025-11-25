@@ -247,42 +247,33 @@ def contact_form(request):
     return redirect('accounts:landing')
 
 def custom_login(request):
-    """Custom login view with role-based access control"""
+    """Custom login view with automatic role detection"""
+    from .models import Footer
+    footer = Footer.objects.first()
+    
     if request.user.is_authenticated:
         return redirect('accounts:dashboard')
     
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        login_role = request.POST.get('login_role', 'admin')
         
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            # Role-based access validation
-            if login_role == 'admin' and not user.is_superuser:
-                messages.error(request, 'Given credentials is not valid')
-                return render(request, 'accounts/login_luxury.html')
-            elif login_role == 'owner' and user.role != 'Owner':
-                messages.error(request, 'Given credentials is not valid')
-                return render(request, 'accounts/login_luxury.html')
-            elif login_role == 'staff' and user.role not in ['Staff', 'Manager']:
-                messages.error(request, 'Given credentials is not valid')
-                return render(request, 'accounts/login_luxury.html')
-            
-            # Check subscription status for non-superusers
-            if not user.is_superuser:
+            # Check subscription status for staff only if they have assigned hotel
+            if not user.is_superuser and user.role not in ['Owner'] and user.assigned_hotel:
                 subscription_active = check_user_subscription_status(user)
                 if not subscription_active:
-                    messages.error(request, 'Your subscription has expired or is inactive. Please contact administrator.')
+                    messages.error(request, 'Your hotel subscription has expired. Please contact your hotel owner.')
                     create_admin_notification(
                         f'Login attempt blocked: {user.get_full_name()} - Inactive subscription',
                         'warning'
                     )
-                    return render(request, 'accounts/login_luxury.html')
+                    return render(request, 'accounts/login_luxury.html', {'footer': footer})
             
             login(request, user)
             
-            # Role-based redirect
+            # Role-based redirect using stored user role
             if user.is_superuser:
                 return redirect('accounts:super_admin_dashboard')
             elif user.role == 'Owner':
@@ -292,7 +283,7 @@ def custom_login(request):
         else:
             messages.error(request, 'Given credentials is not valid')
     
-    return render(request, 'accounts/login_luxury.html')
+    return render(request, 'accounts/login_luxury.html', {'footer': footer})
 
 def check_user_subscription_status(user):
     """Check if user's hotel has active subscription"""
@@ -348,11 +339,11 @@ def custom_logout(request):
 @login_required
 def dashboard(request):
     """Role-based dashboard redirect with subscription check"""
-    # Check subscription status for non-superusers
-    if not request.user.is_superuser:
+    # Check subscription status for staff with assigned hotels only
+    if not request.user.is_superuser and request.user.role not in ['Owner'] and request.user.assigned_hotel:
         subscription_active = check_user_subscription_status(request.user)
         if not subscription_active:
-            messages.error(request, 'Your subscription has expired. Access denied.')
+            messages.error(request, 'Your hotel subscription has expired. Access denied.')
             logout(request)
             return redirect('accounts:login')
     
