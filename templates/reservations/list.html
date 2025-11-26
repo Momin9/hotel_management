@@ -136,86 +136,22 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <!-- Sample Data -->
-                        <tr class="hover:bg-luxury-25 transition-colors">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-user text-royal-600"></i>
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center space-y-4">
+                                    <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-calendar-times text-luxury-400 text-2xl"></i>
                                     </div>
                                     <div>
-                                        <p class="font-semibold text-luxury-800">John Smith</p>
-                                        <p class="text-sm text-luxury-600">john.smith@email.com</p>
+                                        <h3 class="text-lg font-semibold text-luxury-700">No Reservations Found</h3>
+                                        <p class="text-luxury-500">Create your first reservation to get started</p>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-luxury-700">Room 101 - Deluxe Suite</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-luxury-700">Nov 20 - Nov 23, 2024</p>
-                                <p class="text-sm text-luxury-600">3 nights</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-lg font-bold text-luxury-800">$897.00</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                    Confirmed
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex space-x-2">
-                                    <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
-                                        <i class="fas fa-eye"></i>
+                                    {% if can_add_reservation %}
+                                    <a href="{% url 'reservations:create' %}" class="bg-royal-600 hover:bg-royal-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>
+                                        Create Reservation
                                     </a>
-                                    <button onclick="quickCheckIn('sample-1')" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Check In">
-                                        <i class="fas fa-sign-in-alt"></i>
-                                    </button>
-                                    <a href="#" class="text-luxury-600 hover:text-luxury-800 transition-colors p-2 rounded-lg hover:bg-luxury-50" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-luxury-25 transition-colors">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-user text-royal-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold text-luxury-800">Emma Johnson</p>
-                                        <p class="text-sm text-luxury-600">emma.j@email.com</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-luxury-700">Room 205 - Premium Room</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-luxury-700">Nov 22 - Nov 25, 2024</p>
-                                <p class="text-sm text-luxury-600">3 nights</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-lg font-bold text-luxury-800">$747.00</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                    Checked In
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex space-x-2">
-                                    <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <button onclick="quickCheckOut('sample-2')" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Check Out">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                    </button>
-                                    <a href="#" class="text-luxury-600 hover:text-luxury-800 transition-colors p-2 rounded-lg hover:bg-luxury-50" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -362,185 +298,18 @@
             </div>
         </div>
         {% empty %}
-        <!-- Sample Reservation Cards -->
-        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group transition-all duration-300">
-            <div class="bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-700 p-8 relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
-                <div class="absolute -bottom-5 -left-5 w-20 h-20 bg-white/5 rounded-full"></div>
-                
-                <div class="relative">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
-                                <i class="fas fa-user text-white text-2xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-white mb-1">John Smith</h3>
-                                <p class="text-white/80 text-sm">john.smith@email.com</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-semibold text-sm border border-white/30">
-                                Confirmed
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-bed text-white/80 text-lg"></i>
-                                <div>
-                                    <p class="text-white font-semibold">Room 101</p>
-                                    <p class="text-white/70 text-sm">Deluxe Suite</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-dollar-sign text-white/80 text-lg"></i>
-                                <div>
-                                    <p class="text-white font-semibold">$897.00</p>
-                                    <p class="text-white/70 text-sm">Total Amount</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="col-span-full flex flex-col items-center justify-center py-16">
+            <div class="w-24 h-24 bg-luxury-100 rounded-full flex items-center justify-center mb-6">
+                <i class="fas fa-calendar-times text-luxury-400 text-3xl"></i>
             </div>
-            
-            <div class="p-8">
-                <div class="grid grid-cols-2 gap-6 mb-8">
-                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <i class="fas fa-calendar-plus text-white text-lg"></i>
-                        </div>
-                        <p class="font-bold text-luxury-800 text-lg">Nov 20</p>
-                        <p class="text-luxury-600 text-sm font-medium">Check-in</p>
-                    </div>
-                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
-                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <i class="fas fa-calendar-minus text-white text-lg"></i>
-                        </div>
-                        <p class="font-bold text-luxury-800 text-lg">Nov 23</p>
-                        <p class="text-luxury-600 text-sm font-medium">Check-out</p>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-royal-50 to-royal-100 rounded-2xl p-6 mb-8 border border-royal-200">
-                    <div class="flex items-center justify-center space-x-4">
-                        <div class="w-10 h-10 bg-gradient-to-br from-royal-500 to-royal-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-moon text-white"></i>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-royal-800">3</p>
-                            <p class="text-royal-600 text-sm font-medium">Nights</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="space-y-3">
-                    <a href="#" class="w-full bg-gradient-to-r from-royal-500 to-royal-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
-                        <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
-                        View Details
-                    </a>
-                    <button onclick="quickCheckIn('sample-1')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
-                        <i class="fas fa-sign-in-alt mr-2 group-hover:scale-110 transition-transform"></i>
-                        Check In Guest
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift group transition-all duration-300">
-            <div class="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 p-8 relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
-                <div class="absolute -bottom-5 -left-5 w-20 h-20 bg-white/5 rounded-full"></div>
-                
-                <div class="relative">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
-                                <i class="fas fa-user text-white text-2xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-white mb-1">Emma Johnson</h3>
-                                <p class="text-white/80 text-sm">emma.j@email.com</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-semibold text-sm border border-white/30">
-                                Checked In
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-bed text-white/80 text-lg"></i>
-                                <div>
-                                    <p class="text-white font-semibold">Room 205</p>
-                                    <p class="text-white/70 text-sm">Premium Room</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-dollar-sign text-white/80 text-lg"></i>
-                                <div>
-                                    <p class="text-white font-semibold">$747.00</p>
-                                    <p class="text-white/70 text-sm">Total Amount</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-8">
-                <div class="grid grid-cols-2 gap-6 mb-8">
-                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <i class="fas fa-calendar-plus text-white text-lg"></i>
-                        </div>
-                        <p class="font-bold text-luxury-800 text-lg">Nov 22</p>
-                        <p class="text-luxury-600 text-sm font-medium">Check-in</p>
-                    </div>
-                    <div class="text-center p-6 bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl border border-luxury-200">
-                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <i class="fas fa-calendar-minus text-white text-lg"></i>
-                        </div>
-                        <p class="font-bold text-luxury-800 text-lg">Nov 25</p>
-                        <p class="text-luxury-600 text-sm font-medium">Check-out</p>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-royal-50 to-royal-100 rounded-2xl p-6 mb-8 border border-royal-200">
-                    <div class="flex items-center justify-center space-x-4">
-                        <div class="w-10 h-10 bg-gradient-to-br from-royal-500 to-royal-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-moon text-white"></i>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-royal-800">3</p>
-                            <p class="text-royal-600 text-sm font-medium">Nights</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="space-y-3">
-                    <a href="#" class="w-full bg-gradient-to-r from-royal-500 to-royal-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
-                        <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
-                        View Details
-                    </a>
-                    <button onclick="quickCheckOut('sample-2')" class="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
-                        <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
-                        Check Out & Bill
-                    </button>
-                </div>
-            </div>
+            <h3 class="text-2xl font-bold text-luxury-700 mb-2">No Reservations Found</h3>
+            <p class="text-luxury-500 mb-8 text-center max-w-md">Create your first reservation to get started with managing your hotel bookings</p>
+            {% if can_add_reservation %}
+            <a href="{% url 'reservations:create' %}" class="bg-royal-600 hover:bg-royal-700 text-white px-8 py-4 rounded-2xl font-semibold transition-colors">
+                <i class="fas fa-plus mr-2"></i>
+                Create First Reservation
+            </a>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
