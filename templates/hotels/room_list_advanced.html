@@ -133,7 +133,7 @@
                 <!-- Price & Features -->
                 <div class="border-t border-slate-100 pt-4">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-2xl font-bold text-slate-800">${{ room.price }}</span>
+                        <span class="text-2xl font-bold text-slate-800">{{ hotel.currency }} {{ room.price }}</span>
                         <span class="text-sm text-slate-500">per night</span>
                     </div>
                     
@@ -295,7 +295,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-lg font-bold text-slate-800">${{ room.price }}</span>
+                                <span class="text-lg font-bold text-slate-800">{{ hotel.currency }} {{ room.price }}</span>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex space-x-2">
