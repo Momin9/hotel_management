@@ -60,10 +60,36 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Price per Night:</span>
-                        <span class="font-bold text-gold-600">${{ room.price }}</span>
+                        <span class="font-bold text-gold-600">{{ hotel.currency }} {{ room.price }}</span>
                     </div>
                 </div>
             </div>
+            
+            <!-- Room Services -->
+            {% if room.services.exists %}
+            <div class="md:col-span-2 space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-concierge-bell mr-3 text-royal-500"></i>
+                    Room Services
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for service in room.services.all %}
+                    <div class="p-4 border border-luxury-200 rounded-xl">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium text-luxury-900">{{ service.name }}</h4>
+                                {% if service.description %}
+                                <p class="text-sm text-luxury-600 mt-1">{{ service.description }}</p>
+                                {% endif %}
+                            </div>
+                            <span class="font-semibold text-royal-600">{{ hotel.currency }} {{ service.price }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
             
             <!-- Status Information -->
             <div class="space-y-4">

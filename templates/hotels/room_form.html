@@ -97,6 +97,29 @@
                 </div>
             </div>
             
+            <!-- Services Section -->
+            {% if services %}
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4">Room Services</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for service in services %}
+                    <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                        <input type="checkbox" name="services" value="{{ service.service_id }}" id="service_{{ service.service_id }}"
+                               {% if room and service in room.services.all %}checked{% endif %}
+                               class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                        <label for="service_{{ service.service_id }}" class="flex-1 cursor-pointer">
+                            <div class="font-medium text-luxury-800">{{ service.name }}</div>
+                            {% if service.description %}
+                            <div class="text-sm text-luxury-600">{{ service.description }}</div>
+                            {% endif %}
+                            <div class="text-sm font-semibold text-royal-600">{{ hotel.currency }} {{ service.price }}</div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- Action Buttons -->
             <div class="flex space-x-4 pt-6">
                 <button type="submit" 

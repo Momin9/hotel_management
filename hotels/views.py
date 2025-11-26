@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import Hotel, Room
+from .models import Hotel, Room, Service
 
 try:
     from crm.models import GuestProfile
@@ -209,8 +209,10 @@ def room_create(request, hotel_id):
         # Check if room number already exists
         if Room.objects.filter(hotel=hotel_obj, room_number=room_number).exists():
             messages.error(request, f'Room number {room_number} already exists in this hotel. Please choose a different room number.')
+            services = Service.objects.filter(hotel=hotel_obj)
             return render(request, 'hotels/room_form.html', {
-                'hotel': hotel_obj
+                'hotel': hotel_obj,
+                'services': services
             })
         
         try:
@@ -223,14 +225,21 @@ def room_create(request, hotel_id):
                 price=request.POST.get('price', 0),
                 status=request.POST.get('status', 'Available')
             )
+            
+            # Handle services
+            selected_services = request.POST.getlist('services')
+            if selected_services:
+                room.services.set(selected_services)
 
             messages.success(request, f'Room {room.room_number} created successfully!')
             return redirect('hotels:room_list', hotel_id=hotel_id)
         except IntegrityError:
             messages.error(request, f'Room number {room_number} already exists in this hotel. Please choose a different room number.')
 
+    services = Service.objects.filter(hotel=hotel_obj)
     return render(request, 'hotels/room_form.html', {
-        'hotel': hotel_obj
+        'hotel': hotel_obj,
+        'services': services
     })
 
 @owner_or_permission_required('view_room')
@@ -270,9 +279,11 @@ def room_edit(request, hotel_id, room_id):
         # Check if room number already exists (excluding current room)
         if Room.objects.filter(hotel=hotel_obj, room_number=new_room_number).exclude(room_id=room_id).exists():
             messages.error(request, f'Room number {new_room_number} already exists in this hotel. Please choose a different room number.')
+            services = Service.objects.filter(hotel=hotel_obj)
             return render(request, 'hotels/room_form.html', {
                 'hotel': hotel_obj,
-                'room': room
+                'room': room,
+                'services': services
             })
         
         try:
@@ -284,12 +295,18 @@ def room_edit(request, hotel_id, room_id):
             room.status = request.POST.get('status')
             room.save()
             
+            # Handle services
+            selected_services = request.POST.getlist('services')
+            room.services.set(selected_services)
+            
             messages.success(request, f'Room {room.room_number} updated successfully!')
             return redirect('hotels:room_detail', hotel_id=hotel_id, room_id=room_id)
         except IntegrityError:
             messages.error(request, f'Room number {new_room_number} already exists in this hotel. Please choose a different room number.')
     
+    services = Service.objects.filter(hotel=hotel_obj)
     return render(request, 'hotels/room_form.html', {
         'hotel': hotel_obj,
-        'room': room
+        'room': room,
+        'services': services
     })

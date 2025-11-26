@@ -201,6 +201,7 @@ class Room(models.Model):
     bed = models.CharField(max_length=20, choices=BED_TYPE_CHOICES, default='DoubleBed')
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=ROOM_STATUS_CHOICES, default='Available')
+    services = models.ManyToManyField('Service', blank=True, related_name='rooms')
     created_at = models.DateTimeField(auto_now_add=True)
     
 
