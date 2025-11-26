@@ -185,7 +185,7 @@ def room_list(request, hotel_id):
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     rooms = hotel_obj.rooms.all()
-    return render(request, 'hotels/room_list_modern.html', {
+    return render(request, 'hotels/room_list_enhanced.html', {
         'hotel': hotel_obj,
         'rooms': rooms
     })
@@ -219,12 +219,30 @@ def room_create(request, hotel_id):
             room = Room.objects.create(
                 hotel=hotel_obj,
                 room_number=room_number,
-                type=request.POST.get('type', 'Single'),
-                category=request.POST.get('category', 'Standard'),
-                bed=request.POST.get('bed', 'DoubleBed'),
+                type=request.POST.get('type', 'Standard'),
+                bed_type=request.POST.get('bed_type', 'Double'),
+                max_guests=request.POST.get('max_guests', 2),
+                room_size=request.POST.get('room_size', 250),
+                view_type=request.POST.get('view_type') or None,
                 price=request.POST.get('price', 0),
-                status=request.POST.get('status', 'Available')
+                status=request.POST.get('status', 'Available'),
+                description=request.POST.get('description', ''),
+                additional_amenities=request.POST.get('additional_amenities', ''),
+                has_wifi=request.POST.get('has_wifi') == 'on',
+                has_ac=request.POST.get('has_ac') == 'on',
+                has_tv=request.POST.get('has_tv') == 'on',
+                has_minibar=request.POST.get('has_minibar') == 'on',
+                has_balcony=request.POST.get('has_balcony') == 'on',
+                has_work_desk=request.POST.get('has_work_desk') == 'on',
+                has_seating_area=request.POST.get('has_seating_area') == 'on',
+                has_kitchenette=request.POST.get('has_kitchenette') == 'on',
+                has_living_room=request.POST.get('has_living_room') == 'on'
             )
+            
+            # Handle image upload
+            if 'image' in request.FILES:
+                room.image = request.FILES['image']
+                room.save()
             
             # Handle services
             selected_services = request.POST.getlist('services')
@@ -237,7 +255,7 @@ def room_create(request, hotel_id):
             messages.error(request, f'Room number {room_number} already exists in this hotel. Please choose a different room number.')
 
     services = Service.objects.filter(hotel=hotel_obj)
-    return render(request, 'hotels/room_form.html', {
+    return render(request, 'hotels/room_form_enhanced.html', {
         'hotel': hotel_obj,
         'services': services
     })
@@ -289,10 +307,28 @@ def room_edit(request, hotel_id, room_id):
         try:
             room.room_number = new_room_number
             room.type = request.POST.get('type')
-            room.category = request.POST.get('category')
-            room.bed = request.POST.get('bed')
+            room.bed_type = request.POST.get('bed_type')
+            room.max_guests = request.POST.get('max_guests', 2)
+            room.room_size = request.POST.get('room_size', 250)
+            room.view_type = request.POST.get('view_type') or None
             room.price = request.POST.get('price')
             room.status = request.POST.get('status')
+            room.description = request.POST.get('description', '')
+            room.additional_amenities = request.POST.get('additional_amenities', '')
+            room.has_wifi = request.POST.get('has_wifi') == 'on'
+            room.has_ac = request.POST.get('has_ac') == 'on'
+            room.has_tv = request.POST.get('has_tv') == 'on'
+            room.has_minibar = request.POST.get('has_minibar') == 'on'
+            room.has_balcony = request.POST.get('has_balcony') == 'on'
+            room.has_work_desk = request.POST.get('has_work_desk') == 'on'
+            room.has_seating_area = request.POST.get('has_seating_area') == 'on'
+            room.has_kitchenette = request.POST.get('has_kitchenette') == 'on'
+            room.has_living_room = request.POST.get('has_living_room') == 'on'
+            
+            # Handle image upload
+            if 'image' in request.FILES:
+                room.image = request.FILES['image']
+            
             room.save()
             
             # Handle services
@@ -305,7 +341,7 @@ def room_edit(request, hotel_id, room_id):
             messages.error(request, f'Room number {new_room_number} already exists in this hotel. Please choose a different room number.')
     
     services = Service.objects.filter(hotel=hotel_obj)
-    return render(request, 'hotels/room_form.html', {
+    return render(request, 'hotels/room_form_enhanced.html', {
         'hotel': hotel_obj,
         'room': room,
         'services': services

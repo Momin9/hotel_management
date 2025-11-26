@@ -157,30 +157,30 @@ class RoomStatus(models.Model):
         return self.name
 
 class Room(models.Model):
-    """Room model"""
+    """Enhanced Room model with detailed amenities and features"""
     ROOM_TYPE_CHOICES = [
-        ('Single', 'Single'),
-        ('Double', 'Double'),
-        ('Twin', 'Twin'),
-        ('Triple', 'Triple'),
-        ('Quad', 'Quad'),
-    ]
-    
-    ROOM_CATEGORY_CHOICES = [
-        ('Standard', 'Standard'),
-        ('Deluxe', 'Deluxe'),
-        ('SuperDeluxe', 'Super Deluxe'),
-        ('Executive', 'Executive'),
-        ('Suite', 'Suite'),
-        ('JuniorSuite', 'Junior Suite'),
-        ('PresidentialSuite', 'Presidential Suite'),
+        ('Standard', 'Standard Room'),
+        ('Deluxe', 'Deluxe Room'),
+        ('Superior', 'Superior Room'),
+        ('Executive', 'Executive Suite'),
+        ('Presidential', 'Presidential Suite'),
     ]
     
     BED_TYPE_CHOICES = [
-        ('King', 'King'),
-        ('Queen', 'Queen'),
-        ('DoubleBed', 'Double Bed'),
-        ('TwinBed', 'Twin Bed'),
+        ('King', 'King Size Bed'),
+        ('Queen', 'Queen Size Bed'),
+        ('Double', 'Double Bed'),
+        ('Twin', 'Twin Beds'),
+        ('Single', 'Single Bed'),
+    ]
+    
+    VIEW_TYPE_CHOICES = [
+        ('City', 'City View'),
+        ('Garden', 'Garden View'),
+        ('Ocean', 'Ocean View'),
+        ('Mountain', 'Mountain View'),
+        ('Pool', 'Pool View'),
+        ('Courtyard', 'Courtyard View'),
     ]
     
     ROOM_STATUS_CHOICES = [
@@ -196,13 +196,65 @@ class Room(models.Model):
     room_id = models.AutoField(primary_key=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='rooms')
     room_number = models.CharField(max_length=50)
-    type = models.CharField(max_length=20, choices=ROOM_TYPE_CHOICES, default='Single')
-    category = models.CharField(max_length=20, choices=ROOM_CATEGORY_CHOICES, default='Standard')
-    bed = models.CharField(max_length=20, choices=BED_TYPE_CHOICES, default='DoubleBed')
+    
+    # Basic Details
+    type = models.CharField(max_length=20, choices=ROOM_TYPE_CHOICES, default='Standard')
+    bed_type = models.CharField(max_length=20, choices=BED_TYPE_CHOICES, default='Double')
+    max_guests = models.PositiveIntegerField(default=2, help_text='Maximum number of guests')
+    room_size = models.PositiveIntegerField(default=250, help_text='Room size in square feet')
+    view_type = models.CharField(max_length=20, choices=VIEW_TYPE_CHOICES, blank=True, null=True)
+    
+    # Pricing
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    
+    # Status
     status = models.CharField(max_length=20, choices=ROOM_STATUS_CHOICES, default='Available')
+    
+    # Features & Amenities (Boolean fields for common amenities)
+    has_wifi = models.BooleanField(default=True, verbose_name='Free Wi-Fi')
+    has_ac = models.BooleanField(default=True, verbose_name='Air Conditioning')
+    has_tv = models.BooleanField(default=True, verbose_name='TV')
+    has_minibar = models.BooleanField(default=False, verbose_name='Mini Bar')
+    has_balcony = models.BooleanField(default=False, verbose_name='Balcony')
+    has_work_desk = models.BooleanField(default=False, verbose_name='Work Desk')
+    has_seating_area = models.BooleanField(default=False, verbose_name='Seating Area')
+    has_kitchenette = models.BooleanField(default=False, verbose_name='Kitchenette')
+    has_living_room = models.BooleanField(default=False, verbose_name='Separate Living Room')
+    
+    # Additional amenities as text field
+    additional_amenities = models.TextField(blank=True, help_text='Additional amenities (comma-separated)')
+    
+    # Room description
+    description = models.TextField(blank=True, help_text='Room description')
+    
+    # Room image
+    image = models.ImageField(upload_to='room_images/', blank=True, null=True)
+    
+    # Services relationship
     services = models.ManyToManyField('Service', blank=True, related_name='rooms')
+    
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    @property
+    def amenities_list(self):
+        """Get list of all amenities for this room"""
+        amenities = []
+        if self.has_wifi: amenities.append('Free Wi-Fi')
+        if self.has_ac: amenities.append('Air Conditioning')
+        if self.has_tv: amenities.append('TV')
+        if self.has_minibar: amenities.append('Mini Bar')
+        if self.has_balcony: amenities.append('Balcony')
+        if self.has_work_desk: amenities.append('Work Desk')
+        if self.has_seating_area: amenities.append('Seating Area')
+        if self.has_kitchenette: amenities.append('Kitchenette')
+        if self.has_living_room: amenities.append('Separate Living Room')
+        
+        # Add additional amenities
+        if self.additional_amenities:
+            additional = [a.strip() for a in self.additional_amenities.split(',') if a.strip()]
+            amenities.extend(additional)
+            
+        return amenities
     
 
     

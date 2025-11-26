@@ -1,0 +1,268 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{% if room %}Edit Room {{ room.room_number }}{% else %}Add New Room{% endif %} - {{ hotel.name }}{% endblock %}
+{% block page_title %}{% if room %}Edit Room{% else %}Add New Room{% endif %}{% endblock %}
+{% block page_subtitle %}{{ hotel.name }} - Enhanced Room Management{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Basic Information -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                        <i class="fas fa-info-circle mr-3 text-royal-500"></i>
+                        Basic Information
+                    </h3>
+                    
+                    <div>
+                        <label for="room_number" class="block text-sm font-medium text-luxury-700 mb-2">Room Number</label>
+                        <input type="text" name="room_number" id="room_number" 
+                               value="{% if room %}{{ room.room_number }}{% endif %}"
+                               class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-luxury-700 mb-2">Room Type</label>
+                        <select name="type" id="type" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Type</option>
+                            <option value="Standard" {% if room and room.type == 'Standard' %}selected{% endif %}>Standard Room</option>
+                            <option value="Deluxe" {% if room and room.type == 'Deluxe' %}selected{% endif %}>Deluxe Room</option>
+                            <option value="Superior" {% if room and room.type == 'Superior' %}selected{% endif %}>Superior Room</option>
+                            <option value="Executive" {% if room and room.type == 'Executive' %}selected{% endif %}>Executive Suite</option>
+                            <option value="Presidential" {% if room and room.type == 'Presidential' %}selected{% endif %}>Presidential Suite</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="bed_type" class="block text-sm font-medium text-luxury-700 mb-2">Bed Type</label>
+                        <select name="bed_type" id="bed_type" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Bed Type</option>
+                            <option value="King" {% if room and room.bed_type == 'King' %}selected{% endif %}>King Size Bed</option>
+                            <option value="Queen" {% if room and room.bed_type == 'Queen' %}selected{% endif %}>Queen Size Bed</option>
+                            <option value="Double" {% if room and room.bed_type == 'Double' %}selected{% endif %}>Double Bed</option>
+                            <option value="Twin" {% if room and room.bed_type == 'Twin' %}selected{% endif %}>Twin Beds</option>
+                            <option value="Single" {% if room and room.bed_type == 'Single' %}selected{% endif %}>Single Bed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="max_guests" class="block text-sm font-medium text-luxury-700 mb-2">Max Guests</label>
+                            <input type="number" name="max_guests" id="max_guests" min="1" max="10"
+                                   value="{% if room %}{{ room.max_guests }}{% else %}2{% endif %}"
+                                   class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                   required>
+                        </div>
+                        
+                        <div>
+                            <label for="room_size" class="block text-sm font-medium text-luxury-700 mb-2">Size (sq ft)</label>
+                            <input type="number" name="room_size" id="room_size" min="100"
+                                   value="{% if room %}{{ room.room_size }}{% else %}250{% endif %}"
+                                   class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Details & Pricing -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                        <i class="fas fa-dollar-sign mr-3 text-royal-500"></i>
+                        Details & Pricing
+                    </h3>
+                    
+                    <div>
+                        <label for="view_type" class="block text-sm font-medium text-luxury-700 mb-2">View Type</label>
+                        <select name="view_type" id="view_type" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="">Select View</option>
+                            <option value="City" {% if room and room.view_type == 'City' %}selected{% endif %}>City View</option>
+                            <option value="Garden" {% if room and room.view_type == 'Garden' %}selected{% endif %}>Garden View</option>
+                            <option value="Ocean" {% if room and room.view_type == 'Ocean' %}selected{% endif %}>Ocean View</option>
+                            <option value="Mountain" {% if room and room.view_type == 'Mountain' %}selected{% endif %}>Mountain View</option>
+                            <option value="Pool" {% if room and room.view_type == 'Pool' %}selected{% endif %}>Pool View</option>
+                            <option value="Courtyard" {% if room and room.view_type == 'Courtyard' %}selected{% endif %}>Courtyard View</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-luxury-700 mb-2">Price per Night</label>
+                        <input type="number" name="price" id="price" step="0.01" min="0"
+                               value="{% if room %}{{ room.price }}{% endif %}"
+                               class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                        <select name="status" id="status" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Status</option>
+                            <option value="Available" {% if room and room.status == 'Available' %}selected{% endif %}>Available</option>
+                            <option value="Occupied" {% if room and room.status == 'Occupied' %}selected{% endif %}>Occupied</option>
+                            <option value="Reserved" {% if room and room.status == 'Reserved' %}selected{% endif %}>Reserved</option>
+                            <option value="Dirty" {% if room and room.status == 'Dirty' %}selected{% endif %}>Dirty</option>
+                            <option value="Cleaning" {% if room and room.status == 'Cleaning' %}selected{% endif %}>Cleaning</option>
+                            <option value="Maintenance" {% if room and room.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                            <option value="Blocked" {% if room and room.status == 'Blocked' %}selected{% endif %}>Blocked</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="image" class="block text-sm font-medium text-luxury-700 mb-2">Room Image</label>
+                        <input type="file" name="image" id="image" accept="image/*"
+                               class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                        {% if room and room.image %}
+                        <p class="text-sm text-luxury-600 mt-1">Current: {{ room.image.name }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-luxury-700 mb-2">Room Description</label>
+                        <textarea name="description" id="description" rows="4"
+                                  placeholder="Describe the room features and atmosphere..."
+                                  class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent resize-none">{% if room %}{{ room.description }}{% endif %}</textarea>
+                    </div>
+                </div>
+                
+                <!-- Amenities -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                        <i class="fas fa-concierge-bell mr-3 text-royal-500"></i>
+                        Amenities
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 gap-3">
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_wifi" {% if room and room.has_wifi or not room %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-wifi text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Free Wi-Fi</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_ac" {% if room and room.has_ac or not room %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-snowflake text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Air Conditioning</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_tv" {% if room and room.has_tv or not room %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-tv text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">TV</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_minibar" {% if room and room.has_minibar %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-glass-martini text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Mini Bar</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_balcony" {% if room and room.has_balcony %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-door-open text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Balcony</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_work_desk" {% if room and room.has_work_desk %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-laptop text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Work Desk</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_seating_area" {% if room and room.has_seating_area %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-couch text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Seating Area</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_kitchenette" {% if room and room.has_kitchenette %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-utensils text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Kitchenette</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                <input type="checkbox" name="has_living_room" {% if room and room.has_living_room %}checked{% endif %}
+                                       class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                <i class="fas fa-home text-luxury-500"></i>
+                                <span class="text-sm font-medium text-luxury-700">Separate Living Room</span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label for="additional_amenities" class="block text-sm font-medium text-luxury-700 mb-2">Additional Amenities</label>
+                            <textarea name="additional_amenities" id="additional_amenities" rows="3"
+                                      placeholder="Premium Amenities, Coffee Machine, etc. (comma-separated)"
+                                      class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent resize-none">{% if room %}{{ room.additional_amenities }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Services Section -->
+            {% if services %}
+            <div class="mt-8">
+                <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                    <i class="fas fa-bell-concierge mr-3 text-royal-500"></i>
+                    Room Services
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for service in services %}
+                    <div class="flex items-center space-x-3 p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                        <input type="checkbox" name="services" value="{{ service.service_id }}" id="service_{{ service.service_id }}"
+                               {% if room and service in room.services.all %}checked{% endif %}
+                               class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                        <label for="service_{{ service.service_id }}" class="flex-1 cursor-pointer">
+                            <div class="font-medium text-luxury-800">{{ service.name }}</div>
+                            {% if service.description %}
+                            <div class="text-sm text-luxury-600">{{ service.description }}</div>
+                            {% endif %}
+                            <div class="text-sm font-semibold text-royal-600">{{ hotel.currency }} {{ service.price }}</div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-4 pt-8 border-t border-luxury-200">
+                <button type="submit" 
+                        class="bg-royal-600 hover:bg-royal-700 text-white px-8 py-4 rounded-xl font-semibold transition-colors flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>{% if room %}Update Room{% else %}Create Room{% endif %}</span>
+                </button>
+                <a href="{% url 'hotels:room_list' hotel.hotel_id %}" 
+                   class="bg-luxury-200 text-luxury-700 px-8 py-4 rounded-xl font-semibold hover:bg-luxury-300 transition-colors">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

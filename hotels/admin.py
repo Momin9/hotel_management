@@ -6,7 +6,7 @@ class RoomInline(admin.TabularInline):
     model = Room
     extra = 0
     max_num = 20
-    fields = ['room_number', 'type', 'category', 'bed', 'price', 'status']
+    fields = ['room_number', 'type', 'bed_type', 'max_guests', 'price', 'status']
 
 class ServiceInline(admin.TabularInline):
     model = Service
@@ -67,8 +67,8 @@ class HotelSubscriptionAdmin(admin.ModelAdmin):
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ['room_number', 'hotel', 'type', 'category', 'price', 'status']
-    list_filter = ['status', 'type', 'category', 'bed', 'hotel']
+    list_display = ['room_number', 'hotel', 'type', 'bed_type', 'max_guests', 'price', 'status']
+    list_filter = ['status', 'type', 'bed_type', 'view_type', 'hotel']
     search_fields = ['room_number', 'hotel__name']
     list_editable = ['status', 'price']
     

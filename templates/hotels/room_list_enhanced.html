@@ -1,0 +1,172 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Rooms & Rates - {{ hotel.name }}{% endblock %}
+{% block page_title %}Rooms & Rates{% endblock %}
+{% block page_subtitle %}Find your perfect escape. Each room is designed for your ultimate comfort and relaxation.{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-bed text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">{{ hotel.name }} - Rooms</h2>
+                <p class="text-luxury-600 font-medium">{{ rooms.count|default:"0" }} Room{{ rooms.count|pluralize }} Available</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            {% if can_add_room %}
+            <a href="{% url 'hotels:room_create' hotel.hotel_id %}" 
+               class="inline-flex items-center px-6 py-3 bg-royal-600 hover:bg-royal-700 text-white font-semibold rounded-2xl transition-all duration-300">
+                <i class="fas fa-plus mr-2"></i>
+                Add New Room
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Rooms Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for room in rooms %}
+        <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift transition-all duration-300">
+            <!-- Room Image -->
+            <div class="relative h-64 bg-gradient-to-br from-luxury-100 to-luxury-200">
+                {% if room.image %}
+                <img src="{{ room.image.url }}" alt="{{ room.type }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                    <i class="fas fa-bed text-6xl text-luxury-400"></i>
+                </div>
+                {% endif %}
+                
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                          {% if room.status == 'Available' %}bg-green-100 text-green-800
+                          {% elif room.status == 'Occupied' %}bg-red-100 text-red-800
+                          {% elif room.status == 'Reserved' %}bg-blue-100 text-blue-800
+                          {% elif room.status == 'Cleaning' %}bg-yellow-100 text-yellow-800
+                          {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ room.status }}
+                    </span>
+                </div>
+                
+                <!-- Room Number -->
+                <div class="absolute top-4 left-4">
+                    <span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-luxury-800">
+                        Room {{ room.room_number }}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Room Details -->
+            <div class="p-6">
+                <!-- Room Type & Title -->
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-1">{{ room.get_type_display }}</h3>
+                    {% if room.view_type %}
+                    <p class="text-luxury-600">{{ room.get_view_type_display }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Room Stats -->
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="text-center">
+                        <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-users text-royal-600"></i>
+                        </div>
+                        <p class="text-sm font-medium text-luxury-700">{{ room.max_guests }} Guest{{ room.max_guests|pluralize }}</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-expand-arrows-alt text-royal-600"></i>
+                        </div>
+                        <p class="text-sm font-medium text-luxury-700">{{ room.room_size }} sq ft</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-bed text-royal-600"></i>
+                        </div>
+                        <p class="text-sm font-medium text-luxury-700">{{ room.get_bed_type_display }}</p>
+                    </div>
+                </div>
+                
+                <!-- Amenities -->
+                <div class="mb-6">
+                    <div class="flex flex-wrap gap-2">
+                        {% for amenity in room.amenities_list|slice:":6" %}
+                        <span class="px-2 py-1 bg-luxury-100 text-luxury-700 rounded-lg text-xs font-medium">
+                            {{ amenity }}
+                        </span>
+                        {% endfor %}
+                        {% if room.amenities_list|length > 6 %}
+                        <span class="px-2 py-1 bg-luxury-100 text-luxury-700 rounded-lg text-xs font-medium">
+                            +{{ room.amenities_list|length|add:"-6" }} more
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Price & Actions -->
+                <div class="flex items-center justify-between pt-4 border-t border-luxury-200">
+                    <div>
+                        <p class="text-2xl font-bold text-luxury-800">{{ hotel.currency }} {{ room.price }}</p>
+                        <p class="text-sm text-luxury-600">per night</p>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <a href="{% url 'hotels:room_detail' hotel.hotel_id room.room_id %}" 
+                           class="p-2 text-royal-600 hover:text-royal-800 hover:bg-royal-50 rounded-lg transition-colors" 
+                           title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        {% if can_change_room %}
+                        <a href="{% url 'hotels:room_edit' hotel.hotel_id room.room_id %}" 
+                           class="p-2 text-luxury-600 hover:text-luxury-800 hover:bg-luxury-50 rounded-lg transition-colors" 
+                           title="Edit Room">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full flex flex-col items-center justify-center py-16">
+            <div class="w-24 h-24 bg-luxury-100 rounded-full flex items-center justify-center mb-6">
+                <i class="fas fa-bed text-luxury-400 text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-700 mb-2">No Rooms Found</h3>
+            <p class="text-luxury-500 mb-8 text-center max-w-md">Create your first room to start managing your hotel inventory</p>
+            {% if can_add_room %}
+            <a href="{% url 'hotels:room_create' hotel.hotel_id %}" class="bg-royal-600 hover:bg-royal-700 text-white px-8 py-4 rounded-2xl font-semibold transition-colors">
+                <i class="fas fa-plus mr-2"></i>
+                Create First Room
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .hover-lift {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+</style>
+{% endblock %}
