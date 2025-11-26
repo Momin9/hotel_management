@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.core.exceptions import ValidationError
+from ckeditor.fields import RichTextField
 
 
 class UserManager(BaseUserManager):
@@ -362,3 +363,53 @@ class ContactInquiry(models.Model):
     
     def __str__(self):
         return f"{self.full_name} - {self.hotel_name} ({self.get_subject_display()})"
+
+
+class TermsOfService(models.Model):
+    """Terms of Service content with rich text editor"""
+    title = models.CharField(max_length=200, default="Terms of Service")
+    content = RichTextField(config_name='terms_privacy', help_text="Terms of Service content with rich text formatting")
+    effective_date = models.DateField(help_text="Date when these terms become effective")
+    version = models.CharField(max_length=20, default="1.0", help_text="Version number")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Terms of Service"
+        verbose_name_plural = "Terms of Service"
+        ordering = ['-created_at']
+    
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # Deactivate all other active terms
+            TermsOfService.objects.filter(is_active=True).update(is_active=False)
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.title} v{self.version} ({'Active' if self.is_active else 'Inactive'})"
+
+
+class PrivacyPolicy(models.Model):
+    """Privacy Policy content with rich text editor"""
+    title = models.CharField(max_length=200, default="Privacy Policy")
+    content = RichTextField(config_name='terms_privacy', help_text="Privacy Policy content with rich text formatting")
+    effective_date = models.DateField(help_text="Date when this policy becomes effective")
+    version = models.CharField(max_length=20, default="1.0", help_text="Version number")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Privacy Policy"
+        verbose_name_plural = "Privacy Policy"
+        ordering = ['-created_at']
+    
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # Deactivate all other active policies
+            PrivacyPolicy.objects.filter(is_active=True).update(is_active=False)
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.title} v{self.version} ({'Active' if self.is_active else 'Inactive'})"

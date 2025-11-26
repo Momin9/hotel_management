@@ -35,11 +35,15 @@ def about_page(request):
 
 def privacy_policy(request):
     """Privacy Policy page"""
-    return render(request, 'accounts/privacy_policy.html')
+    from .models import PrivacyPolicy
+    privacy_policy = PrivacyPolicy.objects.filter(is_active=True).first()
+    return render(request, 'accounts/privacy_policy.html', {'privacy_policy': privacy_policy})
 
 def terms_of_service(request):
     """Terms of Service page"""
-    return render(request, 'accounts/terms_of_service.html')
+    from .models import TermsOfService
+    terms_of_service = TermsOfService.objects.filter(is_active=True).first()
+    return render(request, 'accounts/terms_of_service.html', {'terms_of_service': terms_of_service})
 
 def forgot_password(request):
     """Forgot password - send OTP to email"""

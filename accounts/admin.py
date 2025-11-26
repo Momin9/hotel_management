@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP, Feature, SiteConfiguration
+from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP, Feature, SiteConfiguration, TermsOfService, PrivacyPolicy
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
@@ -178,6 +178,48 @@ class SiteConfigurationAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Don't allow deletion
         return False
+
+@admin.register(TermsOfService)
+class TermsOfServiceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'version', 'effective_date', 'is_active', 'updated_at')
+    list_filter = ('is_active', 'effective_date', 'created_at')
+    search_fields = ('title', 'version')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'version', 'effective_date', 'is_active')
+        }),
+        ('Content', {
+            'fields': ('content',),
+            'description': 'Use the rich text editor to format your Terms of Service content.'
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
+
+@admin.register(PrivacyPolicy)
+class PrivacyPolicyAdmin(admin.ModelAdmin):
+    list_display = ('title', 'version', 'effective_date', 'is_active', 'updated_at')
+    list_filter = ('is_active', 'effective_date', 'created_at')
+    search_fields = ('title', 'version')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'version', 'effective_date', 'is_active')
+        }),
+        ('Content', {
+            'fields': ('content',),
+            'description': 'Use the rich text editor to format your Privacy Policy content.'
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
 
 # Unregister the default Group admin_dashboard to prevent conflicts
 admin.site.unregister(Group)

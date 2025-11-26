@@ -1,96 +1,118 @@
 {% extends 'base_luxury.html' %}
+{% load static %}
 
-{% block title %}Terms of Service - AuraStay{% endblock %}
-{% block page_title %}Terms of Service{% endblock %}
-{% block page_subtitle %}Legal terms and conditions for using AuraStay{% endblock %}
+{% block title %}Terms of Service - {{ footer.company_name|default:'AuraStay' }}{% endblock %}
+
+{% block page_title %}
+    {% if terms_of_service %}
+        {{ terms_of_service.title }}
+    {% else %}
+        Terms of Service
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if terms_of_service %}
+        Effective Date: {{ terms_of_service.effective_date|date:"F d, Y" }} | Version {{ terms_of_service.version }}
+    {% else %}
+        Please review our terms and conditions
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-3xl p-8 luxury-shadow">
-        <div class="prose prose-lg max-w-none">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-luxury-800 mb-2">📜 AuraStay Terms of Service</h2>
-                <p class="text-luxury-600"><strong>Effective Date:</strong> January 1, 2026</p>
+    <div class="bg-white rounded-3xl luxury-shadow p-8 md:p-12">
+        {% if terms_of_service %}
+            <div class="prose prose-lg max-w-none">
+                {{ terms_of_service.content|safe }}
             </div>
             
-            <div class="space-y-8 text-luxury-700">
-                <section>
-                    <h3 class="text-xl font-semibold text-luxury-800 mb-4">1. Acceptance of Terms</h3>
-                    <p class="leading-relaxed">By accessing, downloading, or using the AuraStay Hotel Management Platform, including any associated software, documentation, or services (collectively, the "Service"), the individual or entity ("Client") acknowledges that they have read, understood, and agree to be bound by these Terms of Service ("TOS"). If the Client does not agree with any part of these terms, they must not use the Service. These TOS govern the contractual relationship between the Client and AuraStay.</p>
-                </section>
-                
-                <section>
-                    <h3 class="text-xl font-semibold text-luxury-800 mb-4">2. Service Description</h3>
-                    <p class="leading-relaxed">AuraStay provides a comprehensive, cloud-based hotel management platform designed to streamline operational efficiency, reservation management, revenue optimization, and guest experience management for the luxury hospitality sector. The specific features and limitations of the Service are determined by the Client's selected Subscription Plan (Free, Standard, Premium, or Enterprise), as detailed on the AuraStay website. AuraStay reserves the right to modify or discontinue any feature of the Service upon reasonable notice.</p>
-                </section>
-                
-                <section>
-                    <h3 class="text-xl font-semibold text-luxury-800 mb-4">3. User Obligations</h3>
-                    <p class="leading-relaxed mb-4">The Client agrees to abide by the following obligations to ensure the lawful and proper use of the Service:</p>
-                    <ul class="list-disc pl-6 space-y-2">
-                        <li><strong>Accuracy of Information:</strong> The Client shall provide accurate and complete registration and billing information and update such information promptly.</li>
-                        <li><strong>Account Security:</strong> The Client is solely responsible for maintaining the confidentiality and security of all login credentials, and for all activities that occur under their account.</li>
-                        <li><strong>Authorized Use:</strong> The Client shall use the Service only for legitimate, internal hotel management purposes and must comply with all applicable local, national, and international laws, including data privacy laws (e.g., GDPR, CCPA).</li>
-                    </ul>
-                    <p class="leading-relaxed mt-4 mb-2"><strong>Prohibited Actions:</strong> The Client shall not:</p>
-                    <ul class="list-disc pl-6 space-y-1">
-                        <li>Share login credentials with unauthorized third parties.</li>
-                        <li>Attempt to disrupt, reverse engineer, or gain unauthorized access to the AuraStay platform or its underlying code.</li>
-                        <li>Use the Service to transmit illegal, offensive, or harmful material.</li>
-                    </ul>
-                </section>
-                
-                <section>
-                    <h3 class="text-xl font-semibold text-luxury-800 mb-4">4. Fees and Payment</h3>
-                    <p class="leading-relaxed mb-4">Access to the paid tiers of the Service (Standard, Premium, Enterprise) is conditioned upon the timely payment of subscription fees.</p>
-                    <ul class="list-disc pl-6 space-y-2">
-                        <li><strong>Subscription Fees:</strong> Fees are based on the selected plan, room count, and billing cycle (monthly or annual), as specified in the Client's active Subscription Agreement.</li>
-                        <li><strong>Billing Cycle:</strong> Fees are billed in advance, either monthly or annually, beginning on the Effective Date.</li>
-                        <li><strong>Payment Terms:</strong> Payment is due net 30 days from the invoice date. Failure to remit payment in a timely manner constitutes a breach of this TOS and may result in the suspension or termination of the Service.</li>
-                        <li><strong>Price Changes:</strong> AuraStay reserves the right to modify subscription fees upon 30 days written notice to the Client.</li>
-                    </ul>
-                </section>
-                
-                <section>
-                    <h3 class="text-xl font-semibold text-luxury-800 mb-4">5. Termination</h3>
-                    <p class="leading-relaxed mb-4">Both the Client and AuraStay may terminate this agreement under certain conditions:</p>
-                    <ul class="list-disc pl-6 space-y-2">
-                        <li><strong>Termination by Client:</strong> The Client may terminate their subscription at any time, subject to the terms of their current Subscription Agreement. No refunds will be issued for pre-paid, unused subscription periods.</li>
-                        <li><strong>Termination by AuraStay:</strong> AuraStay may terminate or suspend the Service immediately, without notice, if the Client materially breaches any term of this TOS, including, but not limited to, non-payment of fees or violation of user obligations.</li>
-                        <li><strong>Data After Termination:</strong> Upon termination, AuraStay will retain the Client's data for a period of 90 days before permanent deletion, unless otherwise required by law.</li>
-                    </ul>
-                </section>
-                
-                <section>
-                    <h3 class="text-xl font-semibold text-luxury-800 mb-4">6. Intellectual Property</h3>
-                    <ul class="list-disc pl-6 space-y-2">
-                        <li><strong>AuraStay Property:</strong> The Service, its software, code, design, trademarks, and all underlying technology are the exclusive property of AuraStay and are protected by intellectual property laws. The Client is granted a limited, non-exclusive, non-transferable license to use the Service for internal business purposes only.</li>
-                        <li><strong>Client Data Property:</strong> All data, information, and content entered into the Service by the Client or on the Client's behalf (including guest data) remains the exclusive property of the Client. AuraStay acts as a data processor on behalf of the Client.</li>
-                    </ul>
-                </section>
-                
-                <section>
-                    <h3 class="text-xl font-semibold text-luxury-800 mb-4">7. Disclaimer of Warranties</h3>
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                        <p class="leading-relaxed font-medium text-yellow-800">THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. AURASTAY DOES NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, OR COMPLETELY SECURE. THE CLIENT ACKNOWLEDGES THAT THEY ARE USING THE SERVICE AT THEIR OWN RISK AND THAT AURASTAY'S LIABILITY FOR ANY DAMAGES ARISING FROM THIS AGREEMENT IS LIMITED TO THE TOTAL AMOUNT OF FEES PAID BY THE CLIENT IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM.</p>
+            <div class="mt-12 pt-8 border-t border-luxury-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+                    <div>
+                        <p class="text-sm text-luxury-600">
+                            <strong>Version:</strong> {{ terms_of_service.version }}
+                        </p>
+                        <p class="text-sm text-luxury-600">
+                            <strong>Effective Date:</strong> {{ terms_of_service.effective_date|date:"F d, Y" }}
+                        </p>
+                        <p class="text-sm text-luxury-600">
+                            <strong>Last Updated:</strong> {{ terms_of_service.updated_at|date:"F d, Y" }}
+                        </p>
                     </div>
-                </section>
-            </div>
-            
-            <div class="mt-12 p-6 bg-luxury-50 rounded-2xl">
-                <div class="text-center">
-                    <h4 class="text-lg font-semibold text-luxury-800 mb-3">📞 Contact Information</h4>
-                    <p class="text-sm text-luxury-600 mb-2">
-                        <strong>Last Updated:</strong> January 1, 2026
-                    </p>
-                    <p class="text-sm text-luxury-600">
-                        For questions about these Terms of Service, please contact us at:
-                        <br><strong>Email:</strong> legal@aurastay.com
-                        <br><strong>Phone:</strong> +1 (555) 123-4567
-                    </p>
+                    <div class="flex space-x-4">
+                        <a href="{% url 'accounts:privacy_policy' %}" class="text-royal-600 hover:text-royal-700 font-medium transition-colors">
+                            Privacy Policy
+                        </a>
+                        <a href="{% url 'accounts:landing' %}" class="bg-royal-600 text-white px-6 py-2 rounded-xl hover:bg-royal-700 transition-colors">
+                            Back to Home
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-file-contract text-6xl text-luxury-300 mb-6"></i>
+                <h3 class="text-2xl font-bold text-luxury-800 mb-4">Terms of Service Not Available</h3>
+                <p class="text-luxury-600 mb-8">
+                    Our Terms of Service are currently being updated. Please check back later or contact us for more information.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="{% url 'accounts:landing' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors">
+                        Back to Home
+                    </a>
+                    <a href="mailto:{{ footer.email|default:'info@aurastay.com' }}" class="border border-royal-600 text-royal-600 px-6 py-3 rounded-xl hover:bg-royal-50 transition-colors">
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<style>
+.prose {
+    color: #334155;
+}
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #1e293b;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+.prose h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+}
+.prose h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+}
+.prose h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+}
+.prose p {
+    margin-bottom: 1.25rem;
+    line-height: 1.75;
+}
+.prose ul, .prose ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+.prose li {
+    margin-bottom: 0.5rem;
+}
+.prose strong {
+    font-weight: 600;
+    color: #1e293b;
+}
+.prose a {
+    color: #0ea5e9;
+    text-decoration: underline;
+}
+.prose a:hover {
+    color: #0284c7;
+}
+</style>
 {% endblock %}

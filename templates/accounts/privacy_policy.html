@@ -1,118 +1,118 @@
 {% extends 'base_luxury.html' %}
+{% load static %}
 
-{% block title %}Privacy Policy - AuraStay{% endblock %}
-{% block page_title %}Privacy Policy{% endblock %}
-{% block page_subtitle %}Your privacy is important to us{% endblock %}
+{% block title %}Privacy Policy - {{ footer.company_name|default:'AuraStay' }}{% endblock %}
+
+{% block page_title %}
+    {% if privacy_policy %}
+        {{ privacy_policy.title }}
+    {% else %}
+        Privacy Policy
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if privacy_policy %}
+        Effective Date: {{ privacy_policy.effective_date|date:"F d, Y" }} | Version {{ privacy_policy.version }}
+    {% else %}
+        Learn how we protect your privacy and data
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-3xl p-8 luxury-shadow mb-8">
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mb-6">
-                <i class="fas fa-shield-alt text-white text-2xl"></i>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl luxury-shadow p-8 md:p-12">
+        {% if privacy_policy %}
+            <div class="prose prose-lg max-w-none">
+                {{ privacy_policy.content|safe }}
             </div>
-            <h1 class="text-4xl font-bold text-luxury-800 mb-4">Privacy Policy</h1>
-            <p class="text-lg text-luxury-600">Last updated: {{ "now"|date:"F d, Y" }}</p>
-        </div>
-
-        <div class="prose prose-lg max-w-none">
-            <section class="mb-8">
-                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-info-circle text-royal-500 mr-3"></i>
-                    Information We Collect
-                </h2>
-                <div class="bg-luxury-50 rounded-2xl p-6">
-                    <p class="text-luxury-700 mb-4">We collect information you provide directly to us, such as when you:</p>
-                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
-                        <li>Create an account or use our services</li>
-                        <li>Contact us through our contact form</li>
-                        <li>Subscribe to our newsletter or marketing communications</li>
-                        <li>Participate in surveys or provide feedback</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section class="mb-8">
-                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-database text-royal-500 mr-3"></i>
-                    How We Use Your Information
-                </h2>
-                <div class="bg-luxury-50 rounded-2xl p-6">
-                    <p class="text-luxury-700 mb-4">We use the information we collect to:</p>
-                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
-                        <li>Provide, maintain, and improve our services</li>
-                        <li>Process transactions and send related information</li>
-                        <li>Send technical notices and support messages</li>
-                        <li>Respond to your comments and questions</li>
-                        <li>Monitor and analyze trends and usage</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section class="mb-8">
-                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-share-alt text-royal-500 mr-3"></i>
-                    Information Sharing
-                </h2>
-                <div class="bg-luxury-50 rounded-2xl p-6">
-                    <p class="text-luxury-700 mb-4">We do not sell, trade, or otherwise transfer your personal information to third parties except:</p>
-                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
-                        <li>With your consent</li>
-                        <li>To comply with legal obligations</li>
-                        <li>To protect our rights and safety</li>
-                        <li>With trusted service providers who assist us</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section class="mb-8">
-                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-lock text-royal-500 mr-3"></i>
-                    Data Security
-                </h2>
-                <div class="bg-luxury-50 rounded-2xl p-6">
-                    <p class="text-luxury-700">We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure.</p>
-                </div>
-            </section>
-
-            <section class="mb-8">
-                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-user-cog text-royal-500 mr-3"></i>
-                    Your Rights
-                </h2>
-                <div class="bg-luxury-50 rounded-2xl p-6">
-                    <p class="text-luxury-700 mb-4">You have the right to:</p>
-                    <ul class="list-disc list-inside text-luxury-700 space-y-2">
-                        <li>Access and update your personal information</li>
-                        <li>Request deletion of your personal information</li>
-                        <li>Opt-out of marketing communications</li>
-                        <li>Request a copy of your data</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section class="mb-8">
-                <h2 class="text-2xl font-bold text-luxury-800 mb-4 flex items-center">
-                    <i class="fas fa-envelope text-royal-500 mr-3"></i>
-                    Contact Us
-                </h2>
-                <div class="bg-royal-50 rounded-2xl p-6">
-                    <p class="text-luxury-700 mb-4">If you have any questions about this Privacy Policy, please contact us:</p>
-                    <div class="space-y-2 text-luxury-700">
-                        <p><strong>Email:</strong> privacy@aurastay.com</p>
-                        <p><strong>Phone:</strong> +1 (555) 123-4567</p>
-                        <p><strong>Address:</strong> 123 Business Ave, New York, NY 10001</p>
+            
+            <div class="mt-12 pt-8 border-t border-luxury-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+                    <div>
+                        <p class="text-sm text-luxury-600">
+                            <strong>Version:</strong> {{ privacy_policy.version }}
+                        </p>
+                        <p class="text-sm text-luxury-600">
+                            <strong>Effective Date:</strong> {{ privacy_policy.effective_date|date:"F d, Y" }}
+                        </p>
+                        <p class="text-sm text-luxury-600">
+                            <strong>Last Updated:</strong> {{ privacy_policy.updated_at|date:"F d, Y" }}
+                        </p>
+                    </div>
+                    <div class="flex space-x-4">
+                        <a href="{% url 'accounts:terms_of_service' %}" class="text-royal-600 hover:text-royal-700 font-medium transition-colors">
+                            Terms of Service
+                        </a>
+                        <a href="{% url 'accounts:landing' %}" class="bg-royal-600 text-white px-6 py-2 rounded-xl hover:bg-royal-700 transition-colors">
+                            Back to Home
+                        </a>
                     </div>
                 </div>
-            </section>
-        </div>
-
-        <div class="text-center mt-8">
-            <a href="{% url 'accounts:landing' %}" class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Back to Home
-            </a>
-        </div>
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-shield-alt text-6xl text-luxury-300 mb-6"></i>
+                <h3 class="text-2xl font-bold text-luxury-800 mb-4">Privacy Policy Not Available</h3>
+                <p class="text-luxury-600 mb-8">
+                    Our Privacy Policy is currently being updated. Please check back later or contact us for more information about how we protect your data.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="{% url 'accounts:landing' %}" class="bg-royal-600 text-white px-6 py-3 rounded-xl hover:bg-royal-700 transition-colors">
+                        Back to Home
+                    </a>
+                    <a href="mailto:{{ footer.email|default:'info@aurastay.com' }}" class="border border-royal-600 text-royal-600 px-6 py-3 rounded-xl hover:bg-royal-50 transition-colors">
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<style>
+.prose {
+    color: #334155;
+}
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #1e293b;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+.prose h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+}
+.prose h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+}
+.prose h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+}
+.prose p {
+    margin-bottom: 1.25rem;
+    line-height: 1.75;
+}
+.prose ul, .prose ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+.prose li {
+    margin-bottom: 0.5rem;
+}
+.prose strong {
+    font-weight: 600;
+    color: #1e293b;
+}
+.prose a {
+    color: #0ea5e9;
+    text-decoration: underline;
+}
+.prose a:hover {
+    color: #0284c7;
+}
+</style>
 {% endblock %}
