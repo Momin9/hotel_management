@@ -190,11 +190,15 @@
                         <span class="font-medium">Hotels</span>
                     </a>
                     {% endif %}
-                    {% if can_view_rooms and user.owned_hotels.first %}
-                    <a href="{% url 'hotels:room_list' user.owned_hotels.first.hotel_id %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                    {% if can_view_rooms %}
+                    {% with first_hotel=user.owned_hotels.first %}
+                    {% if first_hotel %}
+                    <a href="{% url 'hotels:room_list' first_hotel.hotel_id %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                         <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium">Rooms</span>
                     </a>
+                    {% endif %}
+                    {% endwith %}
                     {% endif %}
                     {% if can_view_staff %}
                     <a href="{% url 'staff:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
