@@ -53,7 +53,7 @@ def guest_create(request):
         messages.success(request, 'Guest created successfully!')
         return redirect('crm:list')
     
-    return render(request, 'crm/create_modern.html')
+    return render(request, 'crm/create.html')
 
 @owner_or_permission_required('change_guest')
 def guest_edit(request, guest_id):

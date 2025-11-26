@@ -28,11 +28,11 @@
 <div class="space-y-8">
     <!-- Header with View Toggle -->
     <div class="flex justify-center">
-        <div class="flex items-center space-x-2 bg-white rounded-xl p-1 luxury-shadow">
-            <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-luxury-100">
+        <div class="flex items-center space-x-2 bg-white rounded-xl p-1 shadow-lg">
+            <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100">
                 <i class="fas fa-list mr-2"></i>List View
             </button>
-            <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-royal-500 text-white">
+            <button onclick="toggleView('kanban')" id="kanbanViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-500 text-white">
                 <i class="fas fa-columns mr-2"></i>Kanban View
             </button>
         </div>
@@ -40,49 +40,53 @@
 
     <!-- List View -->
     <div id="listView" class="hidden">
-        <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+        <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
-                    <thead class="bg-luxury-50">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Hotel</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Location</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Contact</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Currency</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Rooms</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Actions</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Hotel</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Location</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Contact</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Currency</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Rooms</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-luxury-100">
+                    <tbody class="divide-y divide-gray-100">
                         {% for hotel in hotels %}
-                        <tr class="hover:bg-luxury-25 transition-colors">
+                        <tr class="hover:bg-gray-25 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center">
-                                        <i class="fas fa-building text-royal-600"></i>
+                                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center overflow-hidden">
+                                        {% if hotel.icon %}
+                                            <img src="{{ hotel.icon.url }}" alt="{{ hotel.name }} logo" class="w-full h-full object-cover rounded-xl">
+                                        {% else %}
+                                            <i class="fas fa-building text-blue-600"></i>
+                                        {% endif %}
                                     </div>
                                     <div>
-                                        <p class="font-semibold text-luxury-800">{{ hotel.name }}</p>
+                                        <p class="font-semibold text-gray-800">{{ hotel.name }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-luxury-700">{{ hotel.city }}, {{ hotel.country }}</p>
+                                <p class="text-gray-700">{{ hotel.city }}, {{ hotel.country }}</p>
                             </td>
                             <td class="px-6 py-4">
                                 {% if hotel.email %}
-                                    <p class="text-luxury-700">{{ hotel.email }}</p>
+                                    <p class="text-gray-700">{{ hotel.email }}</p>
                                 {% endif %}
                                 {% if hotel.phone %}
-                                    <p class="text-sm text-luxury-600">{{ hotel.phone }}</p>
+                                    <p class="text-sm text-gray-600">{{ hotel.phone }}</p>
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4">
-                                <span class="px-2 py-1 bg-gold-100 text-gold-800 rounded-lg text-sm font-medium">{{ hotel.get_currency_display }}</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium">{{ hotel.get_currency_display }}</span>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-lg font-bold text-royal-600">{{ hotel.rooms.count }}</span>
+                                <span class="text-lg font-bold text-blue-600">{{ hotel.rooms.count }}</span>
                             </td>
                             <td class="px-6 py-4">
                                 <span class="px-3 py-1 rounded-full text-sm font-medium {% if hotel.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
@@ -92,12 +96,12 @@
                             <td class="px-6 py-4">
                                 <div class="flex space-x-2">
                                     {% if can_view_rooms %}
-                                    <a href="{% url 'hotels:room_list' hotel.hotel_id %}" class="text-royal-600 hover:text-royal-800 transition-colors" title="View Rooms">
+                                    <a href="{% url 'hotels:room_list' hotel.hotel_id %}" class="text-blue-600 hover:text-blue-800 transition-colors" title="View Rooms">
                                         <i class="fas fa-bed"></i>
                                     </a>
                                     {% endif %}
                                     {% if can_view_hotels %}
-                                    <a href="{% url 'hotels:hotel_detail' hotel.hotel_id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors" title="Settings">
+                                    <a href="{% url 'hotels:hotel_detail' hotel.hotel_id %}" class="text-gray-600 hover:text-gray-800 transition-colors" title="Settings">
                                         <i class="fas fa-cog"></i>
                                     </a>
                                     {% endif %}
@@ -107,11 +111,11 @@
                         {% empty %}
                         <tr>
                             <td colspan="7" class="px-6 py-12 text-center">
-                                <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-building text-luxury-400 text-2xl"></i>
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-building text-gray-400 text-2xl"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-luxury-700 mb-2">No Hotels Found</h3>
-                                <p class="text-luxury-500">You don't have any hotels registered yet.</p>
+                                <h3 class="text-xl font-semibold text-gray-700 mb-2">No Hotels Found</h3>
+                                <p class="text-gray-500">You don't have any hotels registered yet.</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -124,59 +128,63 @@
     <!-- Kanban View -->
     <div id="kanbanView" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {% for hotel in hotels %}
-        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300">
+        <div class="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-luxury-800">{{ hotel.name }}</h3>
-                <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-building text-royal-600"></i>
+                <h3 class="text-xl font-bold text-gray-800">{{ hotel.name }}</h3>
+                <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center overflow-hidden">
+                    {% if hotel.icon %}
+                        <img src="{{ hotel.icon.url }}" alt="{{ hotel.name }} logo" class="w-full h-full object-cover rounded-xl">
+                    {% else %}
+                        <i class="fas fa-building text-blue-600"></i>
+                    {% endif %}
                 </div>
             </div>
             
             <div class="space-y-2 mb-4">
-                <p class="text-luxury-600 text-sm">
+                <p class="text-gray-600 text-sm">
                     <i class="fas fa-map-marker-alt mr-2"></i>
                     {{ hotel.city }}, {{ hotel.country }}
                 </p>
                 {% if hotel.phone %}
-                <p class="text-luxury-600 text-sm">
+                <p class="text-gray-600 text-sm">
                     <i class="fas fa-phone mr-2"></i>
                     {{ hotel.phone }}
                 </p>
                 {% endif %}
                 {% if hotel.email %}
-                <p class="text-luxury-600 text-sm">
+                <p class="text-gray-600 text-sm">
                     <i class="fas fa-envelope mr-2"></i>
                     {{ hotel.email }}
                 </p>
                 {% endif %}
-                <p class="text-luxury-600 text-sm">
+                <p class="text-gray-600 text-sm">
                     <i class="fas fa-coins mr-2"></i>
                     {{ hotel.get_currency_display }}
                 </p>
             </div>
             
             <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="text-center p-3 bg-luxury-50 rounded-xl">
-                    <p class="text-lg font-bold text-royal-600">{{ hotel.rooms.count }}</p>
-                    <p class="text-luxury-600 text-xs">Rooms</p>
+                <div class="text-center p-3 bg-gray-50 rounded-xl">
+                    <p class="text-lg font-bold text-blue-600">{{ hotel.rooms.count }}</p>
+                    <p class="text-gray-600 text-xs">Rooms</p>
                 </div>
-                <div class="text-center p-3 bg-luxury-50 rounded-xl">
+                <div class="text-center p-3 bg-gray-50 rounded-xl">
                     <p class="text-lg font-bold {% if hotel.is_active %}text-green-600{% else %}text-red-600{% endif %}">
                         {% if hotel.is_active %}Active{% else %}Inactive{% endif %}
                     </p>
-                    <p class="text-luxury-600 text-xs">Status</p>
+                    <p class="text-gray-600 text-xs">Status</p>
                 </div>
             </div>
             
             <div class="flex space-x-2">
                 {% if can_view_rooms %}
                 <a href="{% url 'hotels:room_list' hotel.hotel_id %}" 
-                   class="flex-1 bg-royal-500 text-white py-2 rounded-xl text-center text-sm font-semibold hover:bg-royal-600 transition-colors">
+                   class="flex-1 bg-blue-500 text-white py-2 rounded-xl text-center text-sm font-semibold hover:bg-blue-600 transition-colors">
                     View Rooms
                 </a>
                 {% endif %}
                 {% if can_view_hotels %}
-                <a href="{% url 'hotels:hotel_detail' hotel.hotel_id %}" class="flex-1 bg-luxury-200 text-luxury-700 py-2 rounded-xl text-center text-sm font-semibold hover:bg-luxury-300 transition-colors">
+                <a href="{% url 'hotels:hotel_detail' hotel.hotel_id %}" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl text-center text-sm font-semibold hover:bg-gray-300 transition-colors">
                     Settings
                 </a>
                 {% endif %}
@@ -184,11 +192,11 @@
         </div>
         {% empty %}
         <div class="col-span-full text-center py-12">
-            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-building text-luxury-400 text-2xl"></i>
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-building text-gray-400 text-2xl"></i>
             </div>
-            <h3 class="text-xl font-semibold text-luxury-700 mb-2">No Hotels Found</h3>
-            <p class="text-luxury-500">You don't have any hotels registered yet.</p>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No Hotels Found</h3>
+            <p class="text-gray-500">You don't have any hotels registered yet.</p>
         </div>
         {% endfor %}
     </div>
@@ -204,25 +212,18 @@ function toggleView(viewType) {
     if (viewType === 'list') {
         listView.classList.remove('hidden');
         kanbanView.classList.add('hidden');
-        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-royal-500 text-white';
-        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-luxury-100';
+        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-500 text-white';
+        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100';
     } else {
         listView.classList.add('hidden');
         kanbanView.classList.remove('hidden');
-        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-luxury-600 hover:bg-luxury-100';
-        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-royal-500 text-white';
+        listBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100';
+        kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-500 text-white';
     }
 }
 </script>
 
 <style>
-    .hover-lift:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
-    }
-    
-    .luxury-shadow {
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
+
 </style>
 {% endblock %}
