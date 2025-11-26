@@ -85,18 +85,23 @@ def reservation_create(request):
         messages.success(request, f'Reservation created successfully for {guest.full_name}!')
         return redirect('reservations:detail', reservation_id=reservation.id)
     
-    guests = GuestProfile.objects.filter(deleted_at__isnull=True)
-    
     # Filter hotels based on user role
     if request.user.is_superuser:
         hotels = Hotel.objects.filter(deleted_at__isnull=True, is_active=True)
+        # Super admin sees all guests
+        guests = GuestProfile.objects.filter(deleted_at__isnull=True)
     else:
         # Hotel owners see only their hotels
         hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True, is_active=True)
+        # Show only guests who have reservations in user's hotels
+        from reservations.models import Reservation
+        guest_ids = Reservation.objects.filter(hotel__in=hotels).values_list('guest_id', flat=True).distinct()
+        guests = GuestProfile.objects.filter(id__in=guest_ids, deleted_at__isnull=True)
     
     return render(request, 'reservations/create_new.html', {
         'guests': guests,
-        'hotels': hotels
+        'hotels': hotels,
+        'default_hotel': hotels.first() if hotels.exists() else None
     })
 
 @login_required

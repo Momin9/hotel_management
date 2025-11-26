@@ -431,14 +431,11 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="col-span-1 md:col-span-2">
                     <a href="{% url 'accounts:landing' %}" class="flex items-center space-x-3 mb-4 hover:opacity-80 transition-opacity">
-                        <div class="bg-white rounded-xl p-2">
-                            {% if site_config.company_logo %}
-                                <img src="{{ site_config.company_logo.url }}" alt="{{ site_config.company_name }} Logo" class="w-24 h-24 object-contain">
-                            {% else %}
-                                <img src="{% static 'images/logo/aurastay-logo.png' %}" alt="{{ site_config.company_name|default:'AuraStay' }} Logo" class="w-24 h-24 object-contain">
-                            {% endif %}
-                        </div>
-                        <h3 class="text-2xl font-bold text-white">{{ site_config.company_name|default:'AuraStay' }}</h3>
+                        {% if footer.company_logo %}
+                            <img src="{{ footer.company_logo.url }}" alt="{{ footer.company_name }} Logo" class="w-40 h-40 object-contain">
+                        {% else %}
+                            <img src="{% static 'images/logo/aurastay-logo.png' %}" alt="{{ footer.company_name|default:'AuraStay' }} Logo" class="w-40 h-40 object-contain">
+                        {% endif %}
                     </a>
                     <p class="text-luxury-300 mb-4">{{ footer.company_description|default:'The world\'s most advanced hotel management platform, designed for luxury hospitality.' }}</p>
                     <div class="flex space-x-4">

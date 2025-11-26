@@ -23,10 +23,10 @@
                         <select name="guest" id="guestSelect" required
                                 class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                             <option value="">Choose existing guest or create new</option>
+                            <option value="new">+ Create New Guest</option>
                             {% for guest in guests %}
                             <option value="{{ guest.id }}">{{ guest.full_name }} - {{ guest.email }}</option>
                             {% endfor %}
-                            <option value="new">+ Create New Guest</option>
                         </select>
                     </div>
                     
@@ -78,7 +78,7 @@
                                 class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                             <option value="">Select Hotel</option>
                             {% for hotel in hotels %}
-                            <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
+                            <option value="{{ hotel.hotel_id }}" {% if hotel == default_hotel %}selected{% endif %}>{{ hotel.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
