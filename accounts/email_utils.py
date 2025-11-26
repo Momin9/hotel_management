@@ -7,6 +7,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def get_company_name():
+    """Get company name from footer"""
+    try:
+        from .models import Footer
+        footer = Footer.objects.first()
+        return footer.company_name if footer and footer.company_name else 'AuraStay'
+    except:
+        return 'AuraStay'
+
 def send_subscription_welcome_email(subscription, password=None):
     """
     Send VIP welcome email to hotel owner when subscription is created
@@ -34,24 +43,26 @@ def send_subscription_welcome_email(subscription, password=None):
             'end_date': subscription.end_date.strftime('%B %d, %Y'),
             'billing_cycle': subscription.billing_cycle,
             'login_url': login_url,
+            'company_name': get_company_name(),
         }
         
         # Render email template
         html_message = render_to_string('emails/subscription_welcome.html', context)
-        plain_message = strip_tags(html_message)
         
         # Email subject
         subject = f'🎉 Welcome to AuraStay - Your {plan.name} Subscription is Active!'
         
-        # Send email
-        send_mail(
+        # Send HTML email using EmailMultiAlternatives
+        from django.core.mail import EmailMultiAlternatives
+        
+        msg = EmailMultiAlternatives(
             subject=subject,
-            message=plain_message,
+            body='Please enable HTML to view this email properly.',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[owner.email],
-            html_message=html_message,
-            fail_silently=False,
+            to=[owner.email]
         )
+        msg.attach_alternative(html_message, "text/html")
+        msg.send(fail_silently=False)
         
         logger.info(f"Welcome email sent to {owner.email} for hotel {hotel.name}")
         return True

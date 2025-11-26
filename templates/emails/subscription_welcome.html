@@ -1,123 +1,513 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to AuraStay - Your Subscription is Active!</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
-        .header { background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); padding: 40px 30px; text-align: center; }
-        .logo { color: white; font-size: 32px; font-weight: bold; margin-bottom: 10px; }
-        .header-text { color: rgba(255,255,255,0.9); font-size: 16px; }
-        .content { padding: 40px 30px; }
-        .welcome-title { color: #1e293b; font-size: 28px; font-weight: bold; margin-bottom: 20px; text-align: center; }
-        .plan-card { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 15px; padding: 25px; margin: 25px 0; border-left: 5px solid #0ea5e9; }
-        .plan-name { color: #0ea5e9; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-        .plan-price { color: #059669; font-size: 20px; font-weight: bold; margin-bottom: 15px; }
-        .feature-list { list-style: none; padding: 0; margin: 15px 0; }
-        .feature-list li { padding: 8px 0; color: #475569; display: flex; align-items: center; }
-        .feature-list li:before { content: "✓"; color: #059669; font-weight: bold; margin-right: 10px; }
-        .credentials-box { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 10px; padding: 20px; margin: 25px 0; }
-        .credentials-title { color: #92400e; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
-        .credential-item { margin: 10px 0; padding: 10px; background: white; border-radius: 5px; }
-        .credential-label { color: #6b7280; font-size: 14px; }
-        .credential-value { color: #1f2937; font-weight: bold; font-size: 16px; }
-        .login-button { display: inline-block; background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px; font-weight: bold; margin: 20px 0; }
-        .info-section { background: #f0f9ff; border-radius: 10px; padding: 20px; margin: 25px 0; }
-        .info-title { color: #0369a1; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
-        .footer { background: #1e293b; color: white; padding: 30px; text-align: center; }
-        .footer-logo { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
-        .support-info { color: #94a3b8; margin: 10px 0; }
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>🎉 Welcome to AuraStay - Your Subscription is Active!</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style type="text/css">
+        /* Reset styles */
+        body, table, td, p, a, li, blockquote { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; }
+        
+        /* Remove default styling */
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        
+        /* iOS BLUE LINKS */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+        
+        /* GMAIL BLUE LINKS */
+        u + #body a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+        
+        /* SAMSUNG MAIL BLUE LINKS */
+        #MessageViewBody a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+        
+        /* Universal styles */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .logo-container {
+            background-color: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 15px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .company-name {
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .tagline {
+            color: rgba(255,255,255,0.95);
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            background-color: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+        }
+        
+        .content-section {
+            padding: 40px 30px;
+            background-color: #ffffff;
+        }
+        
+        .welcome-title {
+            color: #1e293b;
+            font-family: 'Arial', sans-serif;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .welcome-message {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #475569;
+            text-align: center;
+        }
+        
+        .plan-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .plan-name {
+            color: #0ea5e9;
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .plan-price {
+            color: #059669;
+            font-family: 'Arial', sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .feature-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            color: #475569;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .feature-item:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .credentials-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .credentials-title {
+            color: #92400e;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .credential-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+        
+        .credential-label {
+            color: #6b7280;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .credential-value {
+            color: #1f2937;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .login-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff !important;
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .info-section {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 1px solid #bae6fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .info-title {
+            color: #0369a1;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .info-grid {
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            margin: 10px 0;
+        }
+        
+        .info-label {
+            color: #64748b;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .info-value {
+            color: #1e293b;
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .status-active {
+            background-color: #d1fae5;
+            color: #059669;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .steps-list {
+            margin: 20px 0;
+        }
+        
+        .step-item {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            color: #ffffff;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-block;
+            text-align: center;
+            line-height: 25px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .footer-section {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .support-grid {
+            margin: 20px 0;
+        }
+        
+        .support-item {
+            color: #94a3b8;
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        
+        .support-item strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .footer-note {
+            color: #64748b;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+        }
+        
+        /* Mobile Responsive */
+        @media screen and (max-width: 600px) {
+            .email-container { width: 100% !important; }
+            .content-section { padding: 20px !important; }
+            .header-section { padding: 30px 15px !important; }
+            .company-name { font-size: 28px !important; }
+            .welcome-title { font-size: 24px !important; }
+            .plan-card { padding: 20px !important; }
+            .credentials-box { padding: 20px !important; }
+            .info-section { padding: 20px !important; }
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo">🏨 AuraStay</div>
-            <div class="header-text">Premium Hotel Management Platform</div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <h1 class="welcome-title">🎉 Welcome to AuraStay!</h1>
-            
-            <p style="font-size: 16px; color: #475569; line-height: 1.6; text-align: center;">
-                Dear <strong>{{ owner_name }}</strong>,<br>
-                Congratulations! Your subscription for <strong>{{ hotel_name }}</strong> has been successfully activated.
-            </p>
-
-            <!-- Plan Details -->
-            <div class="plan-card">
-                <div class="plan-name">{{ plan_name }} Plan</div>
-                <div class="plan-price">${{ plan_price }}/month</div>
-                <ul class="feature-list">
-                    <li>Up to {{ max_rooms }} rooms</li>
-                    <li>{{ max_managers }} manager accounts</li>
-                    {% if plan_name != 'Basic' %}<li>Advanced Analytics Dashboard</li>{% endif %}
-                    {% if plan_name == 'Enterprise' %}<li>24/7 Priority Support</li>{% endif %}
-                    <li>Complete Hotel Management Suite</li>
-                </ul>
-            </div>
-
-            <!-- Login Credentials -->
-            <div class="credentials-box">
-                <div class="credentials-title">🔐 Your Login Credentials</div>
-                <div class="credential-item">
-                    <div class="credential-label">Email Address:</div>
-                    <div class="credential-value">{{ owner_email }}</div>
-                </div>
-                <div class="credential-item">
-                    <div class="credential-label">Username:</div>
-                    <div class="credential-value">{{ username }}</div>
-                </div>
-                <div class="credential-item">
-                    <div class="credential-label">Password:</div>
-                    <div class="credential-value">{{ password }}</div>
-                </div>
-            </div>
-
-            <!-- Subscription Details -->
-            <div class="info-section">
-                <div class="info-title">📅 Subscription Details</div>
-                <p><strong>Start Date:</strong> {{ start_date }}</p>
-                <p><strong>End Date:</strong> {{ end_date }}</p>
-                <p><strong>Status:</strong> <span style="color: #059669; font-weight: bold;">Active</span></p>
-                <p><strong>Billing Cycle:</strong> {{ billing_cycle|title }}</p>
-            </div>
-
-            <!-- Login Button -->
-            <div style="text-align: center;">
-                <a href="{{ login_url }}" class="login-button">🚀 Login to Your Dashboard</a>
-            </div>
-
-            <!-- Next Steps -->
-            <div class="info-section">
-                <div class="info-title">🎯 Next Steps</div>
-                <ul style="color: #475569; line-height: 1.6;">
-                    <li>Login to your dashboard using the credentials above</li>
-                    <li>Complete your hotel profile setup</li>
-                    <li>Add your rooms and room types</li>
-                    <li>Invite your staff members</li>
-                    <li>Start managing reservations and guests</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <div class="footer-logo">AuraStay</div>
-            <div class="support-info">
-                📧 Support: support@aurastay.com<br>
-                📞 Phone: +1 (555) 123-4567<br>
-                🌐 Website: www.aurastay.com
-            </div>
-            <p style="margin-top: 20px; color: #64748b; font-size: 14px;">
-                © 2024 AuraStay. All rights reserved.<br>
-                This email was sent because a subscription was created for your hotel.
-            </p>
-        </div>
-    </div>
+<body style="margin: 0; padding: 0; background-color: #f3f4f6;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f3f4f6;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <table class="email-container" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td class="header-section">
+                            <div class="company-name">{{ company_name }}</div>
+                            <div class="tagline">Premium Hotel Management Platform</div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td class="content-section">
+                            <h1 class="welcome-title">🎉 Welcome to AuraStay!</h1>
+                            
+                            <div class="welcome-message">
+                                Dear <strong>{{ owner_name }}</strong>,<br><br>
+                                <strong>Congratulations!</strong> Your subscription for <strong>{{ hotel_name }}</strong> has been successfully activated and is now live. You're all set to revolutionize your hotel management experience!
+                            </div>
+                            
+                            <!-- Plan Details -->
+                            <div class="plan-card">
+                                <div class="plan-name">{{ plan_name }} Plan</div>
+                                <div class="plan-price">${{ plan_price }}/month</div>
+                                <div class="feature-list">
+                                    <div class="feature-item">Up to {{ max_rooms }} rooms</div>
+                                    <div class="feature-item">{{ max_managers }} manager accounts</div>
+                                    <div class="feature-item">Complete booking system</div>
+                                    <div class="feature-item">Guest management</div>
+                                    <div class="feature-item">Staff management</div>
+                                    <div class="feature-item">Financial reporting</div>
+                                    {% if plan_name != 'Basic' %}
+                                    <div class="feature-item">Advanced analytics</div>
+                                    <div class="feature-item">Custom reports</div>
+                                    {% endif %}
+                                    {% if plan_name == 'Enterprise' %}
+                                    <div class="feature-item">24/7 priority support</div>
+                                    <div class="feature-item">API access</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Login Credentials -->
+                            <div class="credentials-box">
+                                <div class="credentials-title">🔐 Your Login Credentials</div>
+                                <div class="credential-item">
+                                    <div class="credential-label">Email Address</div>
+                                    <div class="credential-value">{{ owner_email }}</div>
+                                </div>
+                                <div class="credential-item">
+                                    <div class="credential-label">Username</div>
+                                    <div class="credential-value">{{ username }}</div>
+                                </div>
+                                <div class="credential-item">
+                                    <div class="credential-label">Password</div>
+                                    <div class="credential-value">{{ password }}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Login Button -->
+                            <div style="text-align: center;">
+                                <a href="{{ login_url }}" class="login-button">🚀 Access Your Dashboard Now</a>
+                            </div>
+                            
+                            <!-- Subscription Details -->
+                            <div class="info-section">
+                                <div class="info-title">📅 Subscription Information</div>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Start Date</div>
+                                        <div class="info-value">{{ start_date }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">End Date</div>
+                                        <div class="info-value">{{ end_date }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Status</div>
+                                        <div class="info-value"><span class="status-active">✅ Active</span></div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Billing Cycle</div>
+                                        <div class="info-value">{{ billing_cycle|title }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Getting Started -->
+                            <div class="info-section">
+                                <div class="info-title">🎯 Getting Started Guide</div>
+                                <div class="steps-list">
+                                    <div class="step-item">
+                                        <span class="step-number">1</span>
+                                        Login to your dashboard using the credentials above
+                                    </div>
+                                    <div class="step-item">
+                                        <span class="step-number">2</span>
+                                        Complete your hotel profile and upload your logo
+                                    </div>
+                                    <div class="step-item">
+                                        <span class="step-number">3</span>
+                                        Add your rooms, room types, and pricing
+                                    </div>
+                                    <div class="step-item">
+                                        <span class="step-number">4</span>
+                                        Invite and manage your staff members
+                                    </div>
+                                    <div class="step-item">
+                                        <span class="step-number">5</span>
+                                        Start accepting reservations and managing guests
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td class="footer-section">
+                            <div class="footer-logo">{{ company_name }}</div>
+                            <div class="support-grid">
+                                <div class="support-item">
+                                    <strong>📧 Email Support</strong>
+                                    support@aurastay.com
+                                </div>
+                                <div class="support-item">
+                                    <strong>📞 Phone Support</strong>
+                                    +1 (555) 123-4567
+                                </div>
+                                <div class="support-item">
+                                    <strong>🌐 Website</strong>
+                                    www.aurastay.com
+                                </div>
+                                <div class="support-item">
+                                    <strong>💬 Live Chat</strong>
+                                    Available 24/7
+                                </div>
+                            </div>
+                            <div class="footer-note">
+                                © 2024 AuraStay. All rights reserved.<br>
+                                This email was sent because your hotel subscription was successfully activated.<br>
+                                If you have any questions, our support team is here to help!
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

@@ -259,6 +259,52 @@ class Feature(models.Model):
         return self.title
 
 
+class SiteConfiguration(models.Model):
+    """Global site configuration - single instance for entire platform"""
+    
+    # Company Branding
+    company_name = models.CharField(max_length=100, default="AuraStay")
+    company_logo = models.ImageField(
+        upload_to='site_logos/', 
+        blank=True, 
+        null=True, 
+        help_text='Main company logo used throughout the site (navbar, footer, login, etc.)'
+    )
+    
+    # Site Settings
+    site_title = models.CharField(max_length=200, default="AuraStay - Hotel Management System")
+    site_description = models.TextField(default="The world's most advanced hotel management platform")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Site Configuration"
+        verbose_name_plural = "Site Configuration"
+    
+    def save(self, *args, **kwargs):
+        # Ensure only one instance exists
+        if not self.pk and SiteConfiguration.objects.exists():
+            raise ValidationError('Only one Site Configuration can exist.')
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"Site Config - {self.company_name}"
+    
+    @classmethod
+    def get_instance(cls):
+        """Get or create the single site configuration instance"""
+        instance, created = cls.objects.get_or_create(
+            pk=1,
+            defaults={
+                'company_name': 'AuraStay',
+                'site_title': 'AuraStay - Hotel Management System',
+                'site_description': "The world's most advanced hotel management platform"
+            }
+        )
+        return instance
+
+
 class ContactInquiry(models.Model):
     """Contact form submissions from landing page"""
     

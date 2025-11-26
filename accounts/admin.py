@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP, Feature
+from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP, Feature, SiteConfiguration
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
@@ -152,6 +152,32 @@ class ContactInquiryAdmin(admin.ModelAdmin):
         updated = queryset.update(is_processed=True, processed_at=timezone.now())
         self.message_user(request, f'{updated} inquiries marked as processed.')
     mark_as_processed.short_description = 'Mark selected inquiries as processed'
+
+@admin.register(SiteConfiguration)
+class SiteConfigurationAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Company Branding', {
+            'fields': ('company_name', 'company_logo')
+        }),
+        ('Site Settings', {
+            'fields': ('site_title', 'site_description')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
+    
+    list_display = ('company_name', 'site_title', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    def has_add_permission(self, request):
+        # Only allow adding if no instance exists
+        return not SiteConfiguration.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        # Don't allow deletion
+        return False
 
 # Unregister the default Group admin_dashboard to prevent conflicts
 admin.site.unregister(Group)

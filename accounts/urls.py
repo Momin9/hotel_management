@@ -1,6 +1,7 @@
 from django.urls import path
 from django.shortcuts import redirect
 from . import views
+from .test_email import test_subscription_email
 
 app_name = 'accounts'
 
@@ -56,4 +57,7 @@ urlpatterns = [
     path('download/hotels-pdf/', views.download_hotels_pdf, name='download_hotels_pdf'),
     path('download/subscriptions-pdf/', views.download_subscriptions_pdf, name='download_subscriptions_pdf'),
     path('download/plans-pdf/', views.download_plans_pdf, name='download_plans_pdf'),
+    
+    # Test Email
+    path('test-subscription-email/', test_subscription_email, name='test_subscription_email'),
 ]
