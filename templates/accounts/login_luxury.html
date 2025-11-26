@@ -109,16 +109,13 @@
             <!-- Logo Section -->
             <div class="text-center mb-8 animate-fade-in">
                 <div class="relative inline-block">
-                    <div class="w-20 h-20 mx-auto bg-white rounded-2xl flex items-center justify-center luxury-shadow animate-glow p-2">
-                        {% if site_config.company_logo %}
-                            <img src="{{ site_config.company_logo.url }}" alt="{{ site_config.company_name }}" class="w-full h-full object-contain">
-                        {% else %}
-                            <img src="{% static 'images/logo/aurastay-logo.png' %}" alt="{{ site_config.company_name|default:'AuraStay' }}" class="w-full h-full object-contain">
-                        {% endif %}
-                    </div>
-                    <div class="absolute -top-2 -right-2 w-6 h-6 bg-royal-500 rounded-full animate-pulse"></div>
+                    {% if footer.company_logo %}
+                        <img src="{{ footer.company_logo.url }}" alt="{{ footer.company_name }}" class="w-40 h-40 mx-auto object-contain">
+                    {% else %}
+                        <img src="{% static 'images/logo/aurastay-logo.png' %}" alt="{{ footer.company_name|default:'AuraStay' }}" class="w-40 h-40 mx-auto object-contain">
+                    {% endif %}
                 </div>
-                <h1 class="mt-6 text-4xl font-bold text-white">{{ site_config.company_name|default:'AuraStay' }}</h1>
+                <h1 class="mt-0 text-4xl font-bold text-white" style="margin-top: -48px;">{{ footer.company_name|default:'AuraStay' }}</h1>
                 <p class="mt-2 text-lg text-royal-200 font-medium">Hotel Management Portal</p>
                 <p class="mt-1 text-sm text-luxury-300">Comprehensive hotel and subscription management</p>
             </div>
@@ -202,17 +199,7 @@
                 <p class="text-luxury-400 text-xs mt-1">
                     Design: MA Qureshi | Development: Momin Ali
                 </p>
-                <div class="mt-4 flex justify-center space-x-6">
-                    <a href="#" class="text-luxury-400 hover:text-white transition-colors">
-                        <i class="fab fa-twitter text-lg"></i>
-                    </a>
-                    <a href="#" class="text-luxury-400 hover:text-white transition-colors">
-                        <i class="fab fa-linkedin text-lg"></i>
-                    </a>
-                    <a href="#" class="text-luxury-400 hover:text-white transition-colors">
-                        <i class="fab fa-instagram text-lg"></i>
-                    </a>
-                </div>
+
             </div>
         </div>
     </div>
