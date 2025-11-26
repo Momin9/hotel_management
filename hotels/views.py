@@ -185,9 +185,16 @@ def room_list(request, hotel_id):
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     rooms = hotel_obj.rooms.all()
+    
+    # Check permissions for room management
+    can_add_room = (user_role == 'SUPER_ADMIN' or hotel_obj.owner == request.user)
+    can_change_room = (user_role == 'SUPER_ADMIN' or hotel_obj.owner == request.user)
+    
     return render(request, 'hotels/room_list_enhanced.html', {
         'hotel': hotel_obj,
-        'rooms': rooms
+        'rooms': rooms,
+        'can_add_room': can_add_room,
+        'can_change_room': can_change_room
     })
 
 
