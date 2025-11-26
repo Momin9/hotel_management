@@ -792,7 +792,7 @@ def hotel_subscription_list(request):
 @super_admin_required
 def hotel_subscription_create(request):
     """Create new hotel subscription"""
-    hotels = Hotel.objects.filter(is_active=True)
+    hotels = Hotel.objects.filter(deleted_at__isnull=True).order_by('name')
     plans = SubscriptionPlan.objects.filter(is_active=True)
     
     if request.method == 'POST':
@@ -863,7 +863,7 @@ def hotel_subscription_create(request):
 def hotel_subscription_edit(request, subscription_id):
     """Edit hotel subscription with status change handling"""
     subscription = get_object_or_404(HotelSubscription, id=subscription_id)
-    hotels = Hotel.objects.filter(is_active=True)
+    hotels = Hotel.objects.filter(deleted_at__isnull=True).order_by('name')
     plans = SubscriptionPlan.objects.filter(is_active=True)
     old_status = subscription.status
     

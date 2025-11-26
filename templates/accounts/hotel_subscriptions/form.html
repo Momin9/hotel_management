@@ -16,7 +16,7 @@
                     <option value="">Select Hotel</option>
                     {% for hotel in hotels %}
                     <option value="{{ hotel.hotel_id }}" {% if subscription.hotel.hotel_id == hotel.hotel_id %}selected{% endif %}>
-                        {{ hotel.name }} - {{ hotel.owner.first_name }} {{ hotel.owner.last_name }}
+                        {{ hotel.name }} - {{ hotel.owner.first_name }} {{ hotel.owner.last_name }} {% if not hotel.is_active %}(Inactive){% endif %}
                     </option>
                     {% endfor %}
                 </select>
