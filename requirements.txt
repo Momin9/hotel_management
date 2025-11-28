@@ -106,9 +106,9 @@ drf-yasg==1.21.7
 # Markdown Support
 markdown==3.5.2
 
-# Image Processing
-django-imagekit==5.0.0
-django-easy-thumbnails==2.8.5
+# Image Processing (Compatible versions)
+django-imagekit==4.1.0
+easy-thumbnails==2.8.5
 
 # Admin Interface
 django-admin-interface==0.28.6
