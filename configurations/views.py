@@ -64,6 +64,31 @@ def room_type_create(request):
     return render(request, 'configurations/room_type_form.html', {'hotels': hotels})
 
 @login_required
+def room_type_detail(request, pk):
+    # Check if user has permission to view configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
+    
+    room_type = get_object_or_404(RoomType, pk=pk)
+    
+    # Check permission
+    if not request.user.is_superuser and request.user.role != 'Owner' and room_type.hotel != request.user.assigned_hotel:
+        messages.error(request, 'You do not have permission to view this room type.')
+        return redirect('configurations:room_type_list')
+    
+    # Get related rooms using this room type
+    related_rooms = room_type.rooms.all()[:10]  # Limit to 10 rooms for display
+    
+    context = {
+        'room_type': room_type,
+        'related_rooms': related_rooms,
+    }
+    return render(request, 'configurations/room_type_detail.html', context)
+
+@login_required
 def room_type_edit(request, pk):
     # Check if user has permission to edit configurations
     if not (request.user.is_superuser or 

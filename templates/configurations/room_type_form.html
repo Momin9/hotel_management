@@ -1,45 +1,132 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}{% if room_type %}Edit{% else %}Add{% endif %} Room Type{% endblock %}
+{% block title %}{% if room_type %}Edit Room Type{% else %}Create Room Type{% endif %}{% endblock %}
+{% block page_title %}{% if room_type %}Edit Room Type{% else %}Create Room Type{% endif %}{% endblock %}
+{% block page_subtitle %}Configure room types for better organization and pricing{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h4>{% if room_type %}Edit{% else %}Add{% endif %} Room Type</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {% if not room_type %}
-                        <div class="mb-3">
-                            <label for="hotel" class="form-label">Hotel</label>
-                            <select class="form-select" id="hotel" name="hotel" required>
-                                <option value="">Select Hotel</option>
-                                {% for hotel in hotels %}
-                                    <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% endif %}
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ room_type.name|default:'' }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3">{{ room_type.description|default:'' }}</textarea>
-                        </div>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{% url 'configurations:room_type_list' %}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
-                </div>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4">
+                <i class="fas fa-bed text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-luxury-800">{% if room_type %}Edit Room Type{% else %}Create New Room Type{% endif %}</h2>
+                <p class="text-luxury-600">{% if room_type %}Update room type information{% else %}Add a new room type to your hotel{% endif %}</p>
             </div>
         </div>
+
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Basic Information -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                        <i class="fas fa-info-circle mr-3 text-blue-500"></i>
+                        Basic Information
+                    </h3>
+                    
+                    {% if not room_type %}
+                    <div>
+                        <label for="hotel" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-building mr-2 text-blue-500"></i>Hotel
+                        </label>
+                        <select id="hotel" name="hotel" required
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer">
+                            <option value="">🏨 Select Hotel</option>
+                            {% for hotel in hotels %}
+                                <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-tag mr-2 text-blue-500"></i>Room Type Name
+                        </label>
+                        <input type="text" id="name" name="name" value="{{ room_type.name|default:'' }}" required
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                               placeholder="🏠 Enter room type name (e.g., Deluxe Suite, Standard Room)">
+                    </div>
+                    
+                    <div>
+                        <label for="max_occupancy" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-users mr-2 text-blue-500"></i>Maximum Occupancy
+                        </label>
+                        <input type="number" id="max_occupancy" name="max_occupancy" value="{{ room_type.max_occupancy|default:'2' }}" min="1" max="10"
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                               placeholder="👥 Maximum number of guests">
+                    </div>
+                    
+                    <div>
+                        <label for="bed_configuration" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-bed mr-2 text-blue-500"></i>Bed Configuration
+                        </label>
+                        <input type="text" id="bed_configuration" name="bed_configuration" value="{{ room_type.bed_configuration|default:'' }}"
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                               placeholder="🛏️ Bed setup (e.g., 1 King Bed, 2 Queen Beds)">
+                    </div>
+                </div>
+                
+                <!-- Description & Details -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                        <i class="fas fa-align-left mr-3 text-blue-500"></i>
+                        Description & Details
+                    </h3>
+                    
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-file-alt mr-2 text-blue-500"></i>Description
+                        </label>
+                        <textarea id="description" name="description" rows="6"
+                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white resize-none"
+                                  placeholder="📝 Describe the room type features, amenities, and what makes it special...">{{ room_type.description|default:'' }}</textarea>
+                    </div>
+                    
+                    <!-- Status Toggle -->
+                    <div class="bg-gray-50 p-6 rounded-2xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-lg font-semibold text-luxury-800 flex items-center">
+                                    <i class="fas fa-toggle-on mr-2 text-green-500"></i>Status
+                                </h4>
+                                <p class="text-sm text-luxury-600 mt-1">Enable or disable this room type</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_active" class="sr-only peer" {% if room_type.is_active or not room_type %}checked{% endif %}>
+                                <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+                                <span class="ml-3 text-sm font-medium text-luxury-700">Active</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-4 pt-8 border-t border-luxury-200">
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-save"></i>
+                    <span>{% if room_type %}Update Room Type{% else %}Create Room Type{% endif %}</span>
+                </button>
+                <a href="{% url 'configurations:room_type_list' %}" 
+                   class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-semibold hover:bg-gray-300 transition-all duration-300 flex items-center space-x-2">
+                    <i class="fas fa-times"></i>
+                    <span>Cancel</span>
+                </a>
+            </div>
+        </form>
     </div>
 </div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
 {% endblock %}

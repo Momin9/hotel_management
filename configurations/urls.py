@@ -7,6 +7,7 @@ urlpatterns = [
     # Room Type URLs
     path('room-types/', views.room_type_list, name='room_type_list'),
     path('room-types/create/', views.room_type_create, name='room_type_create'),
+    path('room-types/<uuid:pk>/', views.room_type_detail, name='room_type_detail'),
     path('room-types/<uuid:pk>/edit/', views.room_type_edit, name='room_type_edit'),
     path('room-types/<uuid:pk>/delete/', views.room_type_delete, name='room_type_delete'),
     

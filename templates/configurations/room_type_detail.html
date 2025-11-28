@@ -1,0 +1,175 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{{ room_type.name }} - Room Type Details{% endblock %}
+{% block page_title %}Room Type Details{% endblock %}
+{% block page_subtitle %}{{ room_type.name }} - {{ room_type.hotel.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4">
+                    <i class="fas fa-bed text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-luxury-800">{{ room_type.name }}</h1>
+                    <p class="text-luxury-600 flex items-center">
+                        <i class="fas fa-building mr-2"></i>
+                        {{ room_type.hotel.name }}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4">
+                <a href="{% url 'configurations:room_type_edit' room_type.pk %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold transition-colors flex items-center">
+                    <i class="fas fa-edit mr-2"></i>
+                    Edit Room Type
+                </a>
+                <a href="{% url 'configurations:room_type_list' %}" 
+                   class="bg-gray-200 text-gray-700 px-6 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition-colors flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to List
+                </a>
+            </div>
+        </div>
+        
+        <!-- Status Badge -->
+        <div class="flex items-center space-x-4">
+            <span class="px-4 py-2 rounded-full text-sm font-medium
+                  {% if room_type.is_active %}bg-green-100 text-green-800
+                  {% else %}bg-gray-100 text-gray-800{% endif %}">
+                <i class="fas fa-circle mr-2"></i>
+                {% if room_type.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+            <span class="text-sm text-luxury-600">
+                <i class="fas fa-calendar mr-2"></i>
+                Created {{ room_type.created_at|date:"F d, Y" }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Basic Information -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+                <i class="fas fa-info-circle mr-3 text-blue-500"></i>
+                Basic Information
+            </h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-sm font-semibold text-luxury-700 mb-2">Room Type Name</h3>
+                    <p class="text-luxury-800 text-lg">{{ room_type.name }}</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-luxury-700 mb-2">Hotel</h3>
+                    <p class="text-luxury-800">{{ room_type.hotel.name }}</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-luxury-700 mb-2">Maximum Occupancy</h3>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-3">
+                            <i class="fas fa-users text-blue-600"></i>
+                        </div>
+                        <span class="text-luxury-800 text-lg">{{ room_type.max_occupancy }} Guest{{ room_type.max_occupancy|pluralize }}</span>
+                    </div>
+                </div>
+                
+                {% if room_type.bed_configuration %}
+                <div>
+                    <h3 class="text-sm font-semibold text-luxury-700 mb-2">Bed Configuration</h3>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mr-3">
+                            <i class="fas fa-bed text-green-600"></i>
+                        </div>
+                        <span class="text-luxury-800">{{ room_type.bed_configuration }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Description -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+                <i class="fas fa-align-left mr-3 text-blue-500"></i>
+                Description
+            </h2>
+            
+            {% if room_type.description %}
+            <div class="prose prose-luxury max-w-none">
+                <p class="text-luxury-700 leading-relaxed">{{ room_type.description }}</p>
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-file-alt text-luxury-400 text-2xl"></i>
+                </div>
+                <p class="text-luxury-500">No description provided for this room type.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Related Rooms -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-800 mb-6 flex items-center">
+            <i class="fas fa-door-open mr-3 text-blue-500"></i>
+            Rooms Using This Type
+        </h2>
+        
+        {% if related_rooms %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for room in related_rooms %}
+            <div class="border border-luxury-200 rounded-2xl p-4 hover:bg-luxury-50 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-luxury-800">Room {{ room.room_number }}</h3>
+                        {% if room.floor %}
+                        <p class="text-sm text-luxury-600">{{ room.floor.name }}</p>
+                        {% endif %}
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium
+                          {% if room.status == 'Available' %}bg-green-100 text-green-800
+                          {% elif room.status == 'Occupied' %}bg-red-100 text-red-800
+                          {% elif room.status == 'Reserved' %}bg-blue-100 text-blue-800
+                          {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ room.status }}
+                    </span>
+                </div>
+                <div class="mt-2 text-sm text-luxury-600">
+                    <span class="mr-4">
+                        <i class="fas fa-users mr-1"></i>
+                        {{ room.max_guests }} guests
+                    </span>
+                    <span>
+                        <i class="fas fa-dollar-sign mr-1"></i>
+                        {{ room.price }}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-door-open text-luxury-400 text-2xl"></i>
+            </div>
+            <p class="text-luxury-500">No rooms are currently using this room type.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}
