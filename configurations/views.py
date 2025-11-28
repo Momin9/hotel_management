@@ -134,8 +134,14 @@ def room_type_delete(request, pk):
     return render(request, 'configurations/confirm_delete.html', {'object': room_type, 'type': 'Room Type'})
 
 # Bed Type Views
-@owner_or_permission_required('view_configurations')
+@login_required
 def bed_type_list(request):
+    # Check if user has permission to view configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
     if request.user.is_superuser:
         bed_types = BedType.objects.all()
     elif request.user.role == 'Owner':
@@ -146,18 +152,23 @@ def bed_type_list(request):
     
     context = {
         'bed_types': bed_types,
-        'can_add_configurations': request.user.role == 'Owner' or request.user.can_add_configurations,
-        'can_change_configurations': request.user.role == 'Owner' or request.user.can_change_configurations,
-        'can_delete_configurations': request.user.role == 'Owner' or request.user.can_delete_configurations,
+        # Permissions are now handled by context processor
     }
     return render(request, 'configurations/bed_type_list.html', context)
 
-@owner_or_permission_required('add_configurations')
+@login_required
 def bed_type_create(request):
+    # Check if user has permission to create configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_add_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to create configurations.')
+        return redirect('configurations:bed_type_list')
     if request.method == 'POST':
         hotel_id = request.POST.get('hotel')
         hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
         
+        # Check permission
         if not request.user.is_superuser and request.user.role != 'Owner' and hotel != request.user.assigned_hotel:
             messages.error(request, 'You do not have permission to create bed types for this hotel.')
             return redirect('configurations:bed_type_list')
@@ -170,6 +181,7 @@ def bed_type_create(request):
         messages.success(request, 'Bed type created successfully!')
         return redirect('configurations:bed_type_list')
     
+    # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
     elif request.user.role == 'Owner':
@@ -179,10 +191,47 @@ def bed_type_create(request):
     
     return render(request, 'configurations/bed_type_form.html', {'hotels': hotels})
 
-@owner_or_permission_required('change_configurations')
-def bed_type_edit(request, pk):
+@login_required
+def bed_type_detail(request, pk):
+    # Check if user has permission to view configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
+    
     bed_type = get_object_or_404(BedType, pk=pk)
     
+    # Check permission
+    if not request.user.is_superuser and request.user.role != 'Owner' and bed_type.hotel != request.user.assigned_hotel:
+        messages.error(request, 'You do not have permission to view this bed type.')
+        return redirect('configurations:bed_type_list')
+    
+    # Get related rooms using this bed type (if there's a relationship)
+    # Note: This assumes there's a relationship between Room and BedType
+    # You may need to adjust this based on your actual Room model structure
+    try:
+        related_rooms = bed_type.rooms.all()[:10]  # Limit to 10 rooms for display
+    except:
+        related_rooms = []  # If no relationship exists yet
+    
+    context = {
+        'bed_type': bed_type,
+        'related_rooms': related_rooms,
+    }
+    return render(request, 'configurations/bed_type_detail.html', context)
+
+@login_required
+def bed_type_edit(request, pk):
+    # Check if user has permission to edit configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_change_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to edit configurations.')
+        return redirect('configurations:bed_type_list')
+    bed_type = get_object_or_404(BedType, pk=pk)
+    
+    # Check permission
     if not request.user.is_superuser and request.user.role != 'Owner' and bed_type.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have permission to edit this bed type.')
         return redirect('configurations:bed_type_list')
@@ -196,10 +245,17 @@ def bed_type_edit(request, pk):
     
     return render(request, 'configurations/bed_type_form.html', {'bed_type': bed_type})
 
-@owner_or_permission_required('delete_configurations')
+@login_required
 def bed_type_delete(request, pk):
+    # Check if user has permission to delete configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_delete_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to delete configurations.')
+        return redirect('configurations:bed_type_list')
     bed_type = get_object_or_404(BedType, pk=pk)
     
+    # Check permission
     if not request.user.is_superuser and request.user.role != 'Owner' and bed_type.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have permission to delete this bed type.')
         return redirect('configurations:bed_type_list')
@@ -211,8 +267,14 @@ def bed_type_delete(request, pk):
     return render(request, 'configurations/confirm_delete.html', {'object': bed_type, 'type': 'Bed Type'})
 
 # Floor Views
-@owner_or_permission_required('view_configurations')
+@login_required
 def floor_list(request):
+    # Check if user has permission to view configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
     if request.user.is_superuser:
         floors = Floor.objects.all()
     elif request.user.role == 'Owner':
@@ -223,18 +285,23 @@ def floor_list(request):
     
     context = {
         'floors': floors,
-        'can_add_configurations': request.user.role == 'Owner' or request.user.can_add_configurations,
-        'can_change_configurations': request.user.role == 'Owner' or request.user.can_change_configurations,
-        'can_delete_configurations': request.user.role == 'Owner' or request.user.can_delete_configurations,
+        # Permissions are now handled by context processor
     }
     return render(request, 'configurations/floor_list.html', context)
 
-@owner_or_permission_required('add_configurations')
+@login_required
 def floor_create(request):
+    # Check if user has permission to create configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_add_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to create configurations.')
+        return redirect('configurations:floor_list')
     if request.method == 'POST':
         hotel_id = request.POST.get('hotel')
         hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
         
+        # Check permission
         if not request.user.is_superuser and request.user.role != 'Owner' and hotel != request.user.assigned_hotel:
             messages.error(request, 'You do not have permission to create floors for this hotel.')
             return redirect('configurations:floor_list')
@@ -248,6 +315,7 @@ def floor_create(request):
         messages.success(request, 'Floor created successfully!')
         return redirect('configurations:floor_list')
     
+    # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
     elif request.user.role == 'Owner':
@@ -257,10 +325,44 @@ def floor_create(request):
     
     return render(request, 'configurations/floor_form.html', {'hotels': hotels})
 
-@owner_or_permission_required('change_configurations')
-def floor_edit(request, pk):
+@login_required
+def floor_detail(request, pk):
+    # Check if user has permission to view configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
+    
     floor = get_object_or_404(Floor, pk=pk)
     
+    # Check permission
+    if not request.user.is_superuser and request.user.role != 'Owner' and floor.hotel != request.user.assigned_hotel:
+        messages.error(request, 'You do not have permission to view this floor.')
+        return redirect('configurations:floor_list')
+    
+    # Get related rooms on this floor
+    try:
+        related_rooms = floor.rooms.all()[:10]  # Limit to 10 rooms for display
+    except:
+        related_rooms = []  # If no relationship exists yet
+    
+    context = {
+        'floor': floor,
+        'related_rooms': related_rooms,
+    }
+    return render(request, 'configurations/floor_detail.html', context)
+
+def floor_edit(request, pk):
+    # Check if user has permission to edit configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_change_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to edit configurations.')
+        return redirect('configurations:floor_list')
+    floor = get_object_or_404(Floor, pk=pk)
+    
+    # Check permission
     if not request.user.is_superuser and request.user.role != 'Owner' and floor.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have permission to edit this floor.')
         return redirect('configurations:floor_list')
@@ -275,10 +377,17 @@ def floor_edit(request, pk):
     
     return render(request, 'configurations/floor_form.html', {'floor': floor})
 
-@owner_or_permission_required('delete_configurations')
+@login_required
 def floor_delete(request, pk):
+    # Check if user has permission to delete configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_delete_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to delete configurations.')
+        return redirect('configurations:floor_list')
     floor = get_object_or_404(Floor, pk=pk)
     
+    # Check permission
     if not request.user.is_superuser and request.user.role != 'Owner' and floor.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have permission to delete this floor.')
         return redirect('configurations:floor_list')
@@ -290,8 +399,14 @@ def floor_delete(request, pk):
     return render(request, 'configurations/confirm_delete.html', {'object': floor, 'type': 'Floor'})
 
 # Amenity Views
-@owner_or_permission_required('view_configurations')
+@login_required
 def amenity_list(request):
+    # Check if user has permission to view configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
     if request.user.is_superuser:
         amenities = Amenity.objects.all()
     elif request.user.role == 'Owner':
@@ -302,18 +417,23 @@ def amenity_list(request):
     
     context = {
         'amenities': amenities,
-        'can_add_configurations': request.user.role == 'Owner' or request.user.can_add_configurations,
-        'can_change_configurations': request.user.role == 'Owner' or request.user.can_change_configurations,
-        'can_delete_configurations': request.user.role == 'Owner' or request.user.can_delete_configurations,
+        # Permissions are now handled by context processor
     }
     return render(request, 'configurations/amenity_list.html', context)
 
-@owner_or_permission_required('add_configurations')
+@login_required
 def amenity_create(request):
+    # Check if user has permission to create configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_add_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to create configurations.')
+        return redirect('configurations:amenity_list')
     if request.method == 'POST':
         hotel_id = request.POST.get('hotel')
         hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
         
+        # Check permission
         if not request.user.is_superuser and request.user.role != 'Owner' and hotel != request.user.assigned_hotel:
             messages.error(request, 'You do not have permission to create amenities for this hotel.')
             return redirect('configurations:amenity_list')
@@ -327,6 +447,7 @@ def amenity_create(request):
         messages.success(request, 'Amenity created successfully!')
         return redirect('configurations:amenity_list')
     
+    # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
     elif request.user.role == 'Owner':
@@ -336,10 +457,37 @@ def amenity_create(request):
     
     return render(request, 'configurations/amenity_form.html', {'hotels': hotels})
 
-@owner_or_permission_required('change_configurations')
-def amenity_edit(request, pk):
+@login_required
+def amenity_detail(request, pk):
+    # Check if user has permission to view configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
+    
     amenity = get_object_or_404(Amenity, pk=pk)
     
+    # Check permission
+    if not request.user.is_superuser and request.user.role != 'Owner' and amenity.hotel != request.user.assigned_hotel:
+        messages.error(request, 'You do not have permission to view this amenity.')
+        return redirect('configurations:amenity_list')
+    
+    context = {
+        'amenity': amenity,
+    }
+    return render(request, 'configurations/amenity_detail.html', context)
+
+def amenity_edit(request, pk):
+    # Check if user has permission to edit configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_change_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to edit configurations.')
+        return redirect('configurations:amenity_list')
+    amenity = get_object_or_404(Amenity, pk=pk)
+    
+    # Check permission
     if not request.user.is_superuser and request.user.role != 'Owner' and amenity.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have permission to edit this amenity.')
         return redirect('configurations:amenity_list')
@@ -352,12 +500,19 @@ def amenity_edit(request, pk):
         messages.success(request, 'Amenity updated successfully!')
         return redirect('configurations:amenity_list')
     
-    return render(request, 'configurations/amenity_form.html', {'amenity': amenity})
+    return render(request, 'configurations/amenity_form.html', {'amenity': amenity, 'user_hotel': amenity.hotel})
 
-@owner_or_permission_required('delete_configurations')
+@login_required
 def amenity_delete(request, pk):
+    # Check if user has permission to delete configurations
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_delete_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to delete configurations.')
+        return redirect('configurations:amenity_list')
     amenity = get_object_or_404(Amenity, pk=pk)
     
+    # Check permission
     if not request.user.is_superuser and request.user.role != 'Owner' and amenity.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have permission to delete this amenity.')
         return redirect('configurations:amenity_list')

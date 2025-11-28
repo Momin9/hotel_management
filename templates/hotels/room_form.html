@@ -97,6 +97,62 @@
                 </div>
             </div>
             
+            <!-- Amenities Section -->
+            {% if amenities %}
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4">Room Amenities</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Available Amenities -->
+                    <div>
+                        <h4 class="text-md font-medium text-luxury-700 mb-3">Available Amenities</h4>
+                        <div class="space-y-2 max-h-64 overflow-y-auto border border-luxury-200 rounded-xl p-4">
+                            {% for amenity in amenities %}
+                            <div class="flex items-center space-x-3 p-2 hover:bg-luxury-50 rounded-lg transition-colors cursor-pointer" 
+                                 onclick="addAmenity('{{ amenity.pk }}', '{{ amenity.name }}', '{{ amenity.icon|default:'fas fa-star' }}')">
+                                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                    <i class="{{ amenity.icon|default:'fas fa-star' }} text-orange-600 text-sm"></i>
+                                </div>
+                                <span class="font-medium text-luxury-800">{{ amenity.name }}</span>
+                                {% if amenity.description %}
+                                <span class="text-sm text-luxury-600 ml-auto">{{ amenity.description|truncatechars:30 }}</span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Amenities -->
+                    <div>
+                        <h4 class="text-md font-medium text-luxury-700 mb-3">Selected Amenities</h4>
+                        <div id="selectedAmenities" class="space-y-2 min-h-64 border border-luxury-200 rounded-xl p-4 bg-luxury-25">
+                            {% if room %}
+                                {% for amenity in room.amenities.all %}
+                                <div class="selected-amenity flex items-center justify-between p-2 bg-white rounded-lg border border-luxury-200" data-amenity-id="{{ amenity.pk }}">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <i class="{{ amenity.icon|default:'fas fa-star' }} text-orange-600 text-sm"></i>
+                                        </div>
+                                        <span class="font-medium text-luxury-800">{{ amenity.name }}</span>
+                                    </div>
+                                    <button type="button" onclick="removeAmenity('{{ amenity.pk }}')" 
+                                            class="w-6 h-6 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors">
+                                        <i class="fas fa-times text-red-600 text-xs"></i>
+                                    </button>
+                                    <input type="hidden" name="amenities" value="{{ amenity.pk }}">
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                            <div id="emptyAmenitiesMessage" class="text-center text-luxury-500 py-8 {% if room.amenities.all %}hidden{% endif %}">
+                                <i class="fas fa-star text-luxury-300 text-2xl mb-2"></i>
+                                <p>No amenities selected</p>
+                                <p class="text-sm">Click on amenities from the left to add them</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- Services Section -->
             {% if services %}
             <div class="mt-8">
@@ -136,9 +192,73 @@
     </div>
 </div>
 
+<script>
+function addAmenity(amenityId, amenityName, amenityIcon) {
+    // Check if already selected
+    if (document.querySelector(`[data-amenity-id="${amenityId}"]`)) {
+        return;
+    }
+    
+    const selectedContainer = document.getElementById('selectedAmenities');
+    const emptyMessage = document.getElementById('emptyAmenitiesMessage');
+    
+    // Hide empty message
+    emptyMessage.classList.add('hidden');
+    
+    // Create selected amenity element
+    const amenityDiv = document.createElement('div');
+    amenityDiv.className = 'selected-amenity flex items-center justify-between p-2 bg-white rounded-lg border border-luxury-200 animate-fadeIn';
+    amenityDiv.setAttribute('data-amenity-id', amenityId);
+    
+    amenityDiv.innerHTML = `
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                <i class="${amenityIcon} text-orange-600 text-sm"></i>
+            </div>
+            <span class="font-medium text-luxury-800">${amenityName}</span>
+        </div>
+        <button type="button" onclick="removeAmenity('${amenityId}')" 
+                class="w-6 h-6 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors">
+            <i class="fas fa-times text-red-600 text-xs"></i>
+        </button>
+        <input type="hidden" name="amenities" value="${amenityId}">
+    `;
+    
+    selectedContainer.insertBefore(amenityDiv, emptyMessage);
+}
+
+function removeAmenity(amenityId) {
+    const amenityElement = document.querySelector(`[data-amenity-id="${amenityId}"]`);
+    if (amenityElement) {
+        amenityElement.remove();
+    }
+    
+    // Show empty message if no amenities selected
+    const selectedAmenities = document.querySelectorAll('.selected-amenity');
+    const emptyMessage = document.getElementById('emptyAmenitiesMessage');
+    
+    if (selectedAmenities.length === 0) {
+        emptyMessage.classList.remove('hidden');
+    }
+}
+</script>
+
 <style>
     .luxury-shadow {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .animate-fadeIn {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .luxury-25 {
+        background-color: rgba(249, 250, 251, 0.5);
     }
 </style>
 {% endblock %}

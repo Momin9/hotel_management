@@ -1,50 +1,210 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}{% if amenity %}Edit{% else %}Add{% endif %} Amenity{% endblock %}
+{% block title %}{% if amenity %}Edit Amenity{% else %}Create Amenity{% endif %}{% endblock %}
+{% block page_title %}{% if amenity %}Edit Amenity{% else %}Create Amenity{% endif %}{% endblock %}
+{% block page_subtitle %}{% if amenity %}Update amenity information{% else %}Add a new amenity to your hotel{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h4>{% if amenity %}Edit{% else %}Add{% endif %} Amenity</h4>
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6">
+            <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-star text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">
+                    {% if amenity %}Edit Amenity{% else %}Create New Amenity{% endif %}
+                </h2>
+                <p class="text-luxury-600 font-medium">
+                    {% if amenity %}Update the amenity information{% else %}Configure a new amenity for your hotel{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+        <!-- Form Header -->
+        <div class="bg-gradient-to-r from-orange-50 to-amber-50 px-8 py-6 border-b border-luxury-200">
+            <h3 class="text-xl font-bold text-luxury-800 flex items-center">
+                <i class="fas fa-edit mr-3 text-orange-600"></i>
+                Amenity Information
+            </h3>
+            <p class="text-luxury-600 mt-1">Fill in the details for your amenity</p>
+        </div>
+
+        <!-- Form Content -->
+        <div class="p-8">
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                
+                <!-- Hotel Selection -->
+                {% if not amenity %}
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                        <i class="fas fa-building mr-2 text-orange-600"></i>
+                        Hotel
+                    </label>
+                    <select name="hotel" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer">
+                        <option value="">🏨 Select a hotel...</option>
+                        {% for hotel in hotels %}
+                        <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {% if not amenity %}
-                        <div class="mb-3">
-                            <label for="hotel" class="form-label">Hotel</label>
-                            <select class="form-select" id="hotel" name="hotel" required>
-                                <option value="">Select Hotel</option>
-                                {% for hotel in hotels %}
-                                    <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
-                                {% endfor %}
-                            </select>
+                {% else %}
+                <div class="bg-luxury-50 rounded-2xl p-4 mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-building text-orange-600 mr-3"></i>
+                        <div>
+                            <p class="text-sm font-semibold text-luxury-700">Hotel</p>
+                            <p class="text-luxury-800 font-medium">{{ amenity.hotel.name }}</p>
                         </div>
-                        {% endif %}
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ amenity.name|default:'' }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3">{{ amenity.description|default:'' }}</textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="icon" class="form-label">Icon (FontAwesome class)</label>
-                            <input type="text" class="form-control" id="icon" name="icon" value="{{ amenity.icon|default:'' }}" placeholder="e.g., fas fa-wifi">
-                            <div class="form-text">Enter FontAwesome icon class (e.g., fas fa-wifi, fas fa-swimming-pool)</div>
-                        </div>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{% url 'configurations:amenity_list' %}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
+                {% endif %}
+
+                <!-- Amenity Name -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                        <i class="fas fa-star mr-2 text-orange-600"></i>
+                        Amenity Name
+                    </label>
+                    <input type="text" 
+                           name="name" 
+                           value="{% if amenity %}{{ amenity.name }}{% endif %}"
+                           required
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                           placeholder="✨ Amenity name (e.g., Free Wi-Fi, Swimming Pool, Gym)">
+                </div>
+
+                <!-- Icon -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                        <i class="fas fa-icons mr-2 text-orange-600"></i>
+                        Icon (FontAwesome)
+                    </label>
+                    <input type="text" 
+                           name="icon" 
+                           value="{% if amenity %}{{ amenity.icon }}{% endif %}"
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                           placeholder="🎨 FontAwesome icon class (e.g., fas fa-wifi, fas fa-swimming-pool)">
+                    <div class="text-sm text-luxury-500 mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Visit <a href="https://fontawesome.com/icons" target="_blank" class="text-orange-600 hover:text-orange-800 underline">FontAwesome</a> to find icon classes
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                        <i class="fas fa-align-left mr-2 text-orange-600"></i>
+                        Description
+                    </label>
+                    <textarea name="description" 
+                              rows="4"
+                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white resize-none"
+                              placeholder="📝 Describe the amenity and its benefits for guests...">{% if amenity %}{{ amenity.description }}{% endif %}</textarea>
+                </div>
+
+                <!-- Status Toggle -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-4">
+                        <i class="fas fa-toggle-on mr-2 text-orange-600"></i>
+                        Status
+                    </label>
+                    <div class="flex items-center space-x-4">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" 
+                                   name="is_active" 
+                                   value="true"
+                                   {% if not amenity or amenity.is_active %}checked{% endif %}
+                                   class="sr-only peer">
+                            <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-orange-600"></div>
+                            <span class="ml-3 text-sm font-medium text-luxury-700">
+                                <span class="peer-checked:hidden">Inactive</span>
+                                <span class="hidden peer-checked:inline">Active</span>
+                            </span>
+                        </label>
+                        <div class="text-sm text-luxury-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Active amenities are displayed to guests
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-luxury-200">
+                    <button type="submit" 
+                            class="flex-1 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        <i class="fas fa-save mr-2"></i>
+                        {% if amenity %}Update Amenity{% else %}Create Amenity{% endif %}
+                    </button>
+                    
+                    <a href="{% url 'configurations:amenity_list' %}" 
+                       class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-4 px-8 rounded-2xl transition-all duration-300 text-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="bg-gradient-to-r from-orange-50 to-amber-50 rounded-3xl p-8 border border-orange-100">
+        <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-lightbulb text-orange-600 text-lg"></i>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-luxury-800 mb-2">Amenity Configuration Tips</h4>
+                <ul class="text-luxury-600 space-y-2 text-sm">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-orange-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Use clear, guest-friendly names like "Free Wi-Fi", "24/7 Room Service", "Fitness Center"</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-orange-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Choose appropriate FontAwesome icons to make amenities visually appealing</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-orange-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Include operating hours, restrictions, or special instructions in the description</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-orange-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Inactive amenities won't be shown to guests during booking</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    /* Custom select arrow */
+    select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+    
+    /* Focus states */
+    input:focus, textarea:focus, select:focus {
+        transform: translateY(-2px);
+    }
+    
+    /* Smooth transitions */
+    input, textarea, select, button {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+</style>
 {% endblock %}

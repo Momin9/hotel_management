@@ -1,0 +1,263 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{{ amenity.name }} - Amenity Details{% endblock %}
+{% block page_title %}{{ amenity.name }}{% endblock %}
+{% block page_subtitle %}Amenity configuration details{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+                <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                    {% if amenity.icon %}
+                    <i class="{{ amenity.icon }} text-white text-2xl"></i>
+                    {% else %}
+                    <i class="fas fa-star text-white text-2xl"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-luxury-800">{{ amenity.name }}</h2>
+                    <p class="text-luxury-600 font-medium">{{ amenity.hotel.name }}</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4">
+                <span class="px-4 py-2 rounded-2xl text-sm font-medium
+                      {% if amenity.is_active %}bg-green-100 text-green-800
+                      {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    <i class="fas fa-circle mr-2 text-xs"></i>
+                    {% if amenity.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+                
+                <div class="flex gap-2">
+                    <a href="{% url 'configurations:amenity_edit' amenity.pk %}" 
+                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl transition-all duration-300">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit
+                    </a>
+                    
+                    <a href="{% url 'configurations:amenity_list' %}" 
+                       class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-2xl transition-all duration-300">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Information -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Basic Information -->
+            <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 px-8 py-6 border-b border-luxury-200">
+                    <h3 class="text-xl font-bold text-luxury-800 flex items-center">
+                        <i class="fas fa-info-circle mr-3 text-orange-600"></i>
+                        Basic Information
+                    </h3>
+                </div>
+                
+                <div class="p-8 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-luxury-700 mb-2">Amenity Name</label>
+                            <p class="text-luxury-800 font-medium text-lg">{{ amenity.name }}</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-luxury-700 mb-2">Hotel</label>
+                            <p class="text-luxury-800 font-medium">{{ amenity.hotel.name }}</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-luxury-700 mb-2">Icon</label>
+                            {% if amenity.icon %}
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                                    <i class="{{ amenity.icon }} text-orange-600"></i>
+                                </div>
+                                <span class="text-luxury-800 font-medium">{{ amenity.icon }}</span>
+                            </div>
+                            {% else %}
+                            <p class="text-luxury-500 italic">No icon set</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-luxury-700 mb-2">Status</label>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                  {% if amenity.is_active %}bg-green-100 text-green-800
+                                  {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                <i class="fas fa-circle mr-2 text-xs"></i>
+                                {% if amenity.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-luxury-700 mb-2">Created Date</label>
+                            <p class="text-luxury-800 font-medium">{{ amenity.created_at|date:"F d, Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if amenity.description %}
+                    <div>
+                        <label class="block text-sm font-semibold text-luxury-700 mb-2">Description</label>
+                        <div class="bg-luxury-50 rounded-2xl p-4">
+                            <p class="text-luxury-700 leading-relaxed">{{ amenity.description }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Usage Information -->
+            <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 px-8 py-6 border-b border-luxury-200">
+                    <h3 class="text-xl font-bold text-luxury-800 flex items-center">
+                        <i class="fas fa-chart-line mr-3 text-orange-600"></i>
+                        Usage Information
+                    </h3>
+                </div>
+                
+                <div class="p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center p-6 bg-luxury-50 rounded-2xl">
+                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-eye text-orange-600"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-luxury-800 mb-1">Visibility</h4>
+                            <p class="text-luxury-600 text-sm">
+                                {% if amenity.is_active %}Visible to guests{% else %}Hidden from guests{% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="text-center p-6 bg-luxury-50 rounded-2xl">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-calendar text-blue-600"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-luxury-800 mb-1">Created</h4>
+                            <p class="text-luxury-600 text-sm">{{ amenity.created_at|date:"M d, Y" }}</p>
+                        </div>
+                        
+                        <div class="text-center p-6 bg-luxury-50 rounded-2xl">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                {% if amenity.icon %}
+                                <i class="{{ amenity.icon }} text-green-600"></i>
+                                {% else %}
+                                <i class="fas fa-star text-green-600"></i>
+                                {% endif %}
+                            </div>
+                            <h4 class="text-lg font-bold text-luxury-800 mb-1">Icon Status</h4>
+                            <p class="text-luxury-600 text-sm">
+                                {% if amenity.icon %}Icon configured{% else %}No icon set{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-8">
+            <!-- Quick Stats -->
+            <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-4 border-b border-luxury-200">
+                    <h3 class="text-lg font-bold text-luxury-800 flex items-center">
+                        <i class="fas fa-chart-bar mr-2 text-orange-600"></i>
+                        Quick Stats
+                    </h3>
+                </div>
+                
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-star text-orange-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium text-luxury-700">Amenity Type</span>
+                        </div>
+                        <span class="text-sm font-bold text-luxury-800">Hotel Feature</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-calendar text-blue-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium text-luxury-700">Created</span>
+                        </div>
+                        <span class="text-sm font-medium text-luxury-800">{{ amenity.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-toggle-on text-green-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium text-luxury-700">Status</span>
+                        </div>
+                        <span class="text-sm font-medium {% if amenity.is_active %}text-green-600{% else %}text-gray-600{% endif %}">
+                            {% if amenity.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </div>
+                    
+                    {% if amenity.icon %}
+                    <div class="flex items-center justify-between p-3 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-icons text-purple-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium text-luxury-700">Icon</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="{{ amenity.icon }} text-orange-600 mr-2"></i>
+                            <span class="text-xs text-luxury-600">Set</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-4 border-b border-luxury-200">
+                    <h3 class="text-lg font-bold text-luxury-800 flex items-center">
+                        <i class="fas fa-cogs mr-2 text-orange-600"></i>
+                        Actions
+                    </h3>
+                </div>
+                
+                <div class="p-6 space-y-3">
+                    <a href="{% url 'configurations:amenity_edit' amenity.pk %}" 
+                       class="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl transition-all duration-300">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit Amenity
+                    </a>
+                    
+                    <a href="{% url 'configurations:amenity_list' %}" 
+                       class="w-full flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-2xl transition-all duration-300">
+                        <i class="fas fa-list mr-2"></i>
+                        View All Amenities
+                    </a>
+                    
+                    <a href="{% url 'configurations:amenity_delete' amenity.pk %}" 
+                       class="w-full flex items-center justify-center px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 font-medium rounded-2xl transition-all duration-300"
+                       onclick="return confirm('Are you sure you want to delete this amenity?')">
+                        <i class="fas fa-trash mr-2"></i>
+                        Delete Amenity
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

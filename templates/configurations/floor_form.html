@@ -1,49 +1,198 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}{% if floor %}Edit{% else %}Add{% endif %} Floor{% endblock %}
+{% block title %}{% if floor %}Edit Floor{% else %}Create Floor{% endif %}{% endblock %}
+{% block page_title %}{% if floor %}Edit Floor{% else %}Create Floor{% endif %}{% endblock %}
+{% block page_subtitle %}{% if floor %}Update floor information{% else %}Add a new floor to your hotel{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h4>{% if floor %}Edit{% else %}Add{% endif %} Floor</h4>
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-building text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">
+                    {% if floor %}Edit Floor{% else %}Create New Floor{% endif %}
+                </h2>
+                <p class="text-luxury-600 font-medium">
+                    {% if floor %}Update the floor information{% else %}Configure a new floor for your hotel{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+        <!-- Form Header -->
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-8 py-6 border-b border-luxury-200">
+            <h3 class="text-xl font-bold text-luxury-800 flex items-center">
+                <i class="fas fa-edit mr-3 text-green-600"></i>
+                Floor Information
+            </h3>
+            <p class="text-luxury-600 mt-1">Fill in the details for your floor</p>
+        </div>
+
+        <!-- Form Content -->
+        <div class="p-8">
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                
+                <!-- Hotel Selection -->
+                {% if not floor %}
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                        <i class="fas fa-building mr-2 text-green-600"></i>
+                        Hotel
+                    </label>
+                    <select name="hotel" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer">
+                        <option value="">🏨 Select a hotel...</option>
+                        {% for hotel in hotels %}
+                        <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {% if not floor %}
-                        <div class="mb-3">
-                            <label for="hotel" class="form-label">Hotel</label>
-                            <select class="form-select" id="hotel" name="hotel" required>
-                                <option value="">Select Hotel</option>
-                                {% for hotel in hotels %}
-                                    <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% endif %}
-                        <div class="mb-3">
-                            <label for="number" class="form-label">Floor Number</label>
-                            <input type="number" class="form-control" id="number" name="number" value="{{ floor.number|default:'' }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ floor.name|default:'' }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3">{{ floor.description|default:'' }}</textarea>
-                        </div>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{% url 'configurations:floor_list' %}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
+                {% endif %}
+
+                <!-- Floor Number and Name -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                            <i class="fas fa-hashtag mr-2 text-green-600"></i>
+                            Floor Number
+                        </label>
+                        <input type="number" 
+                               name="number" 
+                               value="{% if floor %}{{ floor.number }}{% endif %}"
+                               required
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                               placeholder="🔢 Floor number (e.g., 1, 2, 3, -1 for basement)">
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                            <i class="fas fa-tag mr-2 text-green-600"></i>
+                            Floor Name
+                        </label>
+                        <input type="text" 
+                               name="name" 
+                               value="{% if floor %}{{ floor.name }}{% endif %}"
+                               required
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                               placeholder="🏢 Floor name (e.g., Ground Floor, Mezzanine)">
+                    </div>
                 </div>
+
+                <!-- Description -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">
+                        <i class="fas fa-align-left mr-2 text-green-600"></i>
+                        Description
+                    </label>
+                    <textarea name="description" 
+                              rows="4"
+                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white resize-none"
+                              placeholder="📝 Describe the floor layout, special features, and facilities...">{% if floor %}{{ floor.description }}{% endif %}</textarea>
+                </div>
+
+                <!-- Status Toggle -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-luxury-700 mb-4">
+                        <i class="fas fa-toggle-on mr-2 text-green-600"></i>
+                        Status
+                    </label>
+                    <div class="flex items-center space-x-4">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" 
+                                   name="is_active" 
+                                   value="true"
+                                   {% if not floor or floor.is_active %}checked{% endif %}
+                                   class="sr-only peer">
+                            <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                            <span class="ml-3 text-sm font-medium text-luxury-700">
+                                <span class="peer-checked:hidden">Inactive</span>
+                                <span class="hidden peer-checked:inline">Active</span>
+                            </span>
+                        </label>
+                        <div class="text-sm text-luxury-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Active floors are available for room assignment
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-luxury-200">
+                    <button type="submit" 
+                            class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        <i class="fas fa-save mr-2"></i>
+                        {% if floor %}Update Floor{% else %}Create Floor{% endif %}
+                    </button>
+                    
+                    <a href="{% url 'configurations:floor_list' %}" 
+                       class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-4 px-8 rounded-2xl transition-all duration-300 text-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 border border-green-100">
+        <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-lightbulb text-green-600 text-lg"></i>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-luxury-800 mb-2">Floor Configuration Tips</h4>
+                <ul class="text-luxury-600 space-y-2 text-sm">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Use clear numbering: Ground Floor = 0, First Floor = 1, Basement = -1</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Include descriptive names like "Lobby Level", "Executive Floor", or "Penthouse"</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Describe special features, amenities, or restrictions for each floor</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                        <span>Inactive floors won't appear in room assignment options</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    /* Custom select arrow */
+    select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+    
+    /* Focus states */
+    input:focus, textarea:focus, select:focus {
+        transform: translateY(-2px);
+    }
+    
+    /* Smooth transitions */
+    input, textarea, select, button {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+</style>
 {% endblock %}

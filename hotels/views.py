@@ -263,16 +263,29 @@ def room_create(request, hotel_id):
             room = form.save(commit=False)
             room.hotel = hotel_obj
             room.save()
-            form.save_m2m()  # Save many-to-many relationships (amenities)
+            
+            # Handle amenities from the custom multi-select
+            amenity_ids = request.POST.getlist('amenities')
+            if amenity_ids:
+                room.amenities.set(amenity_ids)
+            
+            form.save_m2m()  # Save other many-to-many relationships
             
             messages.success(request, f'Room {room.room_number} created successfully!')
             return redirect('hotels:room_list', hotel_id=hotel_id)
     else:
         form = RoomForm(hotel=hotel_obj)
 
-    return render(request, 'hotels/room_form_enhanced.html', {
+    # Get amenities for the hotel
+    from configurations.models import Amenity
+    amenities = Amenity.objects.filter(hotel=hotel_obj, is_active=True)
+    services = hotel_obj.services.all()
+    
+    return render(request, 'hotels/room_form.html', {
         'hotel': hotel_obj,
-        'form': form
+        'form': form,
+        'amenities': amenities,
+        'services': services
     })
 
 @owner_or_permission_required('view_room')
@@ -309,16 +322,31 @@ def room_edit(request, hotel_id, room_id):
     if request.method == 'POST':
         form = RoomForm(request.POST, request.FILES, instance=room, hotel=hotel_obj)
         if form.is_valid():
-            room = form.save()
+            room = form.save(commit=False)
+            room.save()
+            
+            # Handle amenities from the custom multi-select
+            amenity_ids = request.POST.getlist('amenities')
+            room.amenities.set(amenity_ids)
+            
+            form.save_m2m()  # Save other many-to-many relationships
+            
             messages.success(request, f'Room {room.room_number} updated successfully!')
             return redirect('hotels:room_detail', hotel_id=hotel_id, room_id=room_id)
     else:
         form = RoomForm(instance=room, hotel=hotel_obj)
     
-    return render(request, 'hotels/room_form_enhanced.html', {
+    # Get amenities for the hotel
+    from configurations.models import Amenity
+    amenities = Amenity.objects.filter(hotel=hotel_obj, is_active=True)
+    services = hotel_obj.services.all()
+    
+    return render(request, 'hotels/room_form.html', {
         'hotel': hotel_obj,
         'room': room,
-        'form': form
+        'form': form,
+        'amenities': amenities,
+        'services': services
     })
 
 # Floor Management Views
