@@ -15,19 +15,54 @@ class RoomForm(forms.ModelForm):
             'amenities', 'additional_amenities', 'description', 'image'
         ]
         widgets = {
-            'room_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'max_guests': forms.NumberInput(attrs={'class': 'form-control'}),
-            'room_size': forms.NumberInput(attrs={'class': 'form-control'}),
-            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'view_type': forms.Select(attrs={'class': 'form-select'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
-            'floor': forms.Select(attrs={'class': 'form-select'}),
-            'room_type': forms.Select(attrs={'class': 'form-select'}),
-            'bed_type': forms.Select(attrs={'class': 'form-select'}),
-            'amenities': forms.CheckboxSelectMultiple(),
-            'additional_amenities': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'room_number': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white',
+                'placeholder': '🏠 Enter room number (e.g., 101, A-205)'
+            }),
+            'max_guests': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white',
+                'min': '1', 'max': '10', 'placeholder': '👥 Maximum guests'
+            }),
+            'room_size': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white',
+                'min': '100', 'placeholder': '📐 Room size in sq ft'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white',
+                'step': '0.01', 'min': '0', 'placeholder': '💰 Price per night'
+            }),
+            'view_type': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
+            }),
+            'status': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
+            }),
+            'floor': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
+            }),
+            'room_type': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
+            }),
+            'bed_type': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
+            }),
+            'amenities': forms.CheckboxSelectMultiple(attrs={
+                'class': 'grid grid-cols-2 gap-3'
+            }),
+            'additional_amenities': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white resize-none',
+                'rows': 3,
+                'placeholder': '✨ Premium Amenities, Coffee Machine, etc. (comma-separated)'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white resize-none',
+                'rows': 4,
+                'placeholder': '📝 Describe the room features, atmosphere, and unique selling points...'
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-gray-50 hover:bg-blue-50 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100',
+                'accept': 'image/*'
+            }),
         }
 
     def __init__(self, *args, **kwargs):
