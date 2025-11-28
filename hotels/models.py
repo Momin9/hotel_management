@@ -34,7 +34,7 @@ class Hotel(models.Model):
     hotel_id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='owned_hotels')
     name = models.CharField(max_length=100)
-    address = models.CharField(max_length=500, blank=True)
+    address = models.CharField(max_length=5000, blank=True)
     city = models.CharField(max_length=50, blank=True)
     country = models.CharField(max_length=50, blank=True)
     phone = models.CharField(max_length=25, blank=True)
