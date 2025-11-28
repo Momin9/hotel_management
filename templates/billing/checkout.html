@@ -1,0 +1,168 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Guest Checkout{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        Guest Checkout
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Guest Information</h5>
+                            <div class="mb-3">
+                                <strong>Name:</strong> {{ stay.reservation.guest.full_name }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Room:</strong> {{ stay.room.room_number }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Check-in:</strong> {{ stay.actual_check_in|date:"M d, Y H:i" }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Check-out:</strong> 
+                                {% if stay.actual_check_out %}
+                                    {{ stay.actual_check_out|date:"M d, Y H:i" }}
+                                {% else %}
+                                    <span class="text-warning">Still checked in</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Billing Details</h5>
+                            <form method="post">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="apply_tax" name="apply_tax" onchange="toggleTaxOptions()">
+                                        <label class="form-check-label" for="apply_tax">
+                                            Apply Tax
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3" id="tax_options" style="display: none;">
+                                    <label for="tax_rate" class="form-label">Tax Rate</label>
+                                    <select class="form-select" id="tax_rate" name="tax_rate">
+                                        <option value="0">Select Tax Rate</option>
+                                        {% for tax in tax_configs %}
+                                            <option value="{{ tax.percentage }}">{{ tax.name }} - {{ tax.percentage }}%</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6>Estimated Charges:</h6>
+                                    <div class="border p-3 bg-light">
+                                        {% with nights=stay.reservation.total_nights %}
+                                        <div class="d-flex justify-content-between">
+                                            <span>Room Rate ({{ nights }} night{{ nights|pluralize }}):</span>
+                                            <span>${{ stay.reservation.total_amount }}</span>
+                                        </div>
+                                        
+                                        {% for expense in stay.reservation.expenses.all %}
+                                        {% if not expense.deleted_at %}
+                                        <div class="d-flex justify-content-between text-muted">
+                                            <span>{{ expense.description }} ({{ expense.quantity }}x):</span>
+                                            <span>${{ expense.total_amount|floatformat:2 }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if stay.reservation.expenses.all %}
+                                        <hr class="my-2">
+                                        {% endif %}
+                                        
+                                        <div class="d-flex justify-content-between">
+                                            <span>Service Charge (5%):</span>
+                                            <span id="service_charge">$0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between" id="tax_line" style="display: none;">
+                                            <span>Tax:</span>
+                                            <span id="tax_amount">$0.00</span>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between fw-bold">
+                                            <span>Total:</span>
+                                            <span id="total_amount">$0.00</span>
+                                        </div>
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-check me-2"></i>
+                                        Complete Checkout & Create Invoice
+                                    </button>
+                                    <a href="{% url 'reservations:reservation_list' %}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Cancel
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleTaxOptions() {
+    const applyTax = document.getElementById('apply_tax').checked;
+    const taxOptions = document.getElementById('tax_options');
+    const taxLine = document.getElementById('tax_line');
+    
+    if (applyTax) {
+        taxOptions.style.display = 'block';
+        taxLine.style.display = 'flex';
+    } else {
+        taxOptions.style.display = 'none';
+        taxLine.style.display = 'none';
+        document.getElementById('tax_rate').value = '0';
+        calculateTotal();
+    }
+}
+
+function calculateTotal() {
+    const roomTotal = {{ stay.reservation.total_amount }};
+    let expensesTotal = 0;
+    {% for expense in stay.reservation.expenses.all %}
+    {% if not expense.deleted_at %}
+    expensesTotal += {{ expense.total_amount }};
+    {% endif %}
+    {% endfor %}
+    
+    const subtotal = roomTotal + expensesTotal;
+    const serviceRate = 0.05;
+    const taxRate = parseFloat(document.getElementById('tax_rate').value) / 100 || 0;
+    
+    const serviceCharge = subtotal * serviceRate;
+    const taxAmount = subtotal * taxRate;
+    const total = subtotal + serviceCharge + taxAmount;
+    
+    document.getElementById('service_charge').textContent = '$' + serviceCharge.toFixed(2);
+    document.getElementById('tax_amount').textContent = '$' + taxAmount.toFixed(2);
+    document.getElementById('total_amount').textContent = '$' + total.toFixed(2);
+}
+
+// Calculate initial total on page load
+document.addEventListener('DOMContentLoaded', function() {
+    calculateTotal();
+});
+
+document.getElementById('tax_rate').addEventListener('change', calculateTotal);
+</script>
+{% endblock %}

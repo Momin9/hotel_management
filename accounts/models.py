@@ -3,7 +3,7 @@ import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.core.exceptions import ValidationError
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class UserManager(BaseUserManager):
@@ -47,6 +47,79 @@ class User(AbstractBaseUser, PermissionsMixin):
     assigned_hotel = models.ForeignKey('hotels.Hotel', on_delete=models.SET_NULL, null=True, blank=True, related_name='staff_members')
     temp_password = models.CharField(max_length=128, blank=True, null=True, help_text='Temporary storage for password to send in emails')
     deleted_at = models.DateTimeField(null=True, blank=True, help_text='Soft delete timestamp')
+    
+    # Hotel Management Permissions
+    can_view_hotels = models.BooleanField(default=False, help_text='Can view hotel information')
+    can_change_hotels = models.BooleanField(default=False, help_text='Can edit hotel settings')
+    can_view_rooms = models.BooleanField(default=False, help_text='Can view rooms')
+    can_add_rooms = models.BooleanField(default=False, help_text='Can add new rooms')
+    can_change_rooms = models.BooleanField(default=False, help_text='Can edit room details')
+    can_delete_rooms = models.BooleanField(default=False, help_text='Can delete rooms')
+    
+    # Reservations Permissions
+    can_view_reservations = models.BooleanField(default=False, help_text='Can view reservations')
+    can_add_reservations = models.BooleanField(default=False, help_text='Can create reservations')
+    can_change_reservations = models.BooleanField(default=False, help_text='Can edit reservations')
+    can_delete_reservations = models.BooleanField(default=False, help_text='Can cancel reservations')
+    can_view_checkins = models.BooleanField(default=False, help_text='Can view check-ins')
+    can_add_checkins = models.BooleanField(default=False, help_text='Can process check-ins')
+    can_change_checkins = models.BooleanField(default=False, help_text='Can modify check-ins')
+    
+    # Guest Management Permissions
+    can_view_guests = models.BooleanField(default=False, help_text='Can view guest profiles')
+    can_add_guests = models.BooleanField(default=False, help_text='Can add new guests')
+    can_change_guests = models.BooleanField(default=False, help_text='Can edit guest information')
+    can_delete_guests = models.BooleanField(default=False, help_text='Can delete guest profiles')
+    
+    # Staff Management Permissions
+    can_view_staff = models.BooleanField(default=False, help_text='Can view staff list')
+    can_add_staff = models.BooleanField(default=False, help_text='Can add new staff')
+    can_change_staff = models.BooleanField(default=False, help_text='Can edit staff details')
+    can_delete_staff = models.BooleanField(default=False, help_text='Can remove staff')
+    
+    # Housekeeping Permissions
+    can_view_housekeeping = models.BooleanField(default=False, help_text='Can view housekeeping tasks')
+    can_add_housekeeping = models.BooleanField(default=False, help_text='Can create housekeeping tasks')
+    can_change_housekeeping = models.BooleanField(default=False, help_text='Can update task status')
+    can_delete_housekeeping = models.BooleanField(default=False, help_text='Can delete tasks')
+    
+    # Maintenance Permissions
+    can_view_maintenance = models.BooleanField(default=False, help_text='Can view maintenance issues')
+    can_add_maintenance = models.BooleanField(default=False, help_text='Can report new issues')
+    can_change_maintenance = models.BooleanField(default=False, help_text='Can update issue status')
+    can_delete_maintenance = models.BooleanField(default=False, help_text='Can close issues')
+    
+    # Point of Sale Permissions
+    can_view_pos = models.BooleanField(default=False, help_text='Can view POS orders')
+    can_add_pos = models.BooleanField(default=False, help_text='Can create orders')
+    can_change_pos = models.BooleanField(default=False, help_text='Can modify orders')
+    can_delete_pos = models.BooleanField(default=False, help_text='Can cancel orders')
+    
+    # Inventory Permissions
+    can_view_inventory = models.BooleanField(default=False, help_text='Can view inventory')
+    can_add_inventory = models.BooleanField(default=False, help_text='Can add inventory items')
+    can_change_inventory = models.BooleanField(default=False, help_text='Can update inventory')
+    can_delete_inventory = models.BooleanField(default=False, help_text='Can remove items')
+    
+    # Financial Permissions
+    can_view_billing = models.BooleanField(default=False, help_text='Can view billing information')
+    can_add_billing = models.BooleanField(default=False, help_text='Can create invoices')
+    can_change_billing = models.BooleanField(default=False, help_text='Can edit billing')
+    can_view_payments = models.BooleanField(default=False, help_text='Can view payments')
+    can_add_payments = models.BooleanField(default=False, help_text='Can process payments')
+    can_view_reports = models.BooleanField(default=False, help_text='Can view financial reports')
+    
+    # Configuration Permissions
+    can_view_configurations = models.BooleanField(default=False, help_text='Can view configuration lists')
+    can_add_configurations = models.BooleanField(default=False, help_text='Can create new configurations')
+    can_change_configurations = models.BooleanField(default=False, help_text='Can edit existing configurations')
+    can_delete_configurations = models.BooleanField(default=False, help_text='Can delete configurations')
+    
+    # Company Management Permissions
+    can_view_companies = models.BooleanField(default=False, help_text='Can view company contracts')
+    can_add_companies = models.BooleanField(default=False, help_text='Can create company contracts')
+    can_change_companies = models.BooleanField(default=False, help_text='Can edit company contracts')
+    can_delete_companies = models.BooleanField(default=False, help_text='Can delete company contracts')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -368,7 +441,7 @@ class ContactInquiry(models.Model):
 class TermsOfService(models.Model):
     """Terms of Service content with rich text editor"""
     title = models.CharField(max_length=200, default="Terms of Service")
-    content = RichTextField(config_name='terms_privacy', help_text="Terms of Service content with rich text formatting")
+    content = CKEditor5Field('Content', config_name='terms_privacy', help_text="Terms of Service content with rich text formatting")
     effective_date = models.DateField(help_text="Date when these terms become effective")
     version = models.CharField(max_length=20, default="1.0", help_text="Version number")
     is_active = models.BooleanField(default=True)
@@ -393,7 +466,7 @@ class TermsOfService(models.Model):
 class PrivacyPolicy(models.Model):
     """Privacy Policy content with rich text editor"""
     title = models.CharField(max_length=200, default="Privacy Policy")
-    content = RichTextField(config_name='terms_privacy', help_text="Privacy Policy content with rich text formatting")
+    content = CKEditor5Field('Content', config_name='terms_privacy', help_text="Privacy Policy content with rich text formatting")
     effective_date = models.DateField(help_text="Date when this policy becomes effective")
     version = models.CharField(max_length=20, default="1.0", help_text="Version number")
     is_active = models.BooleanField(default=True)

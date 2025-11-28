@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 from crm.models import GuestProfile
 import uuid
 
@@ -61,3 +61,43 @@ class Stay(models.Model):
     
     def __str__(self):
         return f"Stay {self.id} - Room {self.room.room_number}"
+
+class ReservationExpense(models.Model):
+    """Additional expenses during guest stay"""
+    EXPENSE_TYPE_CHOICES = [
+        ('food', 'Food & Beverage'),
+        ('laundry', 'Laundry Service'),
+        ('spa', 'Spa Services'),
+        ('minibar', 'Minibar'),
+        ('phone', 'Phone Charges'),
+        ('internet', 'Internet'),
+        ('parking', 'Parking'),
+        ('transport', 'Transportation'),
+        ('room_service', 'Room Service'),
+        ('extra_bed', 'Extra Bed'),
+        ('late_checkout', 'Late Checkout'),
+        ('damage', 'Damage Charges'),
+        ('other', 'Other Services'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE, related_name='expenses')
+    description = models.CharField(max_length=255)
+    expense_type = models.CharField(max_length=20, choices=EXPENSE_TYPE_CHOICES, default='other')
+    quantity = models.PositiveIntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_added = models.DateTimeField(default=timezone.now)
+    notes = models.TextField(blank=True)
+    added_by = models.ForeignKey('accounts.User', on_delete=models.SET_NULL, null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        self.total_amount = self.quantity * self.unit_price
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.description} - ${self.total_amount}"
+    
+    class Meta:
+        ordering = ['-date_added']

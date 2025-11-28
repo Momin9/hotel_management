@@ -57,6 +57,63 @@
         </div>
     </div>
 
+    <!-- Filters Section -->
+    <div class="bg-white rounded-3xl p-6 luxury-shadow">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-luxury-800 flex items-center">
+                <i class="fas fa-filter mr-2 text-royal-500"></i>
+                Filters
+            </h3>
+            <button onclick="clearReservationFilters()" class="text-sm text-luxury-600 hover:text-luxury-800 transition-colors">
+                <i class="fas fa-times mr-1"></i>Clear All
+            </button>
+        </div>
+        
+        <form method="get" id="reservationFilterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Search -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Search</label>
+                <input type="text" name="search" value="{{ request.GET.search }}" 
+                       class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent"
+                       placeholder="Guest name, room...">
+            </div>
+            
+            <!-- Status -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                <select name="status" class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if request.GET.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="checked_in" {% if request.GET.status == 'checked_in' %}selected{% endif %}>Checked In</option>
+                    <option value="checked_out" {% if request.GET.status == 'checked_out' %}selected{% endif %}>Checked Out</option>
+                    <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            
+            <!-- Check-in Date -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Check-in From</label>
+                <input type="date" name="checkin_from" value="{{ request.GET.checkin_from }}" 
+                       class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+            </div>
+            
+            <!-- Check-in Date To -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Check-in To</label>
+                <input type="date" name="checkin_to" value="{{ request.GET.checkin_to }}" 
+                       class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+            </div>
+            
+            <!-- Apply Filters -->
+            <div class="flex items-end">
+                <button type="submit" class="w-full bg-royal-500 text-white py-2 px-4 rounded-lg hover:bg-royal-600 transition-colors">
+                    <i class="fas fa-search mr-2"></i>Apply
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- List View -->
     <div id="listView" class="hidden">
         <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
@@ -127,7 +184,7 @@
                                     </button>
                                     {% endif %}
                                     {% endif %}
-                                    {% if can_change_reservation %}
+                                    {% if can_change_reservation and reservation.status != 'checked_out' %}
                                     <a href="{% url 'reservations:edit' reservation.id %}" class="text-luxury-600 hover:text-luxury-800 transition-colors p-2 rounded-lg hover:bg-luxury-50" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -286,7 +343,7 @@
                     {% endif %}
                     
                     {% if can_change_reservation %}
-                    {% if reservation.status not in 'confirmed,checked_in' %}
+                    {% if reservation.status not in 'confirmed,checked_in,checked_out' %}
                     <a href="{% url 'reservations:edit' reservation.id %}" 
                        class="w-full bg-gradient-to-r from-luxury-500 to-luxury-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
                         <i class="fas fa-edit mr-2 group-hover:scale-110 transition-transform"></i>
@@ -388,31 +445,52 @@ function quickCheckOut(reservationId) {
         return;
     }
     
-    if (confirm('Are you sure you want to check out this guest? This will generate an invoice with Pakistan taxes (17% Sales Tax + 10% Service Charges).')) {
-        fetch(`/reservations/${reservationId}/quick-check-out/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                if (data.invoice_url) {
-                    window.open(data.invoice_url, '_blank');
-                }
-                location.reload();
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            alert('Error: ' + error);
+    // Get stay ID from reservation and redirect to billing checkout
+    fetch(`/reservations/${reservationId}/get-stay-id/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.stay_id) {
+            // Redirect to billing checkout page with tax options
+            window.location.href = `/billing/checkout/${data.stay_id}/`;
+        } else {
+            alert('Error: Unable to find stay record for checkout.');
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+    });
+}
+
+function clearReservationFilters() {
+    const form = document.getElementById('reservationFilterForm');
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        if (input.type === 'text' || input.type === 'date') {
+            input.value = '';
+        } else if (input.type === 'select-one') {
+            input.selectedIndex = 0;
+        }
+    });
+    form.submit();
+}
+
+// Auto-submit form on filter change
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('reservationFilterForm');
+    if (filterForm) {
+        const selects = filterForm.querySelectorAll('select');
+        selects.forEach(select => {
+            select.addEventListener('change', function() {
+                filterForm.submit();
+            });
         });
     }
-}
+});
 </script>
 
 <style>

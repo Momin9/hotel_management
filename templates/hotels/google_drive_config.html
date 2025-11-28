@@ -1,0 +1,142 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Google Drive Configuration - {{ hotel.name }}{% endblock %}
+{% block page_title %}Google Drive Configuration{% endblock %}
+{% block page_subtitle %}Configure Google Drive integration for {{ hotel.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="fab fa-google-drive text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">Google Drive Integration</h3>
+                    <p class="text-gray-600">Configure Google Drive for storing guest documents</p>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Enable Google Drive -->
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <i class="fas fa-toggle-on text-blue-600 text-xl"></i>
+                    <h4 class="text-lg font-semibold text-blue-800">Enable Integration</h4>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    {{ form.google_drive_enabled }}
+                    <label for="{{ form.google_drive_enabled.id_for_label }}" class="text-blue-700 font-medium">
+                        Enable Google Drive integration for storing guest documents
+                    </label>
+                </div>
+                <p class="text-xs text-blue-600 mt-2">{{ form.google_drive_enabled.help_text }}</p>
+            </div>
+
+            <!-- Configuration Fields -->
+            <div class="space-y-6">
+                <div class="flex items-center space-x-3 mb-6">
+                    <i class="fas fa-cog text-gray-600 text-xl"></i>
+                    <h4 class="text-lg font-semibold text-gray-800">Configuration Settings</h4>
+                </div>
+
+                <div>
+                    <label for="{{ form.google_drive_folder_id.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Google Drive Folder ID *
+                    </label>
+                    {{ form.google_drive_folder_id }}
+                    <p class="text-xs text-gray-500 mt-1">{{ form.google_drive_folder_id.help_text }}</p>
+                    <div class="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="text-xs text-yellow-800">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            To get the folder ID: Open Google Drive → Create/Select folder → Copy ID from URL (e.g., 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms)
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ form.google_service_account_key.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Google Service Account JSON Key *
+                    </label>
+                    {{ form.google_service_account_key }}
+                    <p class="text-xs text-gray-500 mt-1">{{ form.google_service_account_key.help_text }}</p>
+                    <div class="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="text-xs text-yellow-800">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Create a service account in Google Cloud Console → Enable Drive API → Download JSON key → Paste content here
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ form.google_drive_share_email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Share Email (Optional)
+                    </label>
+                    {{ form.google_drive_share_email }}
+                    <p class="text-xs text-gray-500 mt-1">{{ form.google_drive_share_email.help_text }}</p>
+                </div>
+            </div>
+
+            <!-- Setup Instructions -->
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <i class="fas fa-book text-green-600 text-xl"></i>
+                    <h4 class="text-lg font-semibold text-green-800">Setup Instructions</h4>
+                </div>
+                
+                <div class="space-y-3 text-sm text-green-700">
+                    <div class="flex items-start space-x-2">
+                        <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</span>
+                        <p>Go to <a href="https://console.cloud.google.com/" target="_blank" class="text-green-600 underline">Google Cloud Console</a></p>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</span>
+                        <p>Create a new project or select existing project</p>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">3</span>
+                        <p>Enable Google Drive API for your project</p>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">4</span>
+                        <p>Create a Service Account and download JSON key</p>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">5</span>
+                        <p>Create a folder in Google Drive and share it with the service account email</p>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">6</span>
+                        <p>Copy the folder ID from the URL and paste it above</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200">
+                <a href="{% url 'hotels:hotel_detail' hotel.hotel_id %}" 
+                   class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-2xl font-semibold text-center hover:bg-gray-200 transition-all duration-300">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Hotel Settings
+                </a>
+                <button type="submit" 
+                        class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 rounded-2xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
+                    <i class="fas fa-save mr-2"></i>
+                    Save Configuration
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

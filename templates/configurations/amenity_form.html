@@ -1,0 +1,50 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{% if amenity %}Edit{% else %}Add{% endif %} Amenity{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>{% if amenity %}Edit{% else %}Add{% endif %} Amenity</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if not amenity %}
+                        <div class="mb-3">
+                            <label for="hotel" class="form-label">Hotel</label>
+                            <select class="form-select" id="hotel" name="hotel" required>
+                                <option value="">Select Hotel</option>
+                                {% for hotel in hotels %}
+                                    <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ amenity.name|default:'' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ amenity.description|default:'' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="icon" class="form-label">Icon (FontAwesome class)</label>
+                            <input type="text" class="form-control" id="icon" name="icon" value="{{ amenity.icon|default:'' }}" placeholder="e.g., fas fa-wifi">
+                            <div class="form-text">Enter FontAwesome icon class (e.g., fas fa-wifi, fas fa-swimming-pool)</div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'configurations:amenity_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

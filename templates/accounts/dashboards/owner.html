@@ -67,7 +67,7 @@
             Management Tools
         </h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <a href="{% url 'hotels:hotel_list' %}" 
                class="flex items-center justify-between p-4 bg-gradient-to-r from-royal-50 to-royal-100 rounded-2xl hover:from-royal-100 hover:to-royal-200 transition-all duration-300 group">
                 <div class="flex items-center space-x-3">
@@ -133,6 +133,19 @@
                 </div>
                 <i class="fas fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i>
             </a>
+            
+            {% if hotel %}
+            <a href="{% url 'hotels:company_list' hotel.hotel_id %}" 
+               class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl hover:from-orange-100 hover:to-orange-200 transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-building text-white"></i>
+                    </div>
+                    <span class="font-semibold text-orange-700">Company Contracts</span>
+                </div>
+                <i class="fas fa-arrow-right text-orange-500 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            {% endif %}
         </div>
     </div>
 

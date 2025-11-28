@@ -1,0 +1,64 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Floors{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Floors</h2>
+        {% if can_add_configurations %}
+        <a href="{% url 'configurations:floor_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Floor
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hotel</th>
+                            <th>Floor Number</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for floor in floors %}
+                        <tr>
+                            <td>{{ floor.hotel.name }}</td>
+                            <td>{{ floor.number }}</td>
+                            <td>{{ floor.name }}</td>
+                            <td>{{ floor.description|truncatechars:50 }}</td>
+                            <td>
+                                <span class="badge {% if floor.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {% if floor.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ floor.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if can_change_configurations %}
+                                <a href="{% url 'configurations:floor_edit' floor.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                {% endif %}
+                                {% if can_delete_configurations %}
+                                <a href="{% url 'configurations:floor_delete' floor.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No floors found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

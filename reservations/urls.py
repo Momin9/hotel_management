@@ -17,4 +17,6 @@ urlpatterns = [
     path('<uuid:reservation_id>/check-out/', views.check_out, name='check_out'),
     path('<uuid:reservation_id>/quick-check-in/', views.quick_check_in, name='quick_check_in'),
     path('<uuid:reservation_id>/quick-check-out/', views.quick_check_out, name='quick_check_out'),
+    path('<uuid:reservation_id>/get-stay-id/', views.get_stay_id, name='get_stay_id'),
+    path('expense/<uuid:expense_id>/delete/', views.delete_expense, name='delete_expense'),
 ]

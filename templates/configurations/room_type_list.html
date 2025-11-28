@@ -1,0 +1,62 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Room Types{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Room Types</h2>
+        {% if can_create_configurations %}
+        <a href="{% url 'configurations:room_type_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Room Type
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hotel</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room_type in room_types %}
+                        <tr>
+                            <td>{{ room_type.hotel.name }}</td>
+                            <td>{{ room_type.name }}</td>
+                            <td>{{ room_type.description|truncatechars:50 }}</td>
+                            <td>
+                                <span class="badge {% if room_type.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {% if room_type.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ room_type.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if can_edit_configurations %}
+                                <a href="{% url 'configurations:room_type_edit' room_type.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                {% endif %}
+                                {% if can_delete_configurations %}
+                                <a href="{% url 'configurations:room_type_delete' room_type.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No room types found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

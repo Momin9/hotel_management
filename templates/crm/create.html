@@ -2,7 +2,7 @@
 
 {% block title %}Create New Guest Profile - AuraStay{% endblock %}
 {% block page_title %}Create New Guest Profile{% endblock %}
-{% block page_subtitle %}Create your luxury hospitality experience{% endblock %}
+<!--{% block page_subtitle %}Create your luxury hospitality experience{% endblock %}-->
 
 {% block content %}
 <!-- Guest Form Card -->
@@ -14,14 +14,49 @@
             </div>
             <div>
                 <h3 class="text-2xl font-bold text-gray-800">New Guest Profile</h3>
-                <p class="text-gray-600 font-medium">Create your luxury hospitality experience</p>
             </div>
         </div>
     </div>
 
-    <form method="post" class="space-y-8">
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
         {% csrf_token %}
         
+        <!-- Guest Type Selection -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 mb-8">
+            <h4 class="text-blue-800 font-semibold mb-4 flex items-center">
+                <i class="fas fa-user-tag text-blue-600 mr-2"></i>
+                Guest Type
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-blue-700 font-semibold mb-3" for="guest_type">
+                        Guest Type *
+                    </label>
+                    <select name="guest_type" id="guest_type" 
+                            class="w-full px-4 py-3 border-2 border-blue-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-colors" 
+                            onchange="toggleCompanyField()" required>
+                        <option value="">Select guest type</option>
+                        <option value="individual">Individual</option>
+                        <option value="company">Company</option>
+                    </select>
+                </div>
+                
+                <div id="company-field" style="display: none;">
+                    <label class="block text-blue-700 font-semibold mb-3" for="company">
+                        Company *
+                    </label>
+                    <select name="company" id="company" 
+                            class="w-full px-4 py-3 border-2 border-blue-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-colors">
+                        <option value="">Select a company</option>
+                        {% for company in companies %}
+                            <option value="{{ company.id }}">{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-xs text-blue-600 mt-1">Select the company this guest represents</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Personal Information Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Left Column -->
@@ -83,9 +118,15 @@
                         <i class="fas fa-flag text-blue-500 mr-2"></i>
                         Nationality
                     </label>
-                    <input type="text" name="nationality" id="nationality" 
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-colors" 
-                           placeholder="e.g., American, British">
+                    <select name="nationality" id="nationality" 
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-colors">
+                        <option value="">Select Country</option>
+                        {% load countries %}
+                        {% get_countries as countries %}
+                        {% for code, name in countries %}
+                            <option value="{{ code }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 
                 <div>
@@ -96,6 +137,30 @@
                     <textarea name="address" id="address" rows="3"
                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-colors resize-none" 
                               placeholder="Enter full address"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-3" for="national_id_card">
+                        <i class="fas fa-id-card text-blue-500 mr-2"></i>
+                        National ID Card {% if not user.is_superuser %}*{% endif %}
+                    </label>
+                    <input type="text" name="national_id_card" id="national_id_card" 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-colors" 
+                           {% if not user.is_superuser %}required{% endif %} placeholder="National Identity Card Number">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-3" for="national_id_card_image">
+                        <i class="fas fa-camera text-blue-500 mr-2"></i>
+                        National ID Card Image
+                    </label>
+                    <input type="file" name="national_id_card_image" id="national_id_card_image" 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-colors" 
+                           accept="image/*">
+                    <p class="text-xs text-gray-500 mt-1">Upload a clear photo of the National ID Card (JPG, PNG, GIF)</p>
+                    {% if hotel and not hotel.google_drive_enabled %}
+                        <p class="text-xs text-red-500 mt-1">⚠️ Google Drive integration is not configured. Contact administrator to enable image uploads.</p>
+                    {% endif %}
                 </div>
                 
                 <!-- Guest Preferences -->
@@ -152,4 +217,87 @@
         </div>
     </form>
 </div>
+
+<script>
+const countryPhoneCodes = {
+    'US': '+1', 'CA': '+1', 'GB': '+44', 'AU': '+61', 'DE': '+49', 'FR': '+33', 'IT': '+39', 'ES': '+34',
+    'NL': '+31', 'BE': '+32', 'CH': '+41', 'AT': '+43', 'SE': '+46', 'NO': '+47', 'DK': '+45', 'FI': '+358',
+    'IE': '+353', 'PT': '+351', 'GR': '+30', 'PL': '+48', 'CZ': '+420', 'HU': '+36', 'SK': '+421', 'SI': '+386',
+    'HR': '+385', 'BG': '+359', 'RO': '+40', 'LT': '+370', 'LV': '+371', 'EE': '+372', 'IS': '+354', 'MT': '+356',
+    'CY': '+357', 'LU': '+352', 'MC': '+377', 'SM': '+378', 'VA': '+379', 'AD': '+376', 'LI': '+423',
+    'JP': '+81', 'KR': '+82', 'CN': '+86', 'IN': '+91', 'PK': '+92', 'BD': '+880', 'LK': '+94', 'MY': '+60',
+    'SG': '+65', 'TH': '+66', 'VN': '+84', 'PH': '+63', 'ID': '+62', 'TW': '+886', 'HK': '+852', 'MO': '+853',
+    'MN': '+976', 'KH': '+855', 'LA': '+856', 'MM': '+95', 'BT': '+975', 'MV': '+960', 'NP': '+977',
+    'AF': '+93', 'IR': '+98', 'IQ': '+964', 'SA': '+966', 'AE': '+971', 'QA': '+974', 'KW': '+965', 'BH': '+973',
+    'OM': '+968', 'YE': '+967', 'JO': '+962', 'LB': '+961', 'SY': '+963', 'IL': '+972', 'PS': '+970', 'TR': '+90',
+    'EG': '+20', 'LY': '+218', 'TN': '+216', 'DZ': '+213', 'MA': '+212', 'SD': '+249', 'ET': '+251', 'KE': '+254',
+    'UG': '+256', 'TZ': '+255', 'RW': '+250', 'BI': '+257', 'DJ': '+253', 'SO': '+252', 'ER': '+291', 'SS': '+211',
+    'ZA': '+27', 'NA': '+264', 'BW': '+267', 'ZW': '+263', 'ZM': '+260', 'MW': '+265', 'MZ': '+258', 'MG': '+261',
+    'MU': '+230', 'SC': '+248', 'KM': '+269', 'RE': '+262', 'YT': '+262', 'SH': '+290', 'CV': '+238', 'ST': '+239',
+    'GQ': '+240', 'GA': '+241', 'CG': '+242', 'CD': '+243', 'CF': '+236', 'CM': '+237', 'TD': '+235', 'NE': '+227',
+    'NG': '+234', 'BJ': '+229', 'TG': '+228', 'GH': '+233', 'CI': '+225', 'LR': '+231', 'SL': '+232', 'GN': '+224',
+    'GW': '+245', 'GM': '+220', 'SN': '+221', 'MR': '+222', 'ML': '+223', 'BF': '+226', 'NI': '+505', 'AO': '+244',
+    'BR': '+55', 'AR': '+54', 'CL': '+56', 'PE': '+51', 'CO': '+57', 'VE': '+58', 'EC': '+593', 'BO': '+591',
+    'PY': '+595', 'UY': '+598', 'GY': '+592', 'SR': '+597', 'GF': '+594', 'FK': '+500', 'MX': '+52', 'GT': '+502',
+    'BZ': '+501', 'SV': '+503', 'HN': '+504', 'CR': '+506', 'PA': '+507', 'CU': '+53', 'JM': '+1876', 'HT': '+509',
+    'DO': '+1809', 'PR': '+1787', 'TT': '+1868', 'BB': '+1246', 'GD': '+1473', 'LC': '+1758', 'VC': '+1784',
+    'AG': '+1268', 'DM': '+1767', 'KN': '+1869', 'BS': '+1242', 'RU': '+7', 'KZ': '+7', 'UZ': '+998', 'TM': '+993',
+    'TJ': '+992', 'KG': '+996', 'BY': '+375', 'UA': '+380', 'MD': '+373', 'GE': '+995', 'AM': '+374', 'AZ': '+994'
+};
+
+function toggleCompanyField() {
+    const guestType = document.getElementById('guest_type');
+    const companyField = document.getElementById('company-field');
+    const companySelect = document.getElementById('company');
+    
+    if (guestType && companyField && companySelect) {
+        if (guestType.value === 'company') {
+            companyField.style.display = 'block';
+            companySelect.required = true;
+        } else {
+            companyField.style.display = 'none';
+            companySelect.required = false;
+            companySelect.value = '';
+        }
+    }
+}
+
+function updatePhoneCode() {
+    const nationalitySelect = document.getElementById('nationality');
+    const phoneInput = document.getElementById('phone');
+    
+    if (nationalitySelect && phoneInput) {
+        const selectedCountry = nationalitySelect.value;
+        const phoneCode = countryPhoneCodes[selectedCountry];
+        
+        if (phoneCode) {
+            const currentValue = phoneInput.value;
+            // Remove existing country code if present
+            let phoneNumber = currentValue.replace(/^\+\d+\s*/, '');
+            phoneInput.value = phoneCode + ' ' + phoneNumber;
+            phoneInput.focus();
+            phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const guestType = document.getElementById('guest_type');
+    if (guestType) {
+        guestType.addEventListener('change', toggleCompanyField);
+        toggleCompanyField();
+    }
+    
+    const nationalitySelect = document.getElementById('nationality');
+    if (nationalitySelect) {
+        nationalitySelect.addEventListener('change', updatePhoneCode);
+    }
+    
+    // Make national_id_card required for non-superusers
+    const nationalIdField = document.getElementById('national_id_card');
+    if (nationalIdField && !{{ user.is_superuser|yesno:'true,false' }}) {
+        nationalIdField.required = true;
+    }
+});
+</script>
 {% endblock %}

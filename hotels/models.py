@@ -45,6 +45,12 @@ class Hotel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(null=True, blank=True, help_text='Soft delete timestamp')
     is_active = models.BooleanField(default=True)
+    
+    # Google Drive Configuration
+    google_drive_enabled = models.BooleanField(default=False, help_text='Enable Google Drive integration')
+    google_drive_folder_id = models.CharField(max_length=200, blank=True, help_text='Google Drive folder ID for storing documents')
+    google_service_account_key = models.TextField(blank=True, help_text='Google Service Account JSON key')
+    google_drive_share_email = models.EmailField(blank=True, help_text='Email to share uploaded documents with')
 
     def __str__(self):
         return self.name
@@ -114,20 +120,62 @@ class SubscriptionHistory(models.Model):
     def __str__(self):
         return f"{self.hotel_subscription.hotel.name} - {self.action}"
 
-class RoomCategory(models.Model):
-    """Room category model"""
+class Floor(models.Model):
+    """Hotel floor model"""
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50, unique=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='floors')
+    floor_number = models.IntegerField(help_text='Floor number (e.g., 1, 2, 3, -1 for basement)')
+    floor_name = models.CharField(max_length=100, help_text='Floor name (e.g., Ground Floor, Mezzanine, Penthouse)')
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ['hotel', 'floor_number']
+        ordering = ['floor_number']
+    
+    def __str__(self):
+        return f"{self.floor_name} (Floor {self.floor_number}) - {self.hotel.name}"
+
+class Company(models.Model):
+    """Company/Corporate client model for hotels"""
+    id = models.AutoField(primary_key=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='companies')
+    name = models.CharField(max_length=200)
+    contact_person = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=25, blank=True)
+    address = models.TextField(blank=True)
+    tax_id = models.CharField(max_length=50, blank=True, help_text='Tax ID or Registration Number')
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text='Corporate discount percentage')
+    credit_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text='Credit limit for corporate bookings')
+    payment_terms = models.CharField(max_length=100, blank=True, help_text='Payment terms (e.g., Net 30 days)')
+    is_active = models.BooleanField(default=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name_plural = 'Companies'
+        unique_together = ['hotel', 'name']
+    
+    def __str__(self):
+        return f"{self.name} - {self.hotel.name}"
+
+class RoomCategory(models.Model):
+    """Room category model for each hotel"""
+    id = models.AutoField(primary_key=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='room_categories')
+    name = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     base_price_multiplier = models.DecimalField(max_digits=5, decimal_places=2, default=1.00)
-    amenities = models.TextField(blank=True, help_text='JSON list of amenities')
+    amenities = models.TextField(blank=True, help_text='Comma-separated list of amenities')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = 'Room Categories'
+        unique_together = ['hotel', 'name']
     
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.hotel.name}"
 
 class RoomType(models.Model):
     """Room type model"""
@@ -158,22 +206,6 @@ class RoomStatus(models.Model):
 
 class Room(models.Model):
     """Enhanced Room model with detailed amenities and features"""
-    ROOM_TYPE_CHOICES = [
-        ('Standard', 'Standard Room'),
-        ('Deluxe', 'Deluxe Room'),
-        ('Superior', 'Superior Room'),
-        ('Executive', 'Executive Suite'),
-        ('Presidential', 'Presidential Suite'),
-    ]
-    
-    BED_TYPE_CHOICES = [
-        ('King', 'King Size Bed'),
-        ('Queen', 'Queen Size Bed'),
-        ('Double', 'Double Bed'),
-        ('Twin', 'Twin Beds'),
-        ('Single', 'Single Bed'),
-    ]
-    
     VIEW_TYPE_CHOICES = [
         ('City', 'City View'),
         ('Garden', 'Garden View'),
@@ -195,11 +227,12 @@ class Room(models.Model):
     
     room_id = models.AutoField(primary_key=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='rooms')
+    floor = models.ForeignKey('configurations.Floor', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
     room_number = models.CharField(max_length=50)
     
-    # Basic Details
-    type = models.CharField(max_length=20, choices=ROOM_TYPE_CHOICES, default='Standard')
-    bed_type = models.CharField(max_length=20, choices=BED_TYPE_CHOICES, default='Double')
+    # Basic Details - using configuration models
+    room_type = models.ForeignKey('configurations.RoomType', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
+    bed_type = models.ForeignKey('configurations.BedType', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
     max_guests = models.PositiveIntegerField(default=2, help_text='Maximum number of guests')
     room_size = models.PositiveIntegerField(default=250, help_text='Room size in square feet')
     view_type = models.CharField(max_length=20, choices=VIEW_TYPE_CHOICES, blank=True, null=True)
@@ -221,6 +254,9 @@ class Room(models.Model):
     has_kitchenette = models.BooleanField(default=False, verbose_name='Kitchenette')
     has_living_room = models.BooleanField(default=False, verbose_name='Separate Living Room')
     
+    # Amenities from configuration
+    amenities = models.ManyToManyField('configurations.Amenity', blank=True, related_name='rooms')
+    
     # Additional amenities as text field
     additional_amenities = models.TextField(blank=True, help_text='Additional amenities (comma-separated)')
     
@@ -239,6 +275,8 @@ class Room(models.Model):
     def amenities_list(self):
         """Get list of all amenities for this room"""
         amenities = []
+        
+        # Boolean amenities
         if self.has_wifi: amenities.append('Free Wi-Fi')
         if self.has_ac: amenities.append('Air Conditioning')
         if self.has_tv: amenities.append('TV')
@@ -248,6 +286,10 @@ class Room(models.Model):
         if self.has_seating_area: amenities.append('Seating Area')
         if self.has_kitchenette: amenities.append('Kitchenette')
         if self.has_living_room: amenities.append('Separate Living Room')
+        
+        # Configuration amenities
+        for amenity in self.amenities.all():
+            amenities.append(amenity.name)
         
         # Add additional amenities
         if self.additional_amenities:
@@ -262,7 +304,22 @@ class Room(models.Model):
         unique_together = ['hotel', 'room_number']
     
     def __str__(self):
-        return f"Room {self.room_number} - {self.hotel.name}"
+        floor_info = f" on {self.floor.name}" if self.floor else ""
+        category_info = f" ({self.category.name})" if self.category else ""
+        room_type_info = f" {self.room_type.name}" if self.room_type else ""
+        return f"Room {self.room_number}{room_type_info}{category_info}{floor_info} - {self.hotel.name}"
+    
+    @property
+    def display_name(self):
+        """Display name for room directory"""
+        parts = [f"Room {self.room_number}"]
+        if self.room_type:
+            parts.append(f"{self.room_type.name}")
+        if self.category:
+            parts.append(f"({self.category.name})")
+        if self.floor:
+            parts.append(f"on {self.floor.name}")
+        return " ".join(parts)
 
 class Service(models.Model):
     """Hotel services model"""

@@ -1,58 +1,225 @@
 {% extends 'base_luxury.html' %}
+{% load static %}
 
 {% block title %}Edit Reservation{% endblock %}
-{% block page_title %}Edit Reservation{% endblock %}
-{% block page_subtitle %}{{ reservation.guest.full_name }}{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-3xl p-8 luxury-shadow">
-        <form method="post" class="space-y-6">
-            {% csrf_token %}
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Check-in Date</label>
-                    <input type="date" name="check_in" value="{{ reservation.check_in|date:'Y-m-d' }}" required
-                           class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Reservation - {{ reservation.guest.full_name }}
+                    </h4>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Check-out Date</label>
-                    <input type="date" name="check_out" value="{{ reservation.check_out|date:'Y-m-d' }}" required
-                           class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Reservation Details -->
+                        <div class="col-md-6">
+                            <h5>Reservation Details</h5>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update_reservation">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Guest:</strong></label>
+                                    <p class="form-control-plaintext">{{ reservation.guest.full_name }}</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Room:</strong></label>
+                                    <p class="form-control-plaintext">{{ reservation.room.room_number }} - {{ reservation.room.type }}</p>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><strong>Check-in:</strong></label>
+                                            <p class="form-control-plaintext">{{ reservation.check_in|date:"M d, Y" }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><strong>Check-out:</strong></label>
+                                            <p class="form-control-plaintext">{{ reservation.check_out|date:"M d, Y" }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="special_requests" class="form-label">Special Requests</label>
+                                    <textarea class="form-control" id="special_requests" name="special_requests" rows="3">{{ reservation.special_requests }}</textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>
+                                    Update Reservation
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Expenses Management -->
+                        <div class="col-md-6">
+                            <h5>Additional Expenses</h5>
+                            
+                            <!-- Add New Expense Form -->
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Add New Expense</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="add_expense">
+                                        
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <input type="text" class="form-control" id="description" name="description" required>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="expense_type" class="form-label">Type</label>
+                                            <select class="form-select" id="expense_type" name="expense_type" required>
+                                                {% for value, label in expense_types %}
+                                                    <option value="{{ value }}">{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="quantity" class="form-label">Quantity</label>
+                                                    <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="unit_price" class="form-label">Unit Price ($)</label>
+                                                    <input type="number" class="form-control" id="unit_price" name="unit_price" step="0.01" min="0" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="notes" class="form-label">Notes</label>
+                                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-plus me-2"></i>
+                                            Add Expense
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Existing Expenses List -->
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Current Expenses</h6>
+                                    <span class="badge bg-primary">${{ total_expenses|floatformat:2 }}</span>
+                                </div>
+                                <div class="card-body">
+                                    {% if expenses %}
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Description</th>
+                                                        <th>Type</th>
+                                                        <th>Qty</th>
+                                                        <th>Price</th>
+                                                        <th>Total</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for expense in expenses %}
+                                                    <tr>
+                                                        <td>{{ expense.description }}</td>
+                                                        <td>
+                                                            <span class="badge bg-secondary">{{ expense.get_expense_type_display }}</span>
+                                                        </td>
+                                                        <td>{{ expense.quantity }}</td>
+                                                        <td>${{ expense.unit_price|floatformat:2 }}</td>
+                                                        <td><strong>${{ expense.total_amount|floatformat:2 }}</strong></td>
+                                                        <td>
+                                                            <form method="post" action="{% url 'reservations:delete_expense' expense.id %}" style="display: inline;">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this expense?')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="table-info">
+                                                        <th colspan="4">Total Additional Expenses:</th>
+                                                        <th>${{ total_expenses|floatformat:2 }}</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-center py-3">
+                                            <i class="fas fa-receipt text-muted fa-2x mb-2"></i>
+                                            <p class="text-muted">No additional expenses added yet.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>Billing Summary</h6>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <strong>Room Charges:</strong><br>
+                                            ${{ reservation.total_amount|floatformat:2 }}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Additional Expenses:</strong><br>
+                                            ${{ total_expenses|floatformat:2 }}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Subtotal:</strong><br>
+                                            ${{ reservation.total_amount|add:total_expenses|floatformat:2 }}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <em>Final total will be calculated at checkout including taxes and service charges.</em>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'reservations:detail' reservation.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Back to Reservation
+                        </a>
+                        {% if reservation.status == 'checked_in' %}
+                        <a href="{% url 'billing:checkout_guest' reservation.stay.id %}" class="btn btn-warning">
+                            <i class="fas fa-sign-out-alt me-2"></i>
+                            Checkout & Create Invoice
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Adults</label>
-                    <input type="number" name="adults" value="{{ reservation.adults }}" min="1" required
-                           class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Children</label>
-                    <input type="number" name="children" value="{{ reservation.children }}" min="0"
-                           class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
-                </div>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-luxury-700 mb-2">Rate per Night</label>
-                <input type="number" name="rate" value="{{ reservation.rate }}" step="0.01" required
-                       class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
-            </div>
-            
-            <div class="flex space-x-4">
-                <button type="submit" class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors">
-                    <i class="fas fa-save mr-2"></i>Update Reservation
-                </button>
-                <a href="{% url 'reservations:detail' reservation.id %}" class="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition-colors">
-                    Cancel
-                </a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}

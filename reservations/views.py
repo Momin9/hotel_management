@@ -13,7 +13,10 @@ from accounts.decorators import owner_or_permission_required
 
 @owner_or_permission_required('view_reservation')
 def reservation_list(request):
-    """List reservations based on user role"""
+    """List reservations based on user role with filtering"""
+    from django.db.models import Q
+    from accounts.permissions import check_user_permission
+    
     if request.user.is_superuser:
         reservations = Reservation.objects.all().order_by('-created_at')
     elif request.user.role == 'Owner':
@@ -27,7 +30,43 @@ def reservation_list(request):
         else:
             reservations = Reservation.objects.none()
     
-    return render(request, 'reservations/list.html', {'reservations': reservations})
+    # Apply filters
+    search = request.GET.get('search')
+    if search:
+        reservations = reservations.filter(
+            Q(guest__first_name__icontains=search) |
+            Q(guest__last_name__icontains=search) |
+            Q(guest__email__icontains=search) |
+            Q(room__room_number__icontains=search)
+        )
+    
+    status = request.GET.get('status')
+    if status:
+        reservations = reservations.filter(status=status)
+    
+    checkin_from = request.GET.get('checkin_from')
+    if checkin_from:
+        reservations = reservations.filter(check_in__gte=checkin_from)
+    
+    checkin_to = request.GET.get('checkin_to')
+    if checkin_to:
+        reservations = reservations.filter(check_in__lte=checkin_to)
+    
+    # Check permissions
+    can_add_reservations = request.user.role == 'Owner' or request.user.can_add_reservations
+    can_change_reservations = request.user.role == 'Owner' or request.user.can_change_reservations
+    can_delete_reservations = request.user.role == 'Owner' or request.user.can_delete_reservations
+    can_add_checkins = request.user.role == 'Owner' or request.user.can_add_checkins
+    can_change_checkins = request.user.role == 'Owner' or request.user.can_change_checkins
+    
+    return render(request, 'reservations/list.html', {
+        'reservations': reservations,
+        'can_add_reservations': can_add_reservations,
+        'can_change_reservations': can_change_reservations,
+        'can_delete_reservations': can_delete_reservations,
+        'can_add_checkins': can_add_checkins,
+        'can_change_checkins': can_change_checkins,
+    })
 
 @owner_or_permission_required('add_reservation')
 def reservation_create(request):
@@ -93,10 +132,8 @@ def reservation_create(request):
     else:
         # Hotel owners see only their hotels
         hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True, is_active=True)
-        # Show only guests who have reservations in user's hotels
-        from reservations.models import Reservation
-        guest_ids = Reservation.objects.filter(hotel__in=hotels).values_list('guest_id', flat=True).distinct()
-        guests = GuestProfile.objects.filter(id__in=guest_ids, deleted_at__isnull=True)
+        # Show all guests (hotel owners can create reservations for any guest)
+        guests = GuestProfile.objects.filter(deleted_at__isnull=True)
     
     return render(request, 'reservations/create_new.html', {
         'guests': guests,
@@ -112,7 +149,7 @@ def check_room_availability(request):
     check_out = request.GET.get('check_out')
     
     if not all([hotel_id, check_in, check_out]):
-        return JsonResponse({'rooms': []})
+        return JsonResponse({'rooms': [], 'debug': 'Missing parameters'})
     
     try:
         check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
@@ -121,6 +158,7 @@ def check_room_availability(request):
         hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
         all_rooms = hotel.rooms.all()
         
+        # Get booked rooms for the date range
         booked_rooms = Reservation.objects.filter(
             hotel=hotel,
             check_in__lt=check_out_date,
@@ -128,6 +166,7 @@ def check_room_availability(request):
             status__in=['confirmed', 'checked_in']
         ).values_list('room_id', flat=True)
         
+        # Get available rooms (exclude booked ones and only show available/cleaning status)
         available_rooms = all_rooms.exclude(room_id__in=booked_rooms).filter(
             status__in=['Available', 'Cleaning']
         )
@@ -136,15 +175,22 @@ def check_room_availability(request):
             'id': room.room_id,
             'number': room.room_number,
             'type': room.type,
-            'category': room.category,
+            'category': room.category.name if room.category else room.type,
             'price': str(room.price),
-            'bed': room.bed
+            'bed': room.bed_type
         } for room in available_rooms]
         
-        return JsonResponse({'rooms': rooms_data})
+        return JsonResponse({
+            'rooms': rooms_data,
+            'debug': {
+                'total_rooms': all_rooms.count(),
+                'booked_rooms': list(booked_rooms),
+                'available_count': available_rooms.count()
+            }
+        })
         
     except Exception as e:
-        return JsonResponse({'rooms': [], 'error': str(e)})
+        return JsonResponse({'rooms': [], 'error': str(e), 'debug': 'Exception occurred'})
 
 @login_required
 def booking_create(request):
@@ -181,7 +227,9 @@ def reservation_detail(request, reservation_id):
 
 @owner_or_permission_required('change_reservation')
 def reservation_edit(request, reservation_id):
-    """Edit reservation"""
+    """Edit reservation and manage expenses"""
+    from .models import ReservationExpense
+    
     reservation = get_object_or_404(Reservation, id=reservation_id)
     
     # Check if user has access to this reservation
@@ -189,16 +237,56 @@ def reservation_edit(request, reservation_id):
         messages.error(request, 'You do not have access to this reservation.')
         return redirect('reservations:list')
     
-    if request.method == 'POST':
-        messages.success(request, 'Reservation updated successfully!')
+    # Prevent editing after checkout
+    if reservation.status == 'checked_out':
+        messages.error(request, 'Cannot edit reservation after guest has been checked out.')
         return redirect('reservations:detail', reservation_id=reservation.id)
     
-    return render(request, 'reservations/edit.html', {'reservation': reservation})
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'add_expense':
+            # Add new expense
+            ReservationExpense.objects.create(
+                reservation=reservation,
+                description=request.POST.get('description'),
+                expense_type=request.POST.get('expense_type'),
+                quantity=int(request.POST.get('quantity', 1)),
+                unit_price=float(request.POST.get('unit_price', 0)),
+                notes=request.POST.get('notes', ''),
+                added_by=request.user
+            )
+            messages.success(request, 'Expense added successfully!')
+            
+        elif action == 'update_reservation':
+            # Update reservation details
+            reservation.special_requests = request.POST.get('special_requests', '')
+            reservation.save()
+            messages.success(request, 'Reservation updated successfully!')
+            
+        return redirect('reservations:edit', reservation_id=reservation.id)
+    
+    expenses = reservation.expenses.filter(deleted_at__isnull=True)
+    expense_types = ReservationExpense.EXPENSE_TYPE_CHOICES
+    
+    context = {
+        'reservation': reservation,
+        'expenses': expenses,
+        'expense_types': expense_types,
+        'total_expenses': sum(exp.total_amount for exp in expenses)
+    }
+    
+    return render(request, 'reservations/edit.html', context)
 
 @owner_or_permission_required('delete_reservation')
 def reservation_cancel(request, reservation_id):
     """Cancel reservation"""
     reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    # Prevent cancellation after checkout
+    if reservation.status == 'checked_out':
+        messages.error(request, 'Cannot cancel reservation after guest has been checked out.')
+        return redirect('reservations:detail', reservation_id=reservation.id)
     
     if request.method == 'POST':
         reservation.status = 'cancelled'
@@ -423,3 +511,30 @@ def generate_invoice(stay):
     invoice.save()
     
     return invoice
+
+@owner_or_permission_required('delete_reservation')
+def delete_expense(request, expense_id):
+    """Delete reservation expense"""
+    from .models import ReservationExpense
+    
+    expense = get_object_or_404(ReservationExpense, id=expense_id)
+    reservation_id = expense.reservation.id
+    
+    if request.method == 'POST':
+        expense.deleted_at = timezone.now()
+        expense.save()
+        messages.success(request, 'Expense deleted successfully!')
+    
+    return redirect('reservations:edit', reservation_id=reservation_id)
+
+@login_required
+def get_stay_id(request, reservation_id):
+    """Get stay ID from reservation ID for checkout"""
+    try:
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        if hasattr(reservation, 'stay'):
+            return JsonResponse({'success': True, 'stay_id': str(reservation.stay.id)})
+        else:
+            return JsonResponse({'success': False, 'message': 'No stay record found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})

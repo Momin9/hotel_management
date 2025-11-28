@@ -1,0 +1,121 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Inventory Dashboard - Hotel Management System{% endblock %}
+{% block page_title %}Inventory Management{% endblock %}
+{% block page_subtitle %}Track and manage your hotel inventory{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Items -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Items</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ total_items|default:0 }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-boxes text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Items -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Low Stock</p>
+                    <p class="text-3xl font-bold text-red-600">{{ low_stock_items|default:0 }}</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Categories</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ total_categories|default:0 }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tags text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Value -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Value</p>
+                    <p class="text-3xl font-bold text-luxury-900">${{ total_value|default:0|floatformat:0 }}</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-luxury-900">Quick Actions</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% if can_create_inventory %}
+            <a href="#" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-plus text-xl"></i>
+                <span class="font-medium">Add Item</span>
+            </a>
+            {% endif %}
+            
+            <a href="#" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-list text-xl"></i>
+                <span class="font-medium">View All Items</span>
+            </a>
+            
+            <a href="#" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-exclamation-triangle text-xl"></i>
+                <span class="font-medium">Low Stock Alert</span>
+            </a>
+            
+            <a href="#" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-chart-bar text-xl"></i>
+                <span class="font-medium">Reports</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Recent Activity</h2>
+        
+        <div class="space-y-4">
+            {% if recent_activities %}
+                {% for activity in recent_activities %}
+                <div class="flex items-center space-x-4 p-4 bg-luxury-50 rounded-xl">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-box text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium text-luxury-900">{{ activity.description }}</p>
+                        <p class="text-sm text-luxury-600">{{ activity.created_at|timesince }} ago</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-inbox text-luxury-400 text-4xl mb-4"></i>
+                <p class="text-luxury-600">No recent activity</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

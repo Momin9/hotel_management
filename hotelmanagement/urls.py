@@ -20,6 +20,8 @@ urlpatterns = [
     path('pos/', include('pos.urls')),
     path('inventory/', include('inventory.urls')),
     path('api/', include('api.urls')),
+    path('configurations/', include('configurations.urls')),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
 ]
 
 if settings.DEBUG:

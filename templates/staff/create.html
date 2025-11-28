@@ -10,7 +10,7 @@
         <form method="post" class="space-y-6">
             {% csrf_token %}
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Personal Information -->
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-luxury-800 mb-4">Personal Information</h3>
@@ -84,6 +84,181 @@
                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
                                value="password123" required>
                         <p class="text-xs text-luxury-500 mt-1">Staff can change this password after first login</p>
+                    </div>
+                </div>
+                
+                <!-- Permissions -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-semibold text-luxury-800 mb-4">Staff Permissions</h3>
+                    
+                    <!-- Hotel Management -->
+                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-luxury-800 mb-3">Hotel Management</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_hotels" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Hotel Information
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_change_hotels" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Edit Hotel Settings
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Rooms
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Add New Rooms
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_change_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Edit Room Details
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_delete_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Delete Rooms
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Reservations -->
+                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-luxury-800 mb-3">Reservations</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Reservations
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Create Reservations
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_change_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Edit Reservations
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_delete_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Cancel Reservations
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_checkins" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Check-ins
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_checkins" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Process Check-ins
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Guest Management -->
+                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-luxury-800 mb-3">Guest Management</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Guest Profiles
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Add New Guests
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_change_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Edit Guest Information
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_delete_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Delete Guest Profiles
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Staff Management -->
+                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-luxury-800 mb-3">Staff Management</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Staff List
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Add New Staff
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_change_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Edit Staff Details
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_delete_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Remove Staff
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Operations -->
+                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-luxury-800 mb-3">Operations</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_housekeeping" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Housekeeping Tasks
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_housekeeping" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Create Housekeeping Tasks
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_maintenance" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Maintenance Issues
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_maintenance" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Report New Issues
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_pos" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View POS Orders
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_pos" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Create Orders
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Financial -->
+                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-luxury-800 mb-3">Financial</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_billing" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Billing Information
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_billing" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Create Invoices
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_payments" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Payments
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_add_payments" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                Process Payments
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_reports" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Financial Reports
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" name="can_view_inventory" class="w-4 h-4 text-royal-600 rounded mr-2">
+                                View Inventory
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

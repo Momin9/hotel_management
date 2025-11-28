@@ -92,6 +92,12 @@ PERMISSION_CATEGORIES = {
         ('view_payment', 'View Payments'),
         ('add_payment', 'Process Payments'),
         ('view_reports', 'View Financial Reports'),
+    ],
+    'Company Management': [
+        ('view_companies', 'View Company Contracts'),
+        ('add_companies', 'Create Company Contracts'),
+        ('change_companies', 'Edit Company Contracts'),
+        ('delete_companies', 'Delete Company Contracts'),
     ]
 }
 
@@ -139,7 +145,86 @@ def check_user_permission(user, permission_codename):
     if user.role == 'Owner':
         return True  # Hotel owners have all permissions for their hotels
     
-    # Check if user has the permission directly assigned
+    # Map permission codenames to boolean fields on User model
+    permission_field_map = {
+        # Configuration permissions
+        'view_configurations': 'can_view_configurations',
+        'add_configurations': 'can_add_configurations',
+        'change_configurations': 'can_change_configurations',
+        'delete_configurations': 'can_delete_configurations',
+        
+        # Staff permissions
+        'view_staff': 'can_view_staff',
+        'add_staff': 'can_add_staff',
+        'change_staff': 'can_change_staff',
+        'delete_staff': 'can_delete_staff',
+        
+        # Hotel permissions
+        'view_hotels': 'can_view_hotels',
+        'change_hotels': 'can_change_hotels',
+        'view_rooms': 'can_view_rooms',
+        'add_rooms': 'can_add_rooms',
+        'change_rooms': 'can_change_rooms',
+        'delete_rooms': 'can_delete_rooms',
+        
+        # Reservation permissions
+        'view_reservations': 'can_view_reservations',
+        'add_reservations': 'can_add_reservations',
+        'change_reservations': 'can_change_reservations',
+        'delete_reservations': 'can_delete_reservations',
+        'view_checkins': 'can_view_checkins',
+        'add_checkins': 'can_add_checkins',
+        'change_checkins': 'can_change_checkins',
+        
+        # Guest permissions
+        'view_guests': 'can_view_guests',
+        'add_guests': 'can_add_guests',
+        'change_guests': 'can_change_guests',
+        'delete_guests': 'can_delete_guests',
+        
+        # Operations permissions
+        'view_housekeeping': 'can_view_housekeeping',
+        'add_housekeeping': 'can_add_housekeeping',
+        'change_housekeeping': 'can_change_housekeeping',
+        'delete_housekeeping': 'can_delete_housekeeping',
+        
+        'view_maintenance': 'can_view_maintenance',
+        'add_maintenance': 'can_add_maintenance',
+        'change_maintenance': 'can_change_maintenance',
+        'delete_maintenance': 'can_delete_maintenance',
+        
+        'view_pos': 'can_view_pos',
+        'add_pos': 'can_add_pos',
+        'change_pos': 'can_change_pos',
+        'delete_pos': 'can_delete_pos',
+        
+        # Financial permissions
+        'view_billing': 'can_view_billing',
+        'add_billing': 'can_add_billing',
+        'change_billing': 'can_change_billing',
+        'view_payments': 'can_view_payments',
+        'add_payments': 'can_add_payments',
+        'view_reports': 'can_view_reports',
+        
+        # Inventory permissions
+        'view_inventory': 'can_view_inventory',
+        'add_inventory': 'can_add_inventory',
+        'change_inventory': 'can_change_inventory',
+        'delete_inventory': 'can_delete_inventory',
+        
+        # Company permissions
+        'view_companies': 'can_view_companies',
+        'add_companies': 'can_add_companies',
+        'change_companies': 'can_change_companies',
+        'delete_companies': 'can_delete_companies',
+    }
+    
+    # Get the boolean field name for this permission
+    field_name = permission_field_map.get(permission_codename)
+    if field_name and hasattr(user, field_name):
+        return getattr(user, field_name)
+    
+    # Fallback to Django permissions if no boolean field mapping exists
     return user.user_permissions.filter(codename=permission_codename).exists()
 
 def get_user_permissions(user):

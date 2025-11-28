@@ -15,7 +15,7 @@
                 </div>
                 <div>
                     <h2 class="text-2xl font-bold text-luxury-900">{{ staff.get_full_name }}</h2>
-                    <p class="text-luxury-600 text-lg">{{ staff.role }}</p>
+                    <p class="text-luxury-600 text-lg">@{{ staff.username }} • {{ staff.role }}</p>
                     <p class="text-luxury-500">{{ staff.assigned_hotel.name|default:"No Hotel Assigned" }}</p>
                 </div>
             </div>
@@ -48,6 +48,10 @@
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Full Name:</span>
                         <span class="font-medium text-luxury-900">{{ staff.get_full_name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">Username:</span>
+                        <span class="font-medium text-luxury-900">@{{ staff.username }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Email:</span>

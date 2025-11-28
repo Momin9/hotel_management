@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Invoice, Payment
+from .models import Invoice, Payment, TaxConfiguration
 
 class PaymentInline(admin.TabularInline):
     model = Payment
@@ -103,3 +103,13 @@ class PaymentAdmin(admin.ModelAdmin):
             color, obj.get_status_display()
         )
     status_badge.short_description = 'Status'
+
+@admin.register(TaxConfiguration)
+class TaxConfigurationAdmin(admin.ModelAdmin):
+    list_display = ['name', 'percentage_display', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['name']
+    
+    def percentage_display(self, obj):
+        return f"{obj.percentage}%"
+    percentage_display.short_description = 'Tax Rate'

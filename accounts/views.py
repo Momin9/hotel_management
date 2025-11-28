@@ -195,20 +195,90 @@ def navigation_context(request):
         pass
     
     nav_permissions = {
-        'can_view_hotels': request.user.role == 'Owner' or check_user_permission(request.user, 'view_hotel'),
-        'can_view_staff': request.user.role == 'Owner' or check_user_permission(request.user, 'view_staff'),
-        'can_view_reservations': request.user.role == 'Owner' or check_user_permission(request.user, 'view_reservation'),
-        'can_view_guests': request.user.role == 'Owner' or check_user_permission(request.user, 'view_guest'),
-        'can_view_reports': request.user.role == 'Owner' or check_user_permission(request.user, 'view_reports'),
-        'can_add_staff': request.user.role == 'Owner' or check_user_permission(request.user, 'add_staff'),
-        'can_add_reservation': request.user.role == 'Owner' or check_user_permission(request.user, 'add_reservation'),
-        'can_add_guest': request.user.role == 'Owner' or check_user_permission(request.user, 'add_guest'),
-        'can_change_staff': request.user.role == 'Owner' or check_user_permission(request.user, 'change_staff'),
-        'can_change_reservation': request.user.role == 'Owner' or check_user_permission(request.user, 'change_reservation'),
-        'can_change_guest': request.user.role == 'Owner' or check_user_permission(request.user, 'change_guest'),
-        'can_checkin': request.user.role == 'Owner' or check_user_permission(request.user, 'add_checkin'),
-        'can_checkout': request.user.role == 'Owner' or check_user_permission(request.user, 'change_checkin'),
-        'can_view_rooms': request.user.role == 'Owner' or check_user_permission(request.user, 'view_room'),
+        # Hotel Management
+        'can_view_hotels': request.user.role == 'Owner' or request.user.can_view_hotels,
+        'can_change_hotels': request.user.role == 'Owner' or request.user.can_change_hotels,
+        'can_view_rooms': request.user.role == 'Owner' or request.user.can_view_rooms,
+        'can_add_rooms': request.user.role == 'Owner' or request.user.can_add_rooms,
+        'can_change_rooms': request.user.role == 'Owner' or request.user.can_change_rooms,
+        'can_delete_rooms': request.user.role == 'Owner' or request.user.can_delete_rooms,
+        
+        # Reservations
+        'can_view_reservations': request.user.role == 'Owner' or request.user.can_view_reservations,
+        'can_add_reservations': request.user.role == 'Owner' or request.user.can_add_reservations,
+        'can_change_reservations': request.user.role == 'Owner' or request.user.can_change_reservations,
+        'can_delete_reservations': request.user.role == 'Owner' or request.user.can_delete_reservations,
+        'can_view_checkins': request.user.role == 'Owner' or request.user.can_view_checkins,
+        'can_add_checkins': request.user.role == 'Owner' or request.user.can_add_checkins,
+        'can_change_checkins': request.user.role == 'Owner' or request.user.can_change_checkins,
+        
+        # Guest Management
+        'can_view_guests': request.user.role == 'Owner' or request.user.can_view_guests,
+        'can_add_guests': request.user.role == 'Owner' or request.user.can_add_guests,
+        'can_change_guests': request.user.role == 'Owner' or request.user.can_change_guests,
+        'can_delete_guests': request.user.role == 'Owner' or request.user.can_delete_guests,
+        
+        # Staff Management
+        'can_view_staff': request.user.role == 'Owner' or request.user.can_view_staff,
+        'can_add_staff': request.user.role == 'Owner' or request.user.can_add_staff,
+        'can_change_staff': request.user.role == 'Owner' or request.user.can_change_staff,
+        'can_delete_staff': request.user.role == 'Owner' or request.user.can_delete_staff,
+        
+        # Configuration Management
+        'can_view_configurations': request.user.role == 'Owner' or request.user.can_view_configurations,
+        'can_add_configurations': request.user.role == 'Owner' or request.user.can_add_configurations,
+        'can_change_configurations': request.user.role == 'Owner' or request.user.can_change_configurations,
+        'can_delete_configurations': request.user.role == 'Owner' or request.user.can_delete_configurations,
+        
+        # Housekeeping
+        'can_view_housekeeping': request.user.role == 'Owner' or request.user.can_view_housekeeping,
+        'can_add_housekeeping': request.user.role == 'Owner' or request.user.can_add_housekeeping,
+        'can_change_housekeeping': request.user.role == 'Owner' or request.user.can_change_housekeeping,
+        'can_delete_housekeeping': request.user.role == 'Owner' or request.user.can_delete_housekeeping,
+        
+        # Maintenance
+        'can_view_maintenance': request.user.role == 'Owner' or request.user.can_view_maintenance,
+        'can_add_maintenance': request.user.role == 'Owner' or request.user.can_add_maintenance,
+        'can_change_maintenance': request.user.role == 'Owner' or request.user.can_change_maintenance,
+        'can_delete_maintenance': request.user.role == 'Owner' or request.user.can_delete_maintenance,
+        
+        # Point of Sale
+        'can_view_pos': request.user.role == 'Owner' or request.user.can_view_pos,
+        'can_add_pos': request.user.role == 'Owner' or request.user.can_add_pos,
+        'can_change_pos': request.user.role == 'Owner' or request.user.can_change_pos,
+        'can_delete_pos': request.user.role == 'Owner' or request.user.can_delete_pos,
+        
+        # Inventory
+        'can_view_inventory': request.user.role == 'Owner' or request.user.can_view_inventory,
+        'can_add_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_add_inventory', False),
+        'can_change_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_change_inventory', False),
+        'can_delete_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_delete_inventory', False),
+        
+        # Financial
+        'can_view_billing': request.user.role == 'Owner' or request.user.can_view_billing,
+        'can_add_billing': request.user.role == 'Owner' or request.user.can_add_billing,
+        'can_change_billing': request.user.role == 'Owner' or request.user.can_change_billing,
+        'can_view_payments': request.user.role == 'Owner' or request.user.can_view_payments,
+        'can_add_payments': request.user.role == 'Owner' or request.user.can_add_payments,
+        'can_view_reports': request.user.role == 'Owner' or request.user.can_view_reports,
+        
+        # Company Management
+        'can_view_companies': request.user.role == 'Owner' or getattr(request.user, 'can_view_companies', False),
+        'can_add_companies': request.user.role == 'Owner' or getattr(request.user, 'can_add_companies', False),
+        'can_change_companies': request.user.role == 'Owner' or getattr(request.user, 'can_change_companies', False),
+        'can_delete_companies': request.user.role == 'Owner' or getattr(request.user, 'can_delete_companies', False),
+        
+        # Front Desk
+        'can_view_front_desk': request.user.role == 'Owner' or request.user.can_view_checkins,
+        
+        # Legacy compatibility
+        'can_add_reservation': request.user.role == 'Owner' or request.user.can_add_reservations,
+        'can_change_reservation': request.user.role == 'Owner' or request.user.can_change_reservations,
+        'can_add_guest': request.user.role == 'Owner' or request.user.can_add_guests,
+        'can_change_guest': request.user.role == 'Owner' or request.user.can_change_guests,
+        'can_checkin': request.user.role == 'Owner' or request.user.can_add_checkins,
+        'can_checkout': request.user.role == 'Owner' or request.user.can_change_checkins,
+        
         'unread_notifications_count': unread_notifications_count,
     }
     

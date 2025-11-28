@@ -44,6 +44,70 @@
         {% endif %}
     </div>
 
+    <!-- Filters Section -->
+    <div class="bg-white rounded-3xl p-6 luxury-shadow">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-luxury-800 flex items-center">
+                <i class="fas fa-filter mr-2 text-royal-500"></i>
+                Filters
+            </h3>
+            <button onclick="clearStaffFilters()" class="text-sm text-luxury-600 hover:text-luxury-800 transition-colors">
+                <i class="fas fa-times mr-1"></i>Clear All
+            </button>
+        </div>
+        
+        <form method="get" id="staffFilterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Search -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Search</label>
+                <input type="text" name="search" value="{{ request.GET.search }}" 
+                       class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent"
+                       placeholder="Name, email...">
+            </div>
+            
+            <!-- Role -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Role</label>
+                <select name="role" class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Roles</option>
+                    <option value="Manager" {% if request.GET.role == 'Manager' %}selected{% endif %}>Manager</option>
+                    <option value="Staff" {% if request.GET.role == 'Staff' %}selected{% endif %}>Staff</option>
+                    <option value="Receptionist" {% if request.GET.role == 'Receptionist' %}selected{% endif %}>Receptionist</option>
+                    <option value="Housekeeping" {% if request.GET.role == 'Housekeeping' %}selected{% endif %}>Housekeeping</option>
+                    <option value="Maintenance" {% if request.GET.role == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                </select>
+            </div>
+            
+            <!-- Hotel -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Hotel</label>
+                <select name="hotel" class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Hotels</option>
+                    {% for hotel in hotels %}
+                        <option value="{{ hotel.hotel_id }}" {% if request.GET.hotel == hotel.hotel_id|stringformat:'s' %}selected{% endif %}>{{ hotel.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Status -->
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                <select name="is_active" class="w-full px-3 py-2 border border-luxury-300 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Staff</option>
+                    <option value="true" {% if request.GET.is_active == 'true' %}selected{% endif %}>Active</option>
+                    <option value="false" {% if request.GET.is_active == 'false' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+            
+            <!-- Apply Filters -->
+            <div class="col-span-full flex justify-end">
+                <button type="submit" class="bg-royal-500 text-white py-2 px-6 rounded-lg hover:bg-royal-600 transition-colors">
+                    <i class="fas fa-search mr-2"></i>Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- List View -->
     <div id="listView">
         <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
@@ -72,7 +136,7 @@
                                     </div>
                                     <div>
                                         <p class="font-semibold text-luxury-800">{{ staff.first_name }} {{ staff.last_name }}</p>
-                                        <p class="text-sm text-luxury-600">{{ staff.role }}</p>
+                                        <p class="text-sm text-luxury-600">@{{ staff.username }} • {{ staff.role }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -146,7 +210,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-luxury-800">{{ staff.first_name }} {{ staff.last_name }}</h3>
-                        <p class="text-luxury-600 text-sm">{{ staff.role }}</p>
+                        <p class="text-luxury-600 text-sm">@{{ staff.username }} • {{ staff.role }}</p>
                     </div>
                 </div>
                 <div class="w-8 h-8 bg-luxury-100 rounded-lg flex items-center justify-center">
@@ -241,6 +305,32 @@ function toggleView(viewType) {
         kanbanBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-royal-500 text-white';
     }
 }
+
+function clearStaffFilters() {
+    const form = document.getElementById('staffFilterForm');
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        if (input.type === 'text') {
+            input.value = '';
+        } else if (input.type === 'select-one') {
+            input.selectedIndex = 0;
+        }
+    });
+    form.submit();
+}
+
+// Auto-submit form on filter change
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('staffFilterForm');
+    if (filterForm) {
+        const selects = filterForm.querySelectorAll('select');
+        selects.forEach(select => {
+            select.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        });
+    }
+});
 </script>
 
 <style>

@@ -16,7 +16,13 @@
                 <div>
                     <h2 class="text-2xl font-bold text-luxury-900">{{ guest.full_name }}</h2>
                     <p class="text-luxury-600 text-lg">{{ guest.email }}</p>
-                    <p class="text-luxury-500">Guest ID: #{{ guest.id|slice:":8" }}</p>
+                    <p class="text-luxury-500">
+                        {% if guest.guest_type == 'company' %}
+                            <i class="fas fa-building mr-1"></i>{{ guest.company.name }}
+                        {% else %}
+                            <i class="fas fa-user mr-1"></i>Individual Guest
+                        {% endif %}
+                    </p>
                 </div>
             </div>
             
@@ -52,11 +58,29 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Nationality:</span>
-                        <span class="font-medium text-luxury-900">{{ guest.nationality|default:"Not provided" }}</span>
+                        <span class="font-medium text-luxury-900">
+                            {% if guest.nationality %}
+                                {{ guest.nationality.name }}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Address:</span>
                         <span class="font-medium text-luxury-900">{{ guest.address|default:"Not provided" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-luxury-600">National ID Card:</span>
+                        <div class="text-right">
+                            <span class="font-medium text-luxury-900">{{ guest.national_id_card|default:"Not provided" }}</span>
+                            {% if guest.google_drive_file_link %}
+                                <br>
+                                <a href="{{ guest.google_drive_file_link }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <i class="fab fa-google-drive mr-1"></i>View ID Card Image
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,7 +95,7 @@
                 <div class="space-y-3">
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Total Reservations:</span>
-                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{{ guest.reservations.count }}</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{{ guest_reservations.count }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Member Since:</span>
@@ -80,8 +104,8 @@
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Last Visit:</span>
                         <span class="font-medium text-luxury-900">
-                            {% if guest.reservations.exists %}
-                                {{ guest.reservations.last.check_in|date:"M d, Y" }}
+                            {% if last_reservation %}
+                                {{ last_reservation.check_in|date:"M d, Y" }}
                             {% else %}
                                 Never
                             {% endif %}
@@ -116,22 +140,25 @@
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="{% url 'reservations:create' %}?guest={{ guest.id }}" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
-                <i class="fas fa-calendar-plus text-2xl text-blue-500 mb-2"></i>
-                <p class="font-medium text-luxury-900">New Reservation</p>
-                <p class="text-sm text-luxury-600">Create booking for guest</p>
+            <a href="{% url 'reservations:create' %}?guest={{ guest.id }}" 
+               class="p-6 border border-luxury-200 rounded-2xl hover:bg-luxury-50 hover:border-blue-300 transition-all duration-300 text-center group">
+                <i class="fas fa-calendar-plus text-3xl text-blue-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <p class="font-semibold text-luxury-900 mb-1">New Reservation</p>
+                <p class="text-sm text-luxury-600">Create booking for {{ guest.first_name }}</p>
             </a>
             
-            <a href="#" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
-                <i class="fas fa-envelope text-2xl text-green-500 mb-2"></i>
-                <p class="font-medium text-luxury-900">Send Email</p>
-                <p class="text-sm text-luxury-600">Contact guest directly</p>
-            </a>
+            <button onclick="openEmailModal()" 
+                    class="p-6 border border-luxury-200 rounded-2xl hover:bg-luxury-50 hover:border-green-300 transition-all duration-300 text-center group">
+                <i class="fas fa-envelope text-3xl text-green-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <p class="font-semibold text-luxury-900 mb-1">Send Email</p>
+                <p class="text-sm text-luxury-600">Contact {{ guest.first_name }} directly</p>
+            </button>
             
-            <a href="#" class="p-4 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors text-center">
-                <i class="fas fa-history text-2xl text-purple-500 mb-2"></i>
-                <p class="font-medium text-luxury-900">View History</p>
-                <p class="text-sm text-luxury-600">See all reservations</p>
+            <a href="{% url 'crm:guest_history' guest.id %}" 
+               class="p-6 border border-luxury-200 rounded-2xl hover:bg-luxury-50 hover:border-purple-300 transition-all duration-300 text-center group">
+                <i class="fas fa-history text-3xl text-purple-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <p class="font-semibold text-luxury-900 mb-1">View History</p>
+                <p class="text-sm text-luxury-600">See all {{ guest.first_name }}'s reservations</p>
             </a>
         </div>
     </div>
@@ -143,6 +170,128 @@
         </a>
     </div>
 </div>
+
+<!-- Email Modal -->
+<div id="emailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-t-3xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-2xl font-bold text-white">Send Email to {{ guest.first_name }}</h3>
+                <button onclick="closeEmailModal()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <form method="post" action="{% url 'crm:send_email' guest.id %}" class="p-6 space-y-6">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">Email Subject</label>
+                    <input type="text" name="subject" id="emailSubject" 
+                           class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                           placeholder="Enter email subject">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-luxury-700 mb-2">Email Message</label>
+                    <textarea name="message" id="emailMessage" rows="8"
+                              class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              placeholder="Write your message here..."></textarea>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="button" onclick="closeEmailModal()" 
+                        class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-2xl font-semibold hover:bg-gray-200 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-2xl font-semibold hover:from-green-600 hover:to-green-700 transition-all">
+                    <i class="fas fa-paper-plane mr-2"></i>Send Email
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEmailModal() {
+    // Pre-fill email content based on guest's reservation history
+    const subject = document.getElementById('emailSubject');
+    const message = document.getElementById('emailMessage');
+    
+    {% if last_reservation %}
+        subject.value = "Thank you for staying with {{ hotel.name }}!";
+        message.value = `Dear {{ guest.first_name }},
+
+We hope this message finds you well! 
+
+We wanted to reach out and thank you for choosing {{ hotel.name }} for your recent stay on {{ last_reservation.check_in|date:"F d, Y" }}. Your visit means the world to us, and we hope you had a wonderful experience.
+
+We would love to hear about your stay! How was your experience with us? Is there anything we could have done better to make your visit even more memorable?
+
+At {{ hotel.name }}, we are committed to providing exceptional hospitality and creating unforgettable memories for our guests. Your feedback helps us continue to improve and deliver the best possible service.
+
+We look forward to welcoming you back soon for another amazing stay!
+
+Warm regards,
+The {{ hotel.name }} Team
+
+---
+{{ hotel.name }}
+{{ hotel.address }}
+{{ hotel.phone }}
+{{ hotel.email }}`;
+    {% else %}
+        subject.value = "Welcome to {{ hotel.name }} - Discover Luxury Hospitality";
+        message.value = `Dear {{ guest.first_name }},
+
+Greetings from {{ hotel.name }}!
+
+We are delighted to welcome you to our exclusive guest community. As one of our valued guests, we wanted to introduce you to the exceptional experiences that await you at our luxury hotel.
+
+🏨 About {{ hotel.name }}:
+{{ hotel.name }} offers world-class accommodations and personalized service in the heart of {{ hotel.city }}. Our commitment to excellence ensures that every stay is memorable and comfortable.
+
+✨ What We Offer:
+- Luxurious rooms and suites with modern amenities
+- Exceptional dining experiences
+- Personalized concierge services
+- State-of-the-art facilities
+- Unforgettable hospitality
+
+We would be honored to host you for your next visit. Whether you're traveling for business or leisure, our team is dedicated to making your stay extraordinary.
+
+Feel free to contact us anytime to make a reservation or if you have any questions about our services.
+
+We look forward to welcoming you to {{ hotel.name }} soon!
+
+Best regards,
+The {{ hotel.name }} Team
+
+---
+{{ hotel.name }}
+{{ hotel.address }}
+{{ hotel.phone }}
+{{ hotel.email }}`;
+    {% endif %}
+    
+    document.getElementById('emailModal').classList.remove('hidden');
+}
+
+function closeEmailModal() {
+    document.getElementById('emailModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('emailModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeEmailModal();
+    }
+});
+</script>
 
 <style>
     .luxury-shadow {
