@@ -140,12 +140,17 @@ def reservation_create(request):
     # Filter hotels based on user role
     if request.user.is_superuser:
         hotels = Hotel.objects.filter(deleted_at__isnull=True, is_active=True)
-        # Super admin sees all guests
         guests = GuestProfile.objects.filter(deleted_at__isnull=True)
-    else:
+    elif request.user.role == 'Owner':
         # Hotel owners see only their hotels
         hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True, is_active=True)
-        # Show all guests (hotel owners can create reservations for any guest)
+        guests = GuestProfile.objects.filter(deleted_at__isnull=True)
+    else:
+        # Staff see only their assigned hotel
+        if request.user.assigned_hotel:
+            hotels = Hotel.objects.filter(hotel_id=request.user.assigned_hotel.hotel_id, deleted_at__isnull=True, is_active=True)
+        else:
+            hotels = Hotel.objects.none()
         guests = GuestProfile.objects.filter(deleted_at__isnull=True)
     
     return render(request, 'reservations/create_new.html', {
@@ -156,54 +161,73 @@ def reservation_create(request):
 
 @login_required
 def check_room_availability(request):
-    """Check room availability for dates"""
+    """Check room availability for selected dates"""
     hotel_id = request.GET.get('hotel_id')
     check_in = request.GET.get('check_in')
     check_out = request.GET.get('check_out')
     
     if not all([hotel_id, check_in, check_out]):
-        return JsonResponse({'rooms': [], 'debug': 'Missing parameters'})
+        return JsonResponse({'rooms': [], 'error': 'Missing parameters'})
     
     try:
+        from datetime import datetime
+        
+        # Parse dates
         check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
         check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
         
-        hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
-        all_rooms = hotel.rooms.all()
+        # Get hotel and all its rooms
+        hotel = Hotel.objects.get(hotel_id=hotel_id)
+        all_rooms = Room.objects.filter(hotel=hotel)
         
-        # Get booked rooms for the date range
-        booked_rooms = Reservation.objects.filter(
-            hotel=hotel,
-            check_in__lt=check_out_date,
-            check_out__gt=check_in_date,
-            status__in=['confirmed', 'checked_in']
-        ).values_list('room_id', flat=True)
+        available_rooms = []
         
-        # Get available rooms (exclude booked ones and only show available/cleaning status)
-        available_rooms = all_rooms.exclude(room_id__in=booked_rooms).filter(
-            status__in=['Available', 'Cleaning']
-        )
-        
-        rooms_data = [{
-            'id': room.room_id,
-            'number': room.room_number,
-            'type': room.type,
-            'category': room.category.name if room.category else room.type,
-            'price': str(room.price),
-            'bed': room.bed_type
-        } for room in available_rooms]
+        # Check each room individually
+        for room in all_rooms:
+            is_available = True
+            
+            # Check for overlapping reservations
+            overlapping_reservations = Reservation.objects.filter(
+                room=room,
+                check_in__lt=check_out_date,
+                check_out__gt=check_in_date
+            ).exclude(status__in=['cancelled', 'checked_out'])
+            
+            # If there are any overlapping reservations, room is not available
+            if overlapping_reservations.exists():
+                is_available = False
+            
+            # If room is available, add to list
+            if is_available:
+                available_rooms.append({
+                    'id': str(room.room_id),
+                    'number': room.room_number,
+                    'type': room.room_type.name if room.room_type else 'Standard',
+                    'category': room.room_type.name if room.room_type else 'Standard',
+                    'price': str(room.price or 0),
+                    'bed': room.bed_type.name if room.bed_type else 'Standard',
+                    'floor': room.floor.name if room.floor else 'Ground Floor'
+                })
         
         return JsonResponse({
-            'rooms': rooms_data,
+            'rooms': available_rooms,
+            'total_rooms': all_rooms.count(),
+            'available_count': len(available_rooms),
+            'dates': {
+                'check_in': check_in,
+                'check_out': check_out
+            },
             'debug': {
-                'total_rooms': all_rooms.count(),
-                'booked_rooms': list(booked_rooms),
-                'available_count': available_rooms.count()
+                'hotel_id': hotel_id,
+                'hotel_name': hotel.name,
+                'all_room_numbers': [r.room_number for r in all_rooms],
+                'reservations_found': Reservation.objects.filter(hotel=hotel).count(),
+                'active_reservations': Reservation.objects.filter(hotel=hotel).exclude(status__in=['cancelled', 'checked_out']).count()
             }
         })
         
     except Exception as e:
-        return JsonResponse({'rooms': [], 'error': str(e), 'debug': 'Exception occurred'})
+        return JsonResponse({'rooms': [], 'error': str(e)})
 
 @login_required
 def booking_create(request):
@@ -217,9 +241,15 @@ def booking_create(request):
     # Filter hotels based on user role
     if request.user.is_superuser:
         hotels = Hotel.objects.filter(deleted_at__isnull=True, is_active=True)
-    else:
+    elif request.user.role == 'Owner':
         # Hotel owners see only their hotels
         hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True, is_active=True)
+    else:
+        # Staff see only their assigned hotel
+        if request.user.assigned_hotel:
+            hotels = Hotel.objects.filter(hotel_id=request.user.assigned_hotel.hotel_id, deleted_at__isnull=True, is_active=True)
+        else:
+            hotels = Hotel.objects.none()
     
     return render(request, 'reservations/booking_create.html', {
         'guests': guests,

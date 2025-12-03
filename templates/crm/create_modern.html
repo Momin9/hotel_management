@@ -26,11 +26,67 @@
             </h3>
         </div>
         
-        <form method="post" class="p-6">
+        <form method="post" enctype="multipart/form-data" class="p-6">
             {% csrf_token %}
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <!-- Personal Information -->
+                <!-- Guest Type -->
                 <div class="col-span-2">
+                    <h4 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-user-tag text-primary-600 mr-2"></i>
+                        Guest Type
+                    </h4>
+                </div>
+                
+                <div>
+                    <label for="guest_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Guest Type <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user-tag text-gray-400"></i>
+                        </div>
+                        <select name="guest_type" id="guest_type" required onchange="toggleCompanyField()"
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
+                            <option value="individual">Individual Guest</option>
+                            <option value="company">Company Guest</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="company_field" style="display: none;">
+                    <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+                        Company <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-building text-gray-400"></i>
+                        </div>
+                        <select name="company" id="company"
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
+                            <option value="">Select a company</option>
+                            {% for company in companies %}
+                            <option value="{{ company.id }}">{{ company.name }}</option>
+                            {% empty %}
+                            <option value="" disabled>No companies available - Please create a company first</option>
+                            {% endfor %}
+                        </select>
+                        {% if not companies %}
+                        <p class="mt-1 text-sm text-amber-600">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            No companies found. 
+                            {% if hotel %}
+                            <a href="{% url 'hotels:company_create' hotel.hotel_id %}" class="text-blue-600 hover:underline" target="_blank">Create a company first</a>
+                            {% else %}
+                            <span class="text-gray-600">Please create a company first</span>
+                            {% endif %}
+                            to assign corporate guests.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Personal Information -->
+                <div class="col-span-2 mt-6">
                     <h4 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
                         <i class="fas fa-user text-primary-600 mr-2"></i>
                         Personal Information
@@ -39,7 +95,7 @@
                 
                 <div>
                     <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
-                        First Name *
+                        First Name <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -53,7 +109,7 @@
 
                 <div>
                     <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
-                        Last Name *
+                        Last Name <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -67,7 +123,7 @@
 
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address *
+                        Email Address <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -103,48 +159,323 @@
 
                 <div>
                     <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">
-                        Date of Birth
+                        Date of Birth <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-calendar text-gray-400"></i>
                         </div>
-                        <input type="date" name="date_of_birth" id="date_of_birth"
+                        <input type="date" name="date_of_birth" id="date_of_birth" required
                                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
                     </div>
                 </div>
 
                 <div>
                     <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nationality
+                        Nationality <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                             <i class="fas fa-flag text-gray-400"></i>
                         </div>
-                        <input type="text" name="nationality" id="nationality"
-                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
-                               placeholder="e.g., American, British">
+                        <select name="nationality" id="nationality" required
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200 appearance-none">
+                            <option value="">Select a country</option>
+                            <option value="AF">Afghanistan</option>
+                            <option value="AL">Albania</option>
+                            <option value="DZ">Algeria</option>
+                            <option value="AS">American Samoa</option>
+                            <option value="AD">Andorra</option>
+                            <option value="AO">Angola</option>
+                            <option value="AI">Anguilla</option>
+                            <option value="AQ">Antarctica</option>
+                            <option value="AG">Antigua and Barbuda</option>
+                            <option value="AR">Argentina</option>
+                            <option value="AM">Armenia</option>
+                            <option value="AW">Aruba</option>
+                            <option value="AU">Australia</option>
+                            <option value="AT">Austria</option>
+                            <option value="AZ">Azerbaijan</option>
+                            <option value="BS">Bahamas</option>
+                            <option value="BH">Bahrain</option>
+                            <option value="BD">Bangladesh</option>
+                            <option value="BB">Barbados</option>
+                            <option value="BY">Belarus</option>
+                            <option value="BE">Belgium</option>
+                            <option value="BZ">Belize</option>
+                            <option value="BJ">Benin</option>
+                            <option value="BM">Bermuda</option>
+                            <option value="BT">Bhutan</option>
+                            <option value="BO">Bolivia</option>
+                            <option value="BA">Bosnia and Herzegovina</option>
+                            <option value="BW">Botswana</option>
+                            <option value="BR">Brazil</option>
+                            <option value="BN">Brunei</option>
+                            <option value="BG">Bulgaria</option>
+                            <option value="BF">Burkina Faso</option>
+                            <option value="BI">Burundi</option>
+                            <option value="KH">Cambodia</option>
+                            <option value="CM">Cameroon</option>
+                            <option value="CA">Canada</option>
+                            <option value="CV">Cape Verde</option>
+                            <option value="KY">Cayman Islands</option>
+                            <option value="CF">Central African Republic</option>
+                            <option value="TD">Chad</option>
+                            <option value="CL">Chile</option>
+                            <option value="CN">China</option>
+                            <option value="CO">Colombia</option>
+                            <option value="KM">Comoros</option>
+                            <option value="CG">Congo</option>
+                            <option value="CD">Congo (Democratic Republic)</option>
+                            <option value="CR">Costa Rica</option>
+                            <option value="CI">Côte d'Ivoire</option>
+                            <option value="HR">Croatia</option>
+                            <option value="CU">Cuba</option>
+                            <option value="CY">Cyprus</option>
+                            <option value="CZ">Czech Republic</option>
+                            <option value="DK">Denmark</option>
+                            <option value="DJ">Djibouti</option>
+                            <option value="DM">Dominica</option>
+                            <option value="DO">Dominican Republic</option>
+                            <option value="EC">Ecuador</option>
+                            <option value="EG">Egypt</option>
+                            <option value="SV">El Salvador</option>
+                            <option value="GQ">Equatorial Guinea</option>
+                            <option value="ER">Eritrea</option>
+                            <option value="EE">Estonia</option>
+                            <option value="ET">Ethiopia</option>
+                            <option value="FJ">Fiji</option>
+                            <option value="FI">Finland</option>
+                            <option value="FR">France</option>
+                            <option value="GA">Gabon</option>
+                            <option value="GM">Gambia</option>
+                            <option value="GE">Georgia</option>
+                            <option value="DE">Germany</option>
+                            <option value="GH">Ghana</option>
+                            <option value="GR">Greece</option>
+                            <option value="GD">Grenada</option>
+                            <option value="GT">Guatemala</option>
+                            <option value="GN">Guinea</option>
+                            <option value="GW">Guinea-Bissau</option>
+                            <option value="GY">Guyana</option>
+                            <option value="HT">Haiti</option>
+                            <option value="HN">Honduras</option>
+                            <option value="HU">Hungary</option>
+                            <option value="IS">Iceland</option>
+                            <option value="IN">India</option>
+                            <option value="ID">Indonesia</option>
+                            <option value="IR">Iran</option>
+                            <option value="IQ">Iraq</option>
+                            <option value="IE">Ireland</option>
+                            <option value="IL">Israel</option>
+                            <option value="IT">Italy</option>
+                            <option value="JM">Jamaica</option>
+                            <option value="JP">Japan</option>
+                            <option value="JO">Jordan</option>
+                            <option value="KZ">Kazakhstan</option>
+                            <option value="KE">Kenya</option>
+                            <option value="KI">Kiribati</option>
+                            <option value="KP">Korea (North)</option>
+                            <option value="KR">Korea (South)</option>
+                            <option value="KW">Kuwait</option>
+                            <option value="KG">Kyrgyzstan</option>
+                            <option value="LA">Laos</option>
+                            <option value="LV">Latvia</option>
+                            <option value="LB">Lebanon</option>
+                            <option value="LS">Lesotho</option>
+                            <option value="LR">Liberia</option>
+                            <option value="LY">Libya</option>
+                            <option value="LI">Liechtenstein</option>
+                            <option value="LT">Lithuania</option>
+                            <option value="LU">Luxembourg</option>
+                            <option value="MK">Macedonia</option>
+                            <option value="MG">Madagascar</option>
+                            <option value="MW">Malawi</option>
+                            <option value="MY">Malaysia</option>
+                            <option value="MV">Maldives</option>
+                            <option value="ML">Mali</option>
+                            <option value="MT">Malta</option>
+                            <option value="MH">Marshall Islands</option>
+                            <option value="MR">Mauritania</option>
+                            <option value="MU">Mauritius</option>
+                            <option value="MX">Mexico</option>
+                            <option value="FM">Micronesia</option>
+                            <option value="MD">Moldova</option>
+                            <option value="MC">Monaco</option>
+                            <option value="MN">Mongolia</option>
+                            <option value="ME">Montenegro</option>
+                            <option value="MA">Morocco</option>
+                            <option value="MZ">Mozambique</option>
+                            <option value="MM">Myanmar</option>
+                            <option value="NA">Namibia</option>
+                            <option value="NR">Nauru</option>
+                            <option value="NP">Nepal</option>
+                            <option value="NL">Netherlands</option>
+                            <option value="NZ">New Zealand</option>
+                            <option value="NI">Nicaragua</option>
+                            <option value="NE">Niger</option>
+                            <option value="NG">Nigeria</option>
+                            <option value="NO">Norway</option>
+                            <option value="OM">Oman</option>
+                            <option value="PK">Pakistan</option>
+                            <option value="PW">Palau</option>
+                            <option value="PS">Palestine</option>
+                            <option value="PA">Panama</option>
+                            <option value="PG">Papua New Guinea</option>
+                            <option value="PY">Paraguay</option>
+                            <option value="PE">Peru</option>
+                            <option value="PH">Philippines</option>
+                            <option value="PL">Poland</option>
+                            <option value="PT">Portugal</option>
+                            <option value="QA">Qatar</option>
+                            <option value="RO">Romania</option>
+                            <option value="RU">Russia</option>
+                            <option value="RW">Rwanda</option>
+                            <option value="KN">Saint Kitts and Nevis</option>
+                            <option value="LC">Saint Lucia</option>
+                            <option value="VC">Saint Vincent and the Grenadines</option>
+                            <option value="WS">Samoa</option>
+                            <option value="SM">San Marino</option>
+                            <option value="ST">São Tomé and Príncipe</option>
+                            <option value="SA">Saudi Arabia</option>
+                            <option value="SN">Senegal</option>
+                            <option value="RS">Serbia</option>
+                            <option value="SC">Seychelles</option>
+                            <option value="SL">Sierra Leone</option>
+                            <option value="SG">Singapore</option>
+                            <option value="SK">Slovakia</option>
+                            <option value="SI">Slovenia</option>
+                            <option value="SB">Solomon Islands</option>
+                            <option value="SO">Somalia</option>
+                            <option value="ZA">South Africa</option>
+                            <option value="SS">South Sudan</option>
+                            <option value="ES">Spain</option>
+                            <option value="LK">Sri Lanka</option>
+                            <option value="SD">Sudan</option>
+                            <option value="SR">Suriname</option>
+                            <option value="SZ">Swaziland</option>
+                            <option value="SE">Sweden</option>
+                            <option value="CH">Switzerland</option>
+                            <option value="SY">Syria</option>
+                            <option value="TW">Taiwan</option>
+                            <option value="TJ">Tajikistan</option>
+                            <option value="TZ">Tanzania</option>
+                            <option value="TH">Thailand</option>
+                            <option value="TL">Timor-Leste</option>
+                            <option value="TG">Togo</option>
+                            <option value="TO">Tonga</option>
+                            <option value="TT">Trinidad and Tobago</option>
+                            <option value="TN">Tunisia</option>
+                            <option value="TR">Turkey</option>
+                            <option value="TM">Turkmenistan</option>
+                            <option value="TV">Tuvalu</option>
+                            <option value="UG">Uganda</option>
+                            <option value="UA">Ukraine</option>
+                            <option value="AE">United Arab Emirates</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="US">United States</option>
+                            <option value="UY">Uruguay</option>
+                            <option value="UZ">Uzbekistan</option>
+                            <option value="VU">Vanuatu</option>
+                            <option value="VA">Vatican City</option>
+                            <option value="VE">Venezuela</option>
+                            <option value="VN">Vietnam</option>
+                            <option value="YE">Yemen</option>
+                            <option value="ZM">Zambia</option>
+                            <option value="ZW">Zimbabwe</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="col-span-2">
                     <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
-                        Address
+                        Address <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
                             <i class="fas fa-map-marker-alt text-gray-400"></i>
                         </div>
-                        <textarea name="address" id="address" rows="3"
+                        <textarea name="address" id="address" rows="3" required
                                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
                                   placeholder="Enter full address"></textarea>
                     </div>
                 </div>
 
+                <!-- Identification -->
+                <div class="col-span-2 mt-6">
+                    <h4 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-id-card text-primary-600 mr-2"></i>
+                        Identification
+                    </h4>
+                </div>
+                
+                <div>
+                    <label for="id_number" class="block text-sm font-medium text-gray-700 mb-2">
+                        ID/Passport Number
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-passport text-gray-400"></i>
+                        </div>
+                        <input type="text" name="id_number" id="id_number"
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
+                               placeholder="Passport or ID number">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="national_id_card" class="block text-sm font-medium text-gray-700 mb-2">
+                        National ID Card Number <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-id-card text-gray-400"></i>
+                        </div>
+                        <input type="text" name="national_id_card" id="national_id_card" required
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
+                               placeholder="National Identity Card Number">
+                    </div>
+                </div>
+                
+                <div class="col-span-2">
+                    <label for="national_id_card_image" class="block text-sm font-medium text-gray-700 mb-2">
+                        National ID Card Image
+                    </label>
+                    <div class="relative">
+                        <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                            <i class="fas fa-image text-gray-400"></i>
+                        </div>
+                        <input type="file" name="national_id_card_image" id="national_id_card_image" accept="image/*"
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Upload a clear image of the guest's national ID card</p>
+                </div>
+                
+                <!-- Preferences & Notes -->
+                <div class="col-span-2 mt-6">
+                    <h4 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-heart text-primary-600 mr-2"></i>
+                        Preferences & Notes
+                    </h4>
+                </div>
+                
+                <div class="col-span-2">
+                    <label for="preferences" class="block text-sm font-medium text-gray-700 mb-2">
+                        Guest Preferences
+                    </label>
+                    <div class="relative">
+                        <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                            <i class="fas fa-heart text-gray-400"></i>
+                        </div>
+                        <textarea name="preferences" id="preferences" rows="3"
+                                  class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
+                                  placeholder="Room preferences, dietary requirements, special needs, etc."></textarea>
+                    </div>
+                </div>
+                
                 <div class="col-span-2">
                     <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
-                        Notes & Preferences
+                        Additional Notes
                     </label>
                     <div class="relative">
                         <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
@@ -152,10 +483,27 @@
                         </div>
                         <textarea name="notes" id="notes" rows="3"
                                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
-                                  placeholder="Special requests, preferences, dietary restrictions, etc."></textarea>
+                                  placeholder="Additional notes about the guest"></textarea>
                     </div>
                 </div>
             </div>
+
+            <script>
+            function toggleCompanyField() {
+                const guestType = document.getElementById('guest_type').value;
+                const companyField = document.getElementById('company_field');
+                const companySelect = document.getElementById('company');
+                
+                if (guestType === 'company') {
+                    companyField.style.display = 'block';
+                    companySelect.required = true;
+                } else {
+                    companyField.style.display = 'none';
+                    companySelect.required = false;
+                    companySelect.value = '';
+                }
+            }
+            </script>
 
             <!-- Action Buttons -->
             <div class="mt-8 flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
@@ -165,7 +513,7 @@
                     Cancel
                 </a>
                 <button type="submit" 
-                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-200">
+                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                     <i class="fas fa-save mr-2"></i>
                     Create Guest
                 </button>

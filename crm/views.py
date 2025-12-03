@@ -113,10 +113,13 @@ def guest_create(request, hotel_id=None):
     else:
         form = GuestForm(hotel=hotel, user=request.user)
     
-    # Get companies for the hotel
+    # Get companies for the hotel - ensure we always have companies
     companies = []
     if hotel:
         companies = Company.objects.filter(hotel=hotel, is_active=True)
+    elif request.user.assigned_hotel:
+        # If no hotel specified but user has assigned hotel
+        companies = Company.objects.filter(hotel=request.user.assigned_hotel, is_active=True)
     
     return render(request, 'crm/create_modern.html', {
         'form': form,
@@ -182,10 +185,16 @@ def guest_edit(request, guest_id, hotel_id=None):
         except Exception as e:
             messages.error(request, f'Error updating guest: {str(e)}')
     
-    # Get companies for the hotel
+    # Get companies for the hotel - ensure we always have companies
     companies = []
     if hotel:
         companies = Company.objects.filter(hotel=hotel, is_active=True)
+    elif request.user.assigned_hotel:
+        # If no hotel specified but user has assigned hotel
+        companies = Company.objects.filter(hotel=request.user.assigned_hotel, is_active=True)
+    elif request.user.role == 'Owner' and request.user.owned_hotels.exists():
+        # For owners, get companies from their first hotel
+        companies = Company.objects.filter(hotel=request.user.owned_hotels.first(), is_active=True)
     
     return render(request, 'crm/edit.html', {
         'guest': guest,

@@ -568,14 +568,7 @@
         </div>
     </footer>
 
-    <!-- Floating Action Button -->
-    {% if user.is_authenticated and request.resolver_match.url_name != 'landing' and request.resolver_match.url_name != 'about' %}
-    <div class="fixed bottom-8 right-8 z-40">
-        <button class="w-16 h-16 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full luxury-shadow hover-lift flex items-center justify-center text-white text-xl">
-            <i class="fas fa-plus"></i>
-        </button>
-    </div>
-    {% endif %}
+
 
     <!-- Include upgrade modal for authenticated users -->
     {% if user.is_authenticated %}
