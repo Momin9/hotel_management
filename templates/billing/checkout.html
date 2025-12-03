@@ -1,120 +1,237 @@
 {% extends 'base_luxury.html' %}
 {% load static %}
 
-{% block title %}Guest Checkout{% endblock %}
+{% block title %}Guest Checkout - AuraStay{% endblock %}
+
+{% block page_title %}Guest Checkout{% endblock %}
+
+{% block page_subtitle %}Complete guest checkout and generate invoice{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-sign-out-alt me-2"></i>
-                        Guest Checkout
-                    </h4>
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6">
+            <div class="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-sign-out-alt text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Guest Checkout</h2>
+                <p class="text-luxury-600 font-medium">Complete checkout and generate invoice</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Guest Information Card -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-royal-500 to-royal-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user text-white text-lg"></i>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5>Guest Information</h5>
-                            <div class="mb-3">
-                                <strong>Name:</strong> {{ stay.reservation.guest.full_name }}
+                <h3 class="text-2xl font-bold text-luxury-800">Guest Information</h3>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="bg-gradient-to-r from-luxury-50 to-luxury-100 rounded-2xl p-6 border border-luxury-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-user-circle text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-luxury-600 font-medium">Guest Name</p>
+                            <p class="text-xl font-bold text-luxury-800">{{ stay.reservation.guest.full_name }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-bed text-white"></i>
                             </div>
-                            <div class="mb-3">
-                                <strong>Room:</strong> {{ stay.room.room_number }}
+                            <div>
+                                <p class="text-sm text-blue-600 font-medium">Room Details</p>
+                                <p class="text-lg font-bold text-blue-800">{{ stay.room.room_number }} - {{ stay.room.type }}</p>
+                                <p class="text-sm text-blue-600">${{ stay.reservation.rate }}/night</p>
                             </div>
-                            <div class="mb-3">
-                                <strong>Check-in:</strong> {{ stay.actual_check_in|date:"M d, Y H:i" }}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border border-green-200">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-calendar-plus text-white"></i>
                             </div>
-                            <div class="mb-3">
-                                <strong>Check-out:</strong> 
+                            <div>
+                                <p class="text-sm text-green-600 font-medium">Check-in</p>
+                                <p class="text-lg font-bold text-green-800">{{ stay.actual_check_in|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 border border-red-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-calendar-minus text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-red-600 font-medium">Check-out</p>
+                            <p class="text-lg font-bold text-red-800">
                                 {% if stay.actual_check_out %}
                                     {{ stay.actual_check_out|date:"M d, Y H:i" }}
                                 {% else %}
-                                    <span class="text-warning">Still checked in</span>
+                                    <span class="text-amber-600">Still checked in</span>
                                 {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <h5>Billing Details</h5>
-                            <form method="post">
-                                {% csrf_token %}
-                                
-                                <div class="mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="apply_tax" name="apply_tax" onchange="toggleTaxOptions()">
-                                        <label class="form-check-label" for="apply_tax">
-                                            Apply Tax
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3" id="tax_options" style="display: none;">
-                                    <label for="tax_rate" class="form-label">Tax Rate</label>
-                                    <select class="form-select" id="tax_rate" name="tax_rate">
-                                        <option value="0">Select Tax Rate</option>
-                                        {% for tax in tax_configs %}
-                                            <option value="{{ tax.percentage }}">{{ tax.name }} - {{ tax.percentage }}%</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <h6>Estimated Charges:</h6>
-                                    <div class="border p-3 bg-light">
-                                        {% with nights=stay.reservation.total_nights %}
-                                        <div class="d-flex justify-content-between">
-                                            <span>Room Rate ({{ nights }} night{{ nights|pluralize }}):</span>
-                                            <span>${{ stay.reservation.total_amount }}</span>
-                                        </div>
-                                        
-                                        {% for expense in stay.reservation.expenses.all %}
-                                        {% if not expense.deleted_at %}
-                                        <div class="d-flex justify-content-between text-muted">
-                                            <span>{{ expense.description }} ({{ expense.quantity }}x):</span>
-                                            <span>${{ expense.total_amount|floatformat:2 }}</span>
-                                        </div>
-                                        {% endif %}
-                                        {% endfor %}
-                                        
-                                        {% if stay.reservation.expenses.all %}
-                                        <hr class="my-2">
-                                        {% endif %}
-                                        
-                                        <div class="d-flex justify-content-between">
-                                            <span>Service Charge (5%):</span>
-                                            <span id="service_charge">$0.00</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between" id="tax_line" style="display: none;">
-                                            <span>Tax:</span>
-                                            <span id="tax_amount">$0.00</span>
-                                        </div>
-                                        <hr>
-                                        <div class="d-flex justify-content-between fw-bold">
-                                            <span>Total:</span>
-                                            <span id="total_amount">$0.00</span>
-                                        </div>
-                                        {% endwith %}
-                                    </div>
-                                </div>
-                                
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-success btn-lg">
-                                        <i class="fas fa-check me-2"></i>
-                                        Complete Checkout & Create Invoice
-                                    </button>
-                                    <a href="{% url 'reservations:reservation_list' %}" class="btn btn-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>
-                                        Cancel
-                                    </a>
-                                </div>
-                            </form>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+                        
+        <!-- Billing Details Card -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-file-invoice-dollar text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Billing Configuration</h3>
+            </div>
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Tax Configuration -->
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-percentage text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-blue-800">Tax Configuration</h4>
+                                <p class="text-sm text-blue-600">Configure tax settings for this invoice</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="apply_tax" name="apply_tax" class="sr-only peer" onchange="toggleTaxOptions()">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    
+                    <div id="tax_options" style="display: none;" class="mt-4">
+                        <label for="tax_rate" class="block text-sm font-medium text-blue-700 mb-2">Select Tax Rate</label>
+                        <select id="tax_rate" name="tax_rate" class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                            <option value="0">Select Tax Rate</option>
+                            {% for tax in tax_configs %}
+                                <option value="{{ tax.percentage }}">{{ tax.name }} - {{ tax.percentage }}%</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Service Charge Configuration -->
+                <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-2xl p-6 border border-emerald-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-concierge-bell text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-emerald-800">Service Charge</h4>
+                                <p class="text-sm text-emerald-600">Add service charge to the bill</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="apply_service_charge" name="apply_service_charge" checked class="sr-only peer" onchange="calculateTotal()">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="service_charge_rate" class="block text-sm font-medium text-emerald-700 mb-2">Service Charge Rate (%)</label>
+                        <input type="number" id="service_charge_rate" name="service_charge_rate" value="5" min="0" max="100" step="0.1" onchange="calculateTotal()" class="w-full px-4 py-3 border border-emerald-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                    </div>
+                </div>
+                                
+                <!-- Invoice Preview -->
+                <div class="bg-gradient-to-r from-luxury-50 to-luxury-100 rounded-2xl p-6 border border-luxury-200">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-r from-luxury-500 to-luxury-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-receipt text-white"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-luxury-800">Invoice Preview</h4>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        {% with nights=stay.reservation.total_nights %}
+                        <!-- Room Charges -->
+                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="text-blue-800 font-medium">{{ stay.room.type }} - Room {{ stay.room.room_number }}</span>
+                                    <p class="text-sm text-blue-600">{{ nights }} night{{ nights|pluralize }} × ${{ stay.reservation.rate }}/night</p>
+                                </div>
+                                <span class="font-bold text-blue-800">${{ stay.reservation.total_amount }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Extra Services -->
+                        {% for expense in stay.reservation.expenses.all %}
+                        {% if not expense.deleted_at %}
+                        <div class="bg-amber-50 rounded-lg p-3 border border-amber-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="text-amber-800 font-medium">{{ expense.description }}</span>
+                                    <p class="text-sm text-amber-600">{{ expense.quantity }}x × ${{ expense.unit_price }}</p>
+                                    <p class="text-xs text-amber-500">{{ expense.get_expense_type_display }}</p>
+                                </div>
+                                <span class="font-bold text-amber-800">${{ expense.total_amount|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        {% if not stay.reservation.expenses.all %}
+                        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 text-center">
+                            <p class="text-gray-500 text-sm">No additional services</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="border-t border-luxury-300 my-3"></div>
+                        
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-luxury-700">Service Charge:</span>
+                            <span class="font-semibold text-luxury-800" id="service_charge">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2" id="tax_line" style="display: none;">
+                            <span class="text-luxury-700">Tax:</span>
+                            <span class="font-semibold text-luxury-800" id="tax_amount">$0.00</span>
+                        </div>
+                        <div class="border-t-2 border-luxury-400 my-3"></div>
+                        <div class="flex justify-between items-center py-3 bg-gradient-to-r from-royal-500 to-royal-600 rounded-xl px-4 text-white">
+                            <span class="text-lg font-bold">Total Amount:</span>
+                            <span class="text-xl font-bold" id="total_amount">$0.00</span>
+                        </div>
+                        {% endwith %}
+                    </div>
+                </div>
+                                
+                <!-- Action Buttons -->
+                <div class="space-y-4">
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg hover-lift transition-all duration-300 group">
+                        <i class="fas fa-check mr-3 group-hover:scale-110 transition-transform"></i>
+                        Complete Checkout & Create Invoice
+                    </button>
+                    <a href="{% url 'reservations:list' %}" class="w-full bg-gradient-to-r from-luxury-500 to-luxury-600 text-white py-4 rounded-2xl font-semibold text-center block hover-lift transition-all duration-300 group">
+                        <i class="fas fa-arrow-left mr-3 group-hover:scale-110 transition-transform"></i>
+                        Cancel & Return
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -146,11 +263,13 @@ function calculateTotal() {
     {% endfor %}
     
     const subtotal = roomTotal + expensesTotal;
-    const serviceRate = 0.05;
+    const applyServiceCharge = document.getElementById('apply_service_charge').checked;
+    const serviceRate = applyServiceCharge ? (parseFloat(document.getElementById('service_charge_rate').value) / 100 || 0) : 0;
     const taxRate = parseFloat(document.getElementById('tax_rate').value) / 100 || 0;
     
     const serviceCharge = subtotal * serviceRate;
-    const taxAmount = subtotal * taxRate;
+    const taxableAmount = subtotal + serviceCharge;
+    const taxAmount = taxableAmount * taxRate;
     const total = subtotal + serviceCharge + taxAmount;
     
     document.getElementById('service_charge').textContent = '$' + serviceCharge.toFixed(2);
@@ -165,4 +284,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById('tax_rate').addEventListener('change', calculateTotal);
 </script>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
 {% endblock %}

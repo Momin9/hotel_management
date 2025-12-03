@@ -1,0 +1,344 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Housekeeping Dashboard - {{ user.get_full_name }}{% endblock %}
+
+{% block page_title %}Housekeeping Dashboard{% endblock %}
+{% block page_subtitle %}Manage room cleaning and housekeeping operations{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Rooms by Floor</p>
+                    <p class="text-3xl font-bold text-luxury-900">8</p>
+                    <p class="text-sm text-blue-600">floors total</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-building text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Today's Schedule</p>
+                    <p class="text-3xl font-bold text-luxury-900">32</p>
+                    <p class="text-sm text-green-600">rooms to clean</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar-day text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Completed Tasks</p>
+                    <p class="text-3xl font-bold text-luxury-900">18</p>
+                    <p class="text-sm text-purple-600">14 pending</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tasks text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Maintenance Requests</p>
+                    <p class="text-3xl font-bold text-luxury-900">5</p>
+                    <p class="text-sm text-yellow-600">2 urgent</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tools text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Supply Status</p>
+                    <p class="text-3xl font-bold text-luxury-900">85%</p>
+                    <p class="text-sm text-indigo-600">well stocked</p>
+                </div>
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-boxes text-indigo-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Status by Floor -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Room Status by Floor</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-luxury-900">Floor 1-2</h3>
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-building text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Clean</span>
+                        <span class="font-medium text-green-600">12</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Dirty</span>
+                        <span class="font-medium text-red-600">6</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">In Progress</span>
+                        <span class="font-medium text-yellow-600">2</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-luxury-900">Floor 3-4</h3>
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-building text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Clean</span>
+                        <span class="font-medium text-green-600">15</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Dirty</span>
+                        <span class="font-medium text-red-600">3</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">In Progress</span>
+                        <span class="font-medium text-yellow-600">2</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-luxury-900">Floor 5-6</h3>
+                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-building text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Clean</span>
+                        <span class="font-medium text-green-600">10</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Dirty</span>
+                        <span class="font-medium text-red-600">8</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">In Progress</span>
+                        <span class="font-medium text-yellow-600">2</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-luxury-900">Floor 7-8</h3>
+                    <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-building text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Clean</span>
+                        <span class="font-medium text-green-600">14</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">Dirty</span>
+                        <span class="font-medium text-red-600">4</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-luxury-600">In Progress</span>
+                        <span class="font-medium text-yellow-600">2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Housekeeping Navigation -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Housekeeping Operations</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if can_view_rooms %}
+            <a href="{% url 'hotels:room_list' user.assigned_hotel.hotel_id %}" class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-bed text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Room Status</h3>
+                    <p class="text-sm text-luxury-600">View room cleaning status</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_view_housekeeping %}
+            <a href="{% url 'housekeeping:task_list' %}" class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 hover:from-green-100 hover:to-green-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-calendar text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Cleaning Schedule</h3>
+                    <p class="text-sm text-luxury-600">Daily cleaning tasks</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_change_housekeeping %}
+            <a href="{% url 'housekeeping:task_list' %}" class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 hover:from-purple-100 hover:to-purple-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-tasks text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Task Assignment</h3>
+                    <p class="text-sm text-luxury-600">Update task status</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_add_maintenance %}
+            <a href="{% url 'maintenance:issue_list' %}" class="group bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 hover:from-yellow-100 hover:to-yellow-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-tools text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Maintenance Requests</h3>
+                    <p class="text-sm text-luxury-600">Report room issues</p>
+                </div>
+            </a>
+            {% endif %}
+
+            <a href="#" class="group bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-list-check text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Today's Tasks</h3>
+                    <p class="text-sm text-luxury-600">View daily assignments</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Today's Tasks and Maintenance -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Today's Cleaning Tasks</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Room 101-105</p>
+                            <p class="text-sm text-luxury-600">Standard cleaning • Floor 1</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        Completed
+                    </span>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-yellow-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Room 201-210</p>
+                            <p class="text-sm text-luxury-600">Deep cleaning • Floor 2</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                        In Progress
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-blue-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Suite 301-305</p>
+                            <p class="text-sm text-luxury-600">VIP cleaning • Floor 3</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        Pending
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Maintenance Requests</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Room 205</p>
+                            <p class="text-sm text-luxury-600">Leaky faucet in bathroom</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                        Urgent
+                    </span>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-tools text-yellow-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Room 312</p>
+                            <p class="text-sm text-luxury-600">Air conditioning not working</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                        Reported
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Room 150</p>
+                            <p class="text-sm text-luxury-600">Light bulb replacement</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        Fixed
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

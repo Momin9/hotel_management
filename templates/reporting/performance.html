@@ -1,0 +1,282 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Performance Dashboard - AuraStay{% endblock %}
+
+{% block page_title %}Performance Dashboard{% endblock %}
+
+{% block page_subtitle %}Operational efficiency metrics and KPIs{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header with Export -->
+    <div class="flex justify-between items-center bg-white rounded-3xl p-6 luxury-shadow">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center">
+                <i class="fas fa-tachometer-alt text-white text-lg"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-luxury-800">Performance Metrics</h2>
+                <p class="text-luxury-600">Real-time operational efficiency indicators</p>
+            </div>
+        </div>
+        <a href="{% url 'reporting:export_performance_pdf' %}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300 flex items-center space-x-2">
+            <i class="fas fa-download"></i>
+            <span>Export PDF</span>
+        </a>
+    </div>
+
+    <!-- Key Performance Indicators -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-percentage text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-blue-600">{{ occupancy_rate }}%</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Occupancy Rate</h3>
+            <p class="text-sm text-luxury-600">Current room occupancy</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-green-600">${{ revpar }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">RevPAR</h3>
+            <p class="text-sm text-luxury-600">Revenue per available room</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-line text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-purple-600">${{ adr }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">ADR</h3>
+            <p class="text-sm text-luxury-600">Average daily rate</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user-check text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-amber-600">{{ retention_rate }}%</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Retention Rate</h3>
+            <p class="text-sm text-luxury-600">Guest return percentage</p>
+        </div>
+    </div>
+
+    <!-- Operational Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-emerald-600">{{ checkins_today }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Check-ins Today</h3>
+            <p class="text-sm text-luxury-600">Guests checked in</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-orange-600">{{ checkouts_today }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Check-outs Today</h3>
+            <p class="text-sm text-luxury-600">Guests checked out</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-users text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-indigo-600">{{ total_staff }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Active Staff</h3>
+            <p class="text-sm text-luxury-600">Currently on duty</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-bed text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-pink-600">{{ occupied_rooms }}/{{ total_rooms }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Room Status</h3>
+            <p class="text-sm text-luxury-600">Occupied/Total rooms</p>
+        </div>
+    </div>
+
+    <!-- Revenue & Efficiency Summary -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-bar text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Revenue Performance</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200">
+                    <div>
+                        <h4 class="font-bold text-green-800">Monthly Revenue</h4>
+                        <p class="text-sm text-green-600">Total revenue this month</p>
+                    </div>
+                    <span class="text-2xl font-bold text-green-700">${{ monthly_revenue|floatformat:0 }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
+                    <div>
+                        <h4 class="font-bold text-blue-800">RevPAR</h4>
+                        <p class="text-sm text-blue-600">Revenue per available room</p>
+                    </div>
+                    <span class="text-2xl font-bold text-blue-700">${{ revpar }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
+                    <div>
+                        <h4 class="font-bold text-purple-800">ADR</h4>
+                        <p class="text-sm text-purple-600">Average daily rate</p>
+                    </div>
+                    <span class="text-2xl font-bold text-purple-700">${{ adr }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-cogs text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Operational Efficiency</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-4 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl border border-amber-200">
+                    <div>
+                        <h4 class="font-bold text-amber-800">Occupancy Rate</h4>
+                        <p class="text-sm text-amber-600">Current room utilization</p>
+                    </div>
+                    <span class="text-2xl font-bold text-amber-700">{{ occupancy_rate }}%</span>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-2xl border border-emerald-200">
+                    <div>
+                        <h4 class="font-bold text-emerald-800">Guest Retention</h4>
+                        <p class="text-sm text-emerald-600">Repeat guest percentage</p>
+                    </div>
+                    <span class="text-2xl font-bold text-emerald-700">{{ retention_rate }}%</span>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-2xl border border-indigo-200">
+                    <div>
+                        <h4 class="font-bold text-indigo-800">Completed Stays</h4>
+                        <p class="text-sm text-indigo-600">Total completed bookings</p>
+                    </div>
+                    <span class="text-2xl font-bold text-indigo-700">{{ completed_stays }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Recent Check-ins -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Recent Check-ins</h3>
+            </div>
+            
+            {% if recent_checkins %}
+                <div class="space-y-4">
+                    {% for checkin in recent_checkins %}
+                    <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-2xl p-4 border border-emerald-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-emerald-800">{{ checkin.reservation.guest.first_name }} {{ checkin.reservation.guest.last_name }}</h4>
+                                <p class="text-sm text-emerald-600">Room {{ checkin.reservation.room.room_number }}</p>
+                                <p class="text-xs text-emerald-500">{{ checkin.actual_check_in|date:"M d, Y H:i" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full text-xs font-semibold">Checked In</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-calendar-check text-emerald-400 text-2xl"></i>
+                    </div>
+                    <p class="text-luxury-500 font-medium">No recent check-ins</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Recent Check-outs -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Recent Check-outs</h3>
+            </div>
+            
+            {% if recent_checkouts %}
+                <div class="space-y-4">
+                    {% for checkout in recent_checkouts %}
+                    <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-4 border border-orange-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-orange-800">{{ checkout.reservation.guest.first_name }} {{ checkout.reservation.guest.last_name }}</h4>
+                                <p class="text-sm text-orange-600">Room {{ checkout.reservation.room.room_number }}</p>
+                                <p class="text-xs text-orange-500">{{ checkout.actual_check_out|date:"M d, Y H:i" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-orange-200 text-orange-800 px-3 py-1 rounded-full text-xs font-semibold">Checked Out</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-calendar-times text-orange-400 text-2xl"></i>
+                    </div>
+                    <p class="text-luxury-500 font-medium">No recent check-outs</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

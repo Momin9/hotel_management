@@ -58,7 +58,7 @@
                     <i class="fas fa-arrow-up mr-1"></i>+5.2%
                 </span>
             </div>
-            <h3 class="text-2xl font-bold text-luxury-900">87.5%</h3>
+            <h3 class="text-2xl font-bold text-luxury-900">{{ occupancy_rate }}%</h3>
             <p class="text-luxury-600">Average Occupancy</p>
         </div>
         
@@ -71,7 +71,7 @@
                     <i class="fas fa-arrow-up mr-1"></i>+12.8%
                 </span>
             </div>
-            <h3 class="text-2xl font-bold text-luxury-900">$124.5K</h3>
+            <h3 class="text-2xl font-bold text-luxury-900">${{ monthly_revenue|floatformat:0 }}</h3>
             <p class="text-luxury-600">Monthly Revenue</p>
         </div>
         
@@ -84,7 +84,7 @@
                     <i class="fas fa-arrow-up mr-1"></i>+8.3%
                 </span>
             </div>
-            <h3 class="text-2xl font-bold text-luxury-900">1,247</h3>
+            <h3 class="text-2xl font-bold text-luxury-900">{{ total_guests }}</h3>
             <p class="text-luxury-600">Total Guests</p>
         </div>
         
@@ -97,7 +97,7 @@
                     <i class="fas fa-arrow-up mr-1"></i>+0.2
                 </span>
             </div>
-            <h3 class="text-2xl font-bold text-luxury-900">4.8</h3>
+            <h3 class="text-2xl font-bold text-luxury-900">{{ avg_rating }}</h3>
             <p class="text-luxury-600">Average Rating</p>
         </div>
     </div>
@@ -150,7 +150,7 @@
             </button>
         </div>
         
-        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 cursor-pointer" onclick="alert('Performance report coming soon!')">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 cursor-pointer" onclick="window.location.href='{% url 'reporting:performance' %}'">
             <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-tachometer-alt text-white text-2xl"></i>
             </div>

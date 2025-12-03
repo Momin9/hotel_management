@@ -185,7 +185,7 @@ def navigation_context(request):
     if not request.user.is_authenticated:
         return {}
     
-    from .permissions import check_user_permission
+    from .role_permissions import RolePermissions
     
     # Get unread notification count
     unread_notifications_count = 0
@@ -194,93 +194,96 @@ def navigation_context(request):
     except:
         pass
     
-    nav_permissions = {
-        # Hotel Management
-        'can_view_hotels': request.user.role == 'Owner' or request.user.can_view_hotels,
-        'can_change_hotels': request.user.role == 'Owner' or request.user.can_change_hotels,
-        'can_view_rooms': request.user.role == 'Owner' or request.user.can_view_rooms,
-        'can_add_rooms': request.user.role == 'Owner' or request.user.can_add_rooms,
-        'can_change_rooms': request.user.role == 'Owner' or request.user.can_change_rooms,
-        'can_delete_rooms': request.user.role == 'Owner' or request.user.can_delete_rooms,
-        
-        # Reservations
-        'can_view_reservations': request.user.role == 'Owner' or request.user.can_view_reservations,
-        'can_add_reservations': request.user.role == 'Owner' or request.user.can_add_reservations,
-        'can_change_reservations': request.user.role == 'Owner' or request.user.can_change_reservations,
-        'can_delete_reservations': request.user.role == 'Owner' or request.user.can_delete_reservations,
-        'can_view_checkins': request.user.role == 'Owner' or request.user.can_view_checkins,
-        'can_add_checkins': request.user.role == 'Owner' or request.user.can_add_checkins,
-        'can_change_checkins': request.user.role == 'Owner' or request.user.can_change_checkins,
-        
-        # Guest Management
-        'can_view_guests': request.user.role == 'Owner' or request.user.can_view_guests,
-        'can_add_guests': request.user.role == 'Owner' or request.user.can_add_guests,
-        'can_change_guests': request.user.role == 'Owner' or request.user.can_change_guests,
-        'can_delete_guests': request.user.role == 'Owner' or request.user.can_delete_guests,
-        
-        # Staff Management
-        'can_view_staff': request.user.role == 'Owner' or request.user.can_view_staff,
-        'can_add_staff': request.user.role == 'Owner' or request.user.can_add_staff,
-        'can_change_staff': request.user.role == 'Owner' or request.user.can_change_staff,
-        'can_delete_staff': request.user.role == 'Owner' or request.user.can_delete_staff,
-        
-        # Configuration Management
-        'can_view_configurations': request.user.role == 'Owner' or request.user.can_view_configurations,
-        'can_add_configurations': request.user.role == 'Owner' or request.user.can_add_configurations,
-        'can_change_configurations': request.user.role == 'Owner' or request.user.can_change_configurations,
-        'can_delete_configurations': request.user.role == 'Owner' or request.user.can_delete_configurations,
-        
-        # Housekeeping
-        'can_view_housekeeping': request.user.role == 'Owner' or request.user.can_view_housekeeping,
-        'can_add_housekeeping': request.user.role == 'Owner' or request.user.can_add_housekeeping,
-        'can_change_housekeeping': request.user.role == 'Owner' or request.user.can_change_housekeeping,
-        'can_delete_housekeeping': request.user.role == 'Owner' or request.user.can_delete_housekeeping,
-        
-        # Maintenance
-        'can_view_maintenance': request.user.role == 'Owner' or request.user.can_view_maintenance,
-        'can_add_maintenance': request.user.role == 'Owner' or request.user.can_add_maintenance,
-        'can_change_maintenance': request.user.role == 'Owner' or request.user.can_change_maintenance,
-        'can_delete_maintenance': request.user.role == 'Owner' or request.user.can_delete_maintenance,
-        
-        # Point of Sale
-        'can_view_pos': request.user.role == 'Owner' or request.user.can_view_pos,
-        'can_add_pos': request.user.role == 'Owner' or request.user.can_add_pos,
-        'can_change_pos': request.user.role == 'Owner' or request.user.can_change_pos,
-        'can_delete_pos': request.user.role == 'Owner' or request.user.can_delete_pos,
-        
-        # Inventory
-        'can_view_inventory': request.user.role == 'Owner' or request.user.can_view_inventory,
-        'can_add_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_add_inventory', False),
-        'can_change_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_change_inventory', False),
-        'can_delete_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_delete_inventory', False),
-        
-        # Financial
-        'can_view_billing': request.user.role == 'Owner' or request.user.can_view_billing,
-        'can_add_billing': request.user.role == 'Owner' or request.user.can_add_billing,
-        'can_change_billing': request.user.role == 'Owner' or request.user.can_change_billing,
-        'can_view_payments': request.user.role == 'Owner' or request.user.can_view_payments,
-        'can_add_payments': request.user.role == 'Owner' or request.user.can_add_payments,
-        'can_view_reports': request.user.role == 'Owner' or request.user.can_view_reports,
-        
-        # Company Management
-        'can_view_companies': request.user.role == 'Owner' or getattr(request.user, 'can_view_companies', False),
-        'can_add_companies': request.user.role == 'Owner' or getattr(request.user, 'can_add_companies', False),
-        'can_change_companies': request.user.role == 'Owner' or getattr(request.user, 'can_change_companies', False),
-        'can_delete_companies': request.user.role == 'Owner' or getattr(request.user, 'can_delete_companies', False),
-        
-        # Front Desk
-        'can_view_front_desk': request.user.role == 'Owner' or request.user.can_view_checkins,
-        
-        # Legacy compatibility
-        'can_add_reservation': request.user.role == 'Owner' or request.user.can_add_reservations,
-        'can_change_reservation': request.user.role == 'Owner' or request.user.can_change_reservations,
-        'can_add_guest': request.user.role == 'Owner' or request.user.can_add_guests,
-        'can_change_guest': request.user.role == 'Owner' or request.user.can_change_guests,
-        'can_checkin': request.user.role == 'Owner' or request.user.can_add_checkins,
-        'can_checkout': request.user.role == 'Owner' or request.user.can_change_checkins,
-        
+    # Get role-based permissions
+    nav_permissions = {}
+    
+    # Use role-based permissions if user has a defined role
+    if hasattr(request.user, 'role') and request.user.role in RolePermissions.ROLE_PERMISSIONS:
+        role_perms = RolePermissions.ROLE_PERMISSIONS[request.user.role]
+        for perm, value in role_perms.items():
+            nav_permissions[perm] = value
+    else:
+        # Fallback to existing permission system
+        nav_permissions = {
+            # Hotel Management
+            'can_view_hotels': request.user.role == 'Owner' or getattr(request.user, 'can_view_hotels', False),
+            'can_change_hotels': request.user.role == 'Owner' or getattr(request.user, 'can_change_hotels', False),
+            'can_view_rooms': request.user.role == 'Owner' or getattr(request.user, 'can_view_rooms', False),
+            'can_add_rooms': request.user.role == 'Owner' or getattr(request.user, 'can_add_rooms', False),
+            'can_change_rooms': request.user.role == 'Owner' or getattr(request.user, 'can_change_rooms', False),
+            'can_delete_rooms': request.user.role == 'Owner' or getattr(request.user, 'can_delete_rooms', False),
+            
+            # Reservations
+            'can_view_reservations': request.user.role == 'Owner' or getattr(request.user, 'can_view_reservations', False),
+            'can_add_reservations': request.user.role == 'Owner' or getattr(request.user, 'can_add_reservations', False),
+            'can_change_reservations': request.user.role == 'Owner' or getattr(request.user, 'can_change_reservations', False),
+            'can_delete_reservations': request.user.role == 'Owner' or getattr(request.user, 'can_delete_reservations', False),
+            'can_view_checkins': request.user.role == 'Owner' or getattr(request.user, 'can_view_checkins', False),
+            'can_add_checkins': request.user.role == 'Owner' or getattr(request.user, 'can_add_checkins', False),
+            'can_change_checkins': request.user.role == 'Owner' or getattr(request.user, 'can_change_checkins', False),
+            
+            # Guest Management
+            'can_view_guests': request.user.role == 'Owner' or getattr(request.user, 'can_view_guests', False),
+            'can_add_guests': request.user.role == 'Owner' or getattr(request.user, 'can_add_guests', False),
+            'can_change_guests': request.user.role == 'Owner' or getattr(request.user, 'can_change_guests', False),
+            'can_delete_guests': request.user.role == 'Owner' or getattr(request.user, 'can_delete_guests', False),
+            
+            # Staff Management
+            'can_view_staff': request.user.role == 'Owner' or getattr(request.user, 'can_view_staff', False),
+            'can_add_staff': request.user.role == 'Owner' or getattr(request.user, 'can_add_staff', False),
+            'can_change_staff': request.user.role == 'Owner' or getattr(request.user, 'can_change_staff', False),
+            'can_delete_staff': request.user.role == 'Owner' or getattr(request.user, 'can_delete_staff', False),
+            
+            # Other permissions...
+            'can_view_housekeeping': request.user.role == 'Owner' or getattr(request.user, 'can_view_housekeeping', False),
+            'can_add_housekeeping': request.user.role == 'Owner' or getattr(request.user, 'can_add_housekeeping', False),
+            'can_change_housekeeping': request.user.role == 'Owner' or getattr(request.user, 'can_change_housekeeping', False),
+            'can_delete_housekeeping': request.user.role == 'Owner' or getattr(request.user, 'can_delete_housekeeping', False),
+            
+            'can_view_maintenance': request.user.role == 'Owner' or getattr(request.user, 'can_view_maintenance', False),
+            'can_add_maintenance': request.user.role == 'Owner' or getattr(request.user, 'can_add_maintenance', False),
+            'can_change_maintenance': request.user.role == 'Owner' or getattr(request.user, 'can_change_maintenance', False),
+            'can_delete_maintenance': request.user.role == 'Owner' or getattr(request.user, 'can_delete_maintenance', False),
+            
+            'can_view_pos': request.user.role == 'Owner' or getattr(request.user, 'can_view_pos', False),
+            'can_add_pos': request.user.role == 'Owner' or getattr(request.user, 'can_add_pos', False),
+            'can_change_pos': request.user.role == 'Owner' or getattr(request.user, 'can_change_pos', False),
+            'can_delete_pos': request.user.role == 'Owner' or getattr(request.user, 'can_delete_pos', False),
+            
+            'can_view_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_view_inventory', False),
+            'can_add_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_add_inventory', False),
+            'can_change_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_change_inventory', False),
+            'can_delete_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_delete_inventory', False),
+            
+            'can_view_billing': request.user.role == 'Owner' or getattr(request.user, 'can_view_billing', False),
+            'can_add_billing': request.user.role == 'Owner' or getattr(request.user, 'can_add_billing', False),
+            'can_change_billing': request.user.role == 'Owner' or getattr(request.user, 'can_change_billing', False),
+            'can_view_payments': request.user.role == 'Owner' or getattr(request.user, 'can_view_payments', False),
+            'can_add_payments': request.user.role == 'Owner' or getattr(request.user, 'can_add_payments', False),
+            'can_view_reports': request.user.role == 'Owner' or getattr(request.user, 'can_view_reports', False),
+            
+            'can_view_companies': request.user.role == 'Owner' or getattr(request.user, 'can_view_companies', False),
+            'can_add_companies': request.user.role == 'Owner' or getattr(request.user, 'can_add_companies', False),
+            'can_change_companies': request.user.role == 'Owner' or getattr(request.user, 'can_change_companies', False),
+            'can_delete_companies': request.user.role == 'Owner' or getattr(request.user, 'can_delete_companies', False),
+            
+            'can_view_configurations': request.user.role == 'Owner' or getattr(request.user, 'can_view_configurations', False),
+            'can_add_configurations': request.user.role == 'Owner' or getattr(request.user, 'can_add_configurations', False),
+            'can_change_configurations': request.user.role == 'Owner' or getattr(request.user, 'can_change_configurations', False),
+            'can_delete_configurations': request.user.role == 'Owner' or getattr(request.user, 'can_delete_configurations', False),
+        }
+    
+    # Legacy compatibility
+    nav_permissions.update({
+        'can_view_front_desk': nav_permissions.get('can_view_checkins', False),
+        'can_add_reservation': nav_permissions.get('can_add_reservations', False),
+        'can_change_reservation': nav_permissions.get('can_change_reservations', False),
+        'can_add_guest': nav_permissions.get('can_add_guests', False),
+        'can_change_guest': nav_permissions.get('can_change_guests', False),
+        'can_checkin': nav_permissions.get('can_add_checkins', False),
+        'can_checkout': nav_permissions.get('can_change_checkins', False),
         'unread_notifications_count': unread_notifications_count,
-    }
+    })
     
     return nav_permissions
 
@@ -321,8 +324,9 @@ def contact_form(request):
     return redirect('accounts:landing')
 
 def custom_login(request):
-    """Custom login view with automatic role detection"""
+    """Custom login view with automatic role detection and permission assignment"""
     from .models import Footer
+    from .role_permissions import RolePermissions
     footer = Footer.objects.first()
     
     if request.user.is_authenticated:
@@ -345,6 +349,10 @@ def custom_login(request):
                     )
                     return render(request, 'accounts/login_luxury.html', {'footer': footer})
             
+            # Apply role-based permissions
+            if user.role in RolePermissions.ROLE_PERMISSIONS:
+                RolePermissions.apply_role_permissions(user)
+            
             login(request, user)
             
             # Role-based redirect using stored user role
@@ -352,6 +360,16 @@ def custom_login(request):
                 return redirect('accounts:super_admin_dashboard')
             elif user.role == 'Owner':
                 return redirect('accounts:owner_dashboard')
+            elif user.role == 'Manager':
+                return redirect('accounts:manager_dashboard')
+            elif user.role == 'Receptionist':
+                return redirect('accounts:receptionist_dashboard')
+            elif user.role == 'Housekeeping':
+                return redirect('accounts:housekeeping_dashboard')
+            elif user.role == 'Maintenance':
+                return redirect('accounts:maintenance_dashboard')
+            elif user.role == 'Accountant':
+                return redirect('accounts:accountant_dashboard')
             else:
                 return redirect('accounts:employee_dashboard')
         else:
@@ -425,6 +443,16 @@ def dashboard(request):
         return redirect('accounts:super_admin_dashboard')
     elif request.user.role == 'Owner':
         return redirect('accounts:owner_dashboard')
+    elif request.user.role == 'Manager':
+        return redirect('accounts:manager_dashboard')
+    elif request.user.role == 'Receptionist':
+        return redirect('accounts:receptionist_dashboard')
+    elif request.user.role == 'Housekeeping':
+        return redirect('accounts:housekeeping_dashboard')
+    elif request.user.role == 'Maintenance':
+        return redirect('accounts:maintenance_dashboard')
+    elif request.user.role == 'Accountant':
+        return redirect('accounts:accountant_dashboard')
     else:
         return redirect('accounts:employee_dashboard')
 
@@ -463,6 +491,8 @@ def super_admin_dashboard(request):
 @login_required
 def owner_dashboard(request):
     """Hotel Owner Dashboard"""
+    from .role_permissions import RolePermissions
+    
     # Get the first hotel owned by the user
     hotel = Hotel.objects.filter(owner=request.user).first()
     hotel_name = hotel.name if hotel else 'Hotel Owner'
@@ -470,7 +500,8 @@ def owner_dashboard(request):
     context = {
         'user_role': 'Hotel Owner',
         'hotel_name': hotel_name,
-        'hotel': hotel
+        'hotel': hotel,
+        'navbar_items': RolePermissions.get_role_navbar_items('Owner'),
     }
     return render(request, 'accounts/dashboards/owner.html', context)
 
@@ -479,6 +510,125 @@ def employee_dashboard(request):
     """Employee Dashboard"""
     context = {'user_role': 'Employee'}
     return render(request, 'accounts/dashboards/employee.html', context)
+
+@login_required
+def manager_dashboard(request):
+    """Manager Dashboard"""
+    from .role_permissions import RolePermissions
+    
+    # Get manager-specific data
+    context = {
+        'user_role': 'Manager',
+        'navbar_items': RolePermissions.get_role_navbar_items('Manager'),
+        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Manager'),
+    }
+    return render(request, 'accounts/dashboards/manager.html', context)
+
+@login_required
+def receptionist_dashboard(request):
+    """Receptionist/Front Desk Dashboard"""
+    from .role_permissions import RolePermissions
+    from reservations.models import Reservation
+    from billing.models import Invoice
+    from hotels.models import Room
+    from django.utils import timezone
+    
+    today = timezone.now().date()
+    
+    # Get real data for receptionist dashboard
+    # Today's check-ins (confirmed reservations for today)
+    todays_checkins = Reservation.objects.filter(
+        check_in=today,
+        status='confirmed'
+    ).select_related('guest', 'room')
+    
+    # Today's check-outs (checked-in guests checking out today)
+    todays_checkouts = Reservation.objects.filter(
+        check_out=today,
+        status='checked_in'
+    ).select_related('guest', 'room')
+    
+    # Available rooms
+    if request.user.assigned_hotel:
+        available_rooms = Room.objects.filter(
+            hotel=request.user.assigned_hotel,
+            status='Available'
+        ).count()
+        total_rooms = Room.objects.filter(
+            hotel=request.user.assigned_hotel
+        ).count()
+    else:
+        available_rooms = Room.objects.filter(status='Available').count()
+        total_rooms = Room.objects.count()
+    
+    # Pending payments (unpaid invoices)
+    pending_payments = Invoice.objects.filter(
+        status__in=['draft', 'sent']
+    ).select_related('guest')
+    
+    # Recent arrivals (checked in today)
+    recent_arrivals = Reservation.objects.filter(
+        status='checked_in',
+        stay__actual_check_in__date=today
+    ).select_related('guest', 'room').order_by('-stay__actual_check_in')[:5]
+    
+    context = {
+        'user_role': 'Receptionist/Front Desk',
+        'navbar_items': RolePermissions.get_role_navbar_items('Receptionist'),
+        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Receptionist'),
+        # Real data
+        'todays_checkins': todays_checkins,
+        'todays_checkouts': todays_checkouts,
+        'checkins_count': todays_checkins.count(),
+        'checkouts_count': todays_checkouts.count(),
+        'available_rooms': available_rooms,
+        'total_rooms': total_rooms,
+        'pending_payments': pending_payments,
+        'pending_payments_count': pending_payments.count(),
+        'pending_payments_total': sum(invoice.total_amount for invoice in pending_payments),
+        'recent_arrivals': recent_arrivals,
+        'recent_arrivals_count': recent_arrivals.count(),
+    }
+    return render(request, 'accounts/dashboards/receptionist.html', context)
+
+@login_required
+def housekeeping_dashboard(request):
+    """Housekeeping Staff Dashboard"""
+    from .role_permissions import RolePermissions
+    
+    # Get housekeeping-specific data
+    context = {
+        'user_role': 'Housekeeping Staff',
+        'navbar_items': RolePermissions.get_role_navbar_items('Housekeeping'),
+        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Housekeeping'),
+    }
+    return render(request, 'accounts/dashboards/housekeeping.html', context)
+
+@login_required
+def maintenance_dashboard(request):
+    """Maintenance Staff Dashboard"""
+    from .role_permissions import RolePermissions
+    
+    # Get maintenance-specific data
+    context = {
+        'user_role': 'Maintenance Staff',
+        'navbar_items': RolePermissions.get_role_navbar_items('Maintenance'),
+        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Maintenance'),
+    }
+    return render(request, 'accounts/dashboards/maintenance.html', context)
+
+@login_required
+def accountant_dashboard(request):
+    """Accountant Dashboard"""
+    from .role_permissions import RolePermissions
+    
+    # Get accountant-specific data
+    context = {
+        'user_role': 'Accountant',
+        'navbar_items': RolePermissions.get_role_navbar_items('Accountant'),
+        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Accountant'),
+    }
+    return render(request, 'accounts/dashboards/accountant.html', context)
 
 @login_required
 @csrf_protect

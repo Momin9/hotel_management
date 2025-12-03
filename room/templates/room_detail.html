@@ -27,7 +27,7 @@
       {% endfor %}
     </tbody>
   </table>
-  <a class="linkx" href="{% url 'reservation_list'  %}?room_number={{ room.room_number }}">All Reservations</a>
+  <a class="linkx" href="{% url 'reservations:list'  %}?room_number={{ room.room_number }}">All Reservations</a>
 
   <h3 class="titlex">Booking Status</h3>
   {% if room.is_booked_now %}

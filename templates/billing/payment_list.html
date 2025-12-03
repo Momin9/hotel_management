@@ -39,6 +39,13 @@
         </div>
         
         <div class="flex flex-col sm:flex-row gap-4">
+            {% if can_add_payments %}
+            <a href="{% url 'billing:create_invoice' %}" class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300 flex items-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>Create Payment</span>
+            </a>
+            {% endif %}
+            
             <!-- View Toggle -->
             <div class="bg-white rounded-xl p-1 luxury-shadow">
                 <button onclick="toggleView('list')" id="listViewBtn" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-royal-600 text-white">
@@ -54,15 +61,15 @@
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="text-center p-6 bg-green-50 rounded-3xl luxury-shadow">
-            <p class="text-3xl font-bold text-green-600">$12,450</p>
+            <p class="text-3xl font-bold text-green-600">${{ total_received|floatformat:2 }}</p>
             <p class="text-sm text-green-700 font-medium">Total Received</p>
         </div>
         <div class="text-center p-6 bg-yellow-50 rounded-3xl luxury-shadow">
-            <p class="text-3xl font-bold text-yellow-600">$2,340</p>
+            <p class="text-3xl font-bold text-yellow-600">${{ pending_amount|floatformat:2 }}</p>
             <p class="text-sm text-yellow-700 font-medium">Pending</p>
         </div>
         <div class="text-center p-6 bg-red-50 rounded-3xl luxury-shadow">
-            <p class="text-3xl font-bold text-red-600">$890</p>
+            <p class="text-3xl font-bold text-red-600">${{ failed_amount|floatformat:2 }}</p>
             <p class="text-sm text-red-700 font-medium">Failed</p>
         </div>
     </div>
@@ -93,22 +100,22 @@
                             <span class="font-mono text-royal-600">#{{ payment.invoice.invoice_number|default:payment.invoice.id|slice:":8" }}</span>
                         </td>
                         <td class="px-6 py-4">
-                            <p class="font-medium text-luxury-800">{{ payment.guest_name|default:"Guest Name" }}</p>
+                            <p class="font-medium text-luxury-800">{{ payment.invoice.guest.full_name|default:"Guest Name" }}</p>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="text-lg font-bold text-luxury-800">${{ payment.amount|default:"299.99"|floatformat:2 }}</span>
+                            <span class="text-lg font-bold text-luxury-800">${{ payment.amount|floatformat:2 }}</span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center space-x-2">
-                                {% if payment.payment_method == 'credit_card' or not payment.payment_method %}
+                                {% if payment.method == 'credit_card' or not payment.method %}
                                 <i class="fas fa-credit-card text-blue-500"></i>
                                 <span class="text-luxury-700">Credit Card</span>
-                                {% elif payment.payment_method == 'cash' %}
+                                {% elif payment.method == 'cash' %}
                                 <i class="fas fa-money-bill text-green-500"></i>
                                 <span class="text-luxury-700">Cash</span>
                                 {% else %}
                                 <i class="fas fa-university text-purple-500"></i>
-                                <span class="text-luxury-700">Bank Transfer</span>
+                                <span class="text-luxury-700">{{ payment.method|title }}</span>
                                 {% endif %}
                             </div>
                         </td>
@@ -117,107 +124,37 @@
                                   {% if payment.status == 'completed' %}bg-green-100 text-green-800
                                   {% elif payment.status == 'pending' %}bg-yellow-100 text-yellow-800
                                   {% else %}bg-red-100 text-red-800{% endif %}">
-                                {{ payment.status|default:"Completed"|title }}
+                                {{ payment.status|title }}
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <p class="text-luxury-700">{{ payment.created_at|date:"M d, Y"|default:"Nov 18, 2024" }}</p>
-                            <p class="text-sm text-luxury-500">{{ payment.created_at|time:"H:i"|default:"14:30" }}</p>
+                            <p class="text-luxury-700">{{ payment.timestamp|date:"M d, Y" }}</p>
+                            <p class="text-sm text-luxury-500">{{ payment.timestamp|time:"H:i" }}</p>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex space-x-2">
-                                <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
+                                <a href="{% url 'billing:payment_detail' payment.id %}" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Download Receipt">
+                                <a href="{% url 'billing:download_receipt' payment.id %}" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Download Receipt">
                                     <i class="fas fa-download"></i>
                                 </a>
-                                <a href="#" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Refund">
+                                {% if payment.status == 'completed' %}
+                                <a href="{% url 'billing:refund_payment' payment.id %}" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Refund">
                                     <i class="fas fa-undo"></i>
                                 </a>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
                     {% empty %}
-                    <!-- Sample Data -->
-                    <tr class="hover:bg-luxury-25 transition-colors">
-                        <td class="px-6 py-4">
-                            <span class="font-mono text-luxury-900">#PAY-001</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="font-mono text-royal-600">#INV-001</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <p class="font-medium text-luxury-800">John Doe</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="text-lg font-bold text-luxury-800">$299.99</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-credit-card text-blue-500"></i>
-                                <span class="text-luxury-700">Credit Card</span>
+                    <tr>
+                        <td colspan="8" class="px-6 py-12 text-center">
+                            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-credit-card text-luxury-400 text-2xl"></i>
                             </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Completed</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <p class="text-luxury-700">Nov 18, 2024</p>
-                            <p class="text-sm text-luxury-500">14:30</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex space-x-2">
-                                <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Download Receipt">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                                <a href="#" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Refund">
-                                    <i class="fas fa-undo"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-luxury-25 transition-colors">
-                        <td class="px-6 py-4">
-                            <span class="font-mono text-luxury-900">#PAY-002</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="font-mono text-royal-600">#INV-002</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <p class="font-medium text-luxury-800">Jane Smith</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="text-lg font-bold text-luxury-800">$449.97</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-money-bill text-green-500"></i>
-                                <span class="text-luxury-700">Cash</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">Pending</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <p class="text-luxury-700">Nov 17, 2024</p>
-                            <p class="text-sm text-luxury-500">16:45</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex space-x-2">
-                                <a href="#" class="text-royal-600 hover:text-royal-800 transition-colors p-2 rounded-lg hover:bg-royal-50" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Download Receipt">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                                <a href="#" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="Refund">
-                                    <i class="fas fa-undo"></i>
-                                </a>
-                            </div>
+                            <p class="text-luxury-500 font-medium">No payments found</p>
+                            <p class="text-luxury-400 text-sm mt-1">Payments will appear here once transactions are processed</p>
                         </td>
                     </tr>
                     {% endfor %}
@@ -228,74 +165,65 @@
 
     <!-- Kanban View -->
     <div id="kanbanView" class="hidden">
+        {% if payments %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Sample Payment Cards -->
+            {% for payment in payments %}
             <div class="bg-white rounded-2xl luxury-shadow p-6 hover-lift">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="font-mono text-sm text-luxury-600">#PAY-001</span>
-                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Completed</span>
+                    <span class="font-mono text-sm text-luxury-600">#{{ payment.id|slice:":8" }}</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium 
+                          {% if payment.status == 'completed' %}bg-green-100 text-green-800
+                          {% elif payment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                          {% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ payment.status|default:"Completed"|title }}
+                    </span>
                 </div>
                 <div class="mb-4">
-                    <h3 class="font-bold text-luxury-900 text-lg mb-1">John Doe</h3>
-                    <p class="text-sm text-luxury-600 mb-2">Invoice: #INV-001</p>
-                    <p class="text-2xl font-bold text-luxury-800">$299.99</p>
+                    <h3 class="font-bold text-luxury-900 text-lg mb-1">{{ payment.invoice.guest.full_name|default:"Guest Name" }}</h3>
+                    <p class="text-sm text-luxury-600 mb-2">Invoice: #{{ payment.invoice.invoice_number|default:payment.invoice.id|slice:":8" }}</p>
+                    <p class="text-2xl font-bold text-luxury-800">${{ payment.amount|floatformat:2 }}</p>
                 </div>
                 <div class="space-y-2 text-sm mb-4">
                     <div class="flex items-center justify-between">
                         <span class="text-luxury-600">Method:</span>
                         <div class="flex items-center space-x-1">
+                            {% if payment.method == 'credit_card' or not payment.method %}
                             <i class="fas fa-credit-card text-blue-500"></i>
                             <span class="font-medium">Credit Card</span>
+                            {% elif payment.method == 'cash' %}
+                            <i class="fas fa-money-bill text-green-500"></i>
+                            <span class="font-medium">Cash</span>
+                            {% else %}
+                            <i class="fas fa-university text-purple-500"></i>
+                            <span class="font-medium">{{ payment.method|title }}</span>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-luxury-600">Date:</span>
-                        <span class="font-medium">Nov 18, 2024</span>
+                        <span class="font-medium">{{ payment.timestamp|date:"M d, Y" }}</span>
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <a href="#" class="flex-1 bg-royal-50 text-royal-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-royal-100 transition-colors text-center">
+                    <a href="{% url 'billing:payment_detail' payment.id %}" class="flex-1 bg-royal-50 text-royal-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-royal-100 transition-colors text-center">
                         <i class="fas fa-eye mr-1"></i>View
                     </a>
-                    <a href="#" class="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors text-center">
+                    <a href="{% url 'billing:download_receipt' payment.id %}" class="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors text-center">
                         <i class="fas fa-download mr-1"></i>Receipt
                     </a>
                 </div>
             </div>
-            
-            <div class="bg-white rounded-2xl luxury-shadow p-6 hover-lift">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="font-mono text-sm text-luxury-600">#PAY-002</span>
-                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
-                </div>
-                <div class="mb-4">
-                    <h3 class="font-bold text-luxury-900 text-lg mb-1">Jane Smith</h3>
-                    <p class="text-sm text-luxury-600 mb-2">Invoice: #INV-002</p>
-                    <p class="text-2xl font-bold text-luxury-800">$449.97</p>
-                </div>
-                <div class="space-y-2 text-sm mb-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-luxury-600">Method:</span>
-                        <div class="flex items-center space-x-1">
-                            <i class="fas fa-money-bill text-green-500"></i>
-                            <span class="font-medium">Cash</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-luxury-600">Date:</span>
-                        <span class="font-medium">Nov 17, 2024</span>
-                    </div>
-                </div>
-                <div class="flex space-x-2">
-                    <a href="#" class="flex-1 bg-royal-50 text-royal-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-royal-100 transition-colors text-center">
-                        <i class="fas fa-eye mr-1"></i>View
-                    </a>
-                    <a href="#" class="flex-1 bg-green-50 text-green-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors text-center">
-                        <i class="fas fa-check mr-1"></i>Process
-                    </a>
-                </div>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-credit-card text-luxury-400 text-2xl"></i>
+            </div>
+            <p class="text-luxury-500 font-medium">No payments found</p>
+            <p class="text-luxury-400 text-sm mt-1">Payments will appear here once transactions are processed</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 

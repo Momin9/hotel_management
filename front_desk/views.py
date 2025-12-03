@@ -15,17 +15,28 @@ def front_desk_dashboard(request):
     """Front desk main dashboard"""
     today = timezone.now().date()
     
-    # Today's arrivals and departures
-    # Mock data for demo
-    arrivals = []
-    departures = []
+    # Today's arrivals (confirmed reservations for today)
+    arrivals = Reservation.objects.filter(
+        check_in=today,
+        status='confirmed'
+    ).select_related('guest', 'room')
     
-    # Current occupancy
-    # Mock data since tables don't exist yet
-    occupied_rooms = 0
+    # Today's departures (checked-in guests checking out today)
+    departures = Reservation.objects.filter(
+        check_out=today,
+        status='checked_in'
+    ).select_related('guest', 'room')
     
-    # Walk-ins today
-    walk_ins = []
+    # Current occupancy (checked-in guests)
+    occupied_rooms = Reservation.objects.filter(
+        status='checked_in'
+    ).count()
+    
+    # Walk-ins today (reservations created today with direct booking)
+    walk_ins = Reservation.objects.filter(
+        created_at__date=today,
+        booking_source='walk_in'
+    ).select_related('guest', 'room')
     
     context = {
         'arrivals': arrivals,
@@ -33,6 +44,9 @@ def front_desk_dashboard(request):
         'occupied_rooms': occupied_rooms,
         'walk_ins': walk_ins,
         'today': today,
+        'arrivals_count': arrivals.count(),
+        'departures_count': departures.count(),
+        'walk_ins_count': walk_ins.count(),
     }
     
     return render(request, 'front_desk/dashboard.html', context)

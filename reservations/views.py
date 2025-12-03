@@ -10,6 +10,7 @@ from crm.models import GuestProfile
 from billing.models import Invoice, ChargeItem, Payment
 from django.utils import timezone
 from accounts.decorators import owner_or_permission_required
+from django.db.models import Q
 
 @owner_or_permission_required('view_reservation')
 def reservation_list(request):
@@ -33,12 +34,24 @@ def reservation_list(request):
     # Apply filters
     search = request.GET.get('search')
     if search:
-        reservations = reservations.filter(
-            Q(guest__first_name__icontains=search) |
-            Q(guest__last_name__icontains=search) |
-            Q(guest__email__icontains=search) |
-            Q(room__room_number__icontains=search)
-        )
+        search_terms = search.split()
+        if len(search_terms) > 1:
+            # Handle full name search (e.g., "Test Guest")
+            reservations = reservations.filter(
+                Q(guest__first_name__icontains=search_terms[0]) & Q(guest__last_name__icontains=search_terms[1]) |
+                Q(guest__first_name__icontains=search) |
+                Q(guest__last_name__icontains=search) |
+                Q(guest__email__icontains=search) |
+                Q(room__room_number__icontains=search)
+            )
+        else:
+            # Handle single term search
+            reservations = reservations.filter(
+                Q(guest__first_name__icontains=search) |
+                Q(guest__last_name__icontains=search) |
+                Q(guest__email__icontains=search) |
+                Q(room__room_number__icontains=search)
+            )
     
     status = request.GET.get('status')
     if status:
@@ -219,7 +232,7 @@ def reservation_detail(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
     
     # Check if user has access to this reservation
-    if not request.user.is_superuser and reservation.hotel.owner != request.user:
+    if not request.user.is_superuser and request.user.role != 'Owner' and reservation.hotel.owner != request.user and reservation.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have access to this reservation.')
         return redirect('reservations:list')
     
@@ -233,7 +246,7 @@ def reservation_edit(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
     
     # Check if user has access to this reservation
-    if not request.user.is_superuser and reservation.hotel.owner != request.user:
+    if not request.user.is_superuser and request.user.role != 'Owner' and reservation.hotel.owner != request.user and reservation.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have access to this reservation.')
         return redirect('reservations:list')
     
@@ -371,7 +384,7 @@ def check_in(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
     
     # Check if user has access
-    if not request.user.is_superuser and reservation.hotel.owner != request.user:
+    if not request.user.is_superuser and request.user.role != 'Owner' and reservation.hotel.owner != request.user and reservation.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have access to this reservation.')
         return redirect('reservations:list')
     
@@ -407,7 +420,7 @@ def check_out(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
     
     # Check if user has access
-    if not request.user.is_superuser and reservation.hotel.owner != request.user:
+    if not request.user.is_superuser and request.user.role != 'Owner' and reservation.hotel.owner != request.user and reservation.hotel != request.user.assigned_hotel:
         messages.error(request, 'You do not have access to this reservation.')
         return redirect('reservations:list')
     

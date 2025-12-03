@@ -179,146 +179,136 @@
                         </div>
                     </div>
                     {% else %}
-                    {% if can_view_hotels %}
-                    <a href="{% url 'hotels:hotel_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-building mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Hotels</span>
-                    </a>
-                    {% endif %}
-                    {% if can_view_rooms %}
-                    {% with first_hotel=user.owned_hotels.first %}
-                    {% if first_hotel %}
-                    <a href="{% url 'hotels:room_list' first_hotel.hotel_id %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Rooms</span>
-                    </a>
-                    {% endif %}
-                    {% endwith %}
-                    {% endif %}
-                    {% if can_view_staff %}
-                    <a href="{% url 'staff:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Staff</span>
-                    </a>
-                    {% endif %}
-                    {% if can_view_reservations %}
-                    <a href="{% url 'reservations:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-calendar-check mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Reservations</span>
-                    </a>
-                    {% endif %}
-                    {% if can_view_guests %}
-                    <a href="{% url 'crm:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-address-book mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Guests</span>
-                    </a>
-                    {% endif %}
-                    {% if can_view_companies %}
-                    {% with first_hotel=user.owned_hotels.first %}
-                    {% if first_hotel %}
-                    <a href="{% url 'hotels:company_list' first_hotel.hotel_id %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                        <i class="fas fa-building mr-2 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium">Companies</span>
-                    </a>
-                    {% endif %}
-                    {% endwith %}
-                    {% endif %}
-                    {% if can_view_front_desk or can_view_housekeeping or can_view_maintenance or can_view_inventory %}
-                    <div class="relative" x-data="{ operationsOpen: false }">
-                        <button @click="operationsOpen = !operationsOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                            <i class="fas fa-cogs mr-2 group-hover:scale-110 transition-transform"></i>
-                            <span class="font-medium">Operations</span>
-                            <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': operationsOpen }"></i>
-                        </button>
-                        <div x-show="operationsOpen" @click.away="operationsOpen = false" x-transition class="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl luxury-shadow py-2 z-50">
-                            {% if can_view_front_desk %}
-                            <a href="{% url 'front_desk:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-concierge-bell mr-3 text-luxury-500"></i>
-                                Front Desk
-                            </a>
-                            {% endif %}
-                            {% if can_view_housekeeping %}
-                            <a href="{% url 'housekeeping:task_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-broom mr-3 text-luxury-500"></i>
-                                Housekeeping
-                            </a>
-                            {% endif %}
-                            {% if can_view_maintenance %}
-                            <a href="{% url 'maintenance:issue_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-tools mr-3 text-luxury-500"></i>
-                                Maintenance
-                            </a>
-                            {% endif %}
-                            {% if can_view_inventory %}
-                            <a href="{% url 'inventory:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-boxes mr-3 text-luxury-500"></i>
-                                Inventory
-                            </a>
-                            {% endif %}
+                    <!-- Role-based Navigation -->
+                    {% if user.role == 'Receptionist' %}
+                        <a href="{% url 'reservations:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-calendar-check mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Reservations</span>
+                        </a>
+                        <a href="{% url 'crm:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Guests</span>
+                        </a>
+                        <a href="{% url 'front_desk:dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-door-open mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Check-in/out</span>
+                        </a>
+                        <a href="{% url 'billing:payment_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-credit-card mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Payments</span>
+                        </a>
+                    {% elif user.role == 'Manager' %}
+                        <a href="{% url 'staff:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Staff</span>
+                        </a>
+                        <a href="{% url 'reservations:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-calendar-check mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Reservations</span>
+                        </a>
+                        <a href="{% url 'reporting:dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-chart-line mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Reports</span>
+                        </a>
+                    {% elif user.role == 'Housekeeping' %}
+                        <a href="{% url 'hotels:room_list' user.assigned_hotel.hotel_id %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Room Status</span>
+                        </a>
+                        <a href="{% url 'housekeeping:task_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-broom mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Tasks</span>
+                        </a>
+                    {% elif user.role == 'Maintenance' %}
+                        <a href="{% url 'maintenance:issue_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-tools mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Requests</span>
+                        </a>
+                        <a href="{% url 'inventory:dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-boxes mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Inventory</span>
+                        </a>
+                    {% elif user.role == 'Accountant' %}
+                        <a href="{% url 'billing:payment_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-credit-card mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Payments</span>
+                        </a>
+                        <a href="{% url 'billing:dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-file-invoice mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Billing</span>
+                        </a>
+                        <a href="{% url 'reporting:dashboard' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-chart-line mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Reports</span>
+                        </a>
+                    {% elif user.role == 'Owner' %}
+                        <!-- Owner gets full navigation -->
+                        {% if can_view_hotels %}
+                        <a href="{% url 'hotels:hotel_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-building mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Hotels</span>
+                        </a>
+                        {% endif %}
+                        {% if can_view_reservations %}
+                        <a href="{% url 'reservations:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-calendar-check mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Reservations</span>
+                        </a>
+                        {% endif %}
+                        {% if can_view_staff %}
+                        <a href="{% url 'staff:list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-users mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Staff</span>
+                        </a>
+                        {% endif %}
+                        <div class="relative" x-data="{ operationsOpen: false }">
+                            <button @click="operationsOpen = !operationsOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                                <i class="fas fa-cogs mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium">Operations</span>
+                                <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': operationsOpen }"></i>
+                            </button>
+                            <div x-show="operationsOpen" @click.away="operationsOpen = false" x-transition class="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl luxury-shadow py-2 z-50">
+                                <a href="{% url 'front_desk:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-concierge-bell mr-3 text-luxury-500"></i>
+                                    Front Desk
+                                </a>
+                                <a href="{% url 'housekeeping:task_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-broom mr-3 text-luxury-500"></i>
+                                    Housekeeping
+                                </a>
+                                <a href="{% url 'maintenance:issue_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-tools mr-3 text-luxury-500"></i>
+                                    Maintenance
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    {% endif %}
-                    {% if can_view_billing or can_view_pos %}
-                    <div class="relative" x-data="{ financialOpen: false }">
-                        <button @click="financialOpen = !financialOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                            <i class="fas fa-dollar-sign mr-2 group-hover:scale-110 transition-transform"></i>
-                            <span class="font-medium">Financial</span>
-                            <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': financialOpen }"></i>
-                        </button>
-                        <div x-show="financialOpen" @click.away="financialOpen = false" x-transition class="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl luxury-shadow py-2 z-50">
-                            {% if can_view_pos %}
-                            <a href="{% url 'pos:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-cash-register mr-3 text-luxury-500"></i>
-                                POS
-                            </a>
-                            {% endif %}
-                            {% if can_view_billing %}
-                            <a href="{% url 'billing:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-file-invoice mr-3 text-luxury-500"></i>
-                                Billing
-                            </a>
-                            {% endif %}
-                            {% if can_view_payments %}
-                            <a href="{% url 'billing:payment_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-credit-card mr-3 text-luxury-500"></i>
-                                Payments
-                            </a>
-                            {% endif %}
-                            {% if can_view_reports %}
-                            <a href="{% url 'reporting:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-chart-bar mr-3 text-luxury-500"></i>
-                                Reports
-                            </a>
-                            {% endif %}
+                        <div class="relative" x-data="{ financialOpen: false }">
+                            <button @click="financialOpen = !financialOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                                <i class="fas fa-dollar-sign mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium">Financial</span>
+                                <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': financialOpen }"></i>
+                            </button>
+                            <div x-show="financialOpen" @click.away="financialOpen = false" x-transition class="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl luxury-shadow py-2 z-50">
+                                <a href="{% url 'billing:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-file-invoice mr-3 text-luxury-500"></i>
+                                    Billing
+                                </a>
+                                <a href="{% url 'billing:payment_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-credit-card mr-3 text-luxury-500"></i>
+                                    Payments
+                                </a>
+                                <a href="{% url 'reporting:dashboard' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-chart-bar mr-3 text-luxury-500"></i>
+                                    Reports
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    {% endif %}
-                    {% if can_view_configurations %}
-                    <div class="relative" x-data="{ configOpen: false }">
-                        <button @click="configOpen = !configOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                            <i class="fas fa-cog mr-2 group-hover:scale-110 transition-transform"></i>
-                            <span class="font-medium">Configuration</span>
-                            <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': configOpen }"></i>
-                        </button>
-                        <div x-show="configOpen" @click.away="configOpen = false" x-transition class="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl luxury-shadow py-2 z-50">
-                            <a href="{% url 'configurations:room_type_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-bed mr-3 text-luxury-500"></i>
-                                Room Types
-                            </a>
-                            <a href="{% url 'configurations:bed_type_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-bed mr-3 text-luxury-500"></i>
-                                Bed Types
-                            </a>
-                            <a href="{% url 'configurations:floor_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-building mr-3 text-luxury-500"></i>
-                                Floors
-                            </a>
-                            <a href="{% url 'configurations:amenity_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
-                                <i class="fas fa-star mr-3 text-luxury-500"></i>
-                                Amenities
-                            </a>
-                        </div>
-                    </div>
+                    {% else %}
+                        <!-- Staff role gets basic navigation -->
+                        <a href="{% url 'staff:performance' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-calendar mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">My Schedule</span>
+                        </a>
                     {% endif %}
                     {% endif %}
                     {% endif %}
@@ -399,7 +389,7 @@
                             <div class="hidden sm:block">
                                 <p class="text-sm font-semibold text-luxury-800">{{ user.get_full_name|default:user.email }}</p>
                                 <p class="text-xs text-luxury-600">
-                                    {% if user.is_superuser %}Super Admin{% elif user.role == 'Owner' %}Hotel Owner{% else %}{{ user.role }}{% endif %}
+                                    {% if user.is_superuser %}Super Admin{% elif user.role == 'Owner' %}Hotel Owner{% elif user.role == 'Receptionist' %}Receptionist/Front Desk{% elif user.role == 'Housekeeping' %}Housekeeping Staff{% elif user.role == 'Maintenance' %}Maintenance Staff{% elif user.role == 'Accountant' %}Accountant{% elif user.role == 'Manager' %}Manager{% else %}{{ user.role }}{% endif %}
                                 </p>
                             </div>
                             <i class="fas fa-chevron-down text-luxury-600 transition-transform" :class="{ 'rotate-180': open }"></i>

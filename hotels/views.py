@@ -156,7 +156,13 @@ def hotel_detail(request, hotel_id):
     
     # Check if user has access to this hotel
     user_role = RoleManager.get_user_role(request.user)
-    if user_role != 'SUPER_ADMIN' and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     
@@ -183,7 +189,13 @@ def room_list(request, hotel_id):
     
     # Check if user has access to this hotel
     user_role = RoleManager.get_user_role(request.user)
-    if user_role not in ['SUPER_ADMIN', 'FRONT_DESK', 'HOUSEKEEPING'] and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     
@@ -253,7 +265,13 @@ def room_create(request, hotel_id):
     
     # Check if user has access to this hotel
     user_role = RoleManager.get_user_role(request.user)
-    if user_role != 'SUPER_ADMIN' and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
 
@@ -295,7 +313,13 @@ def room_detail(request, hotel_id, room_id):
     
     # Check if user has access to this hotel
     user_role = RoleManager.get_user_role(request.user)
-    if user_role != 'SUPER_ADMIN' and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     
@@ -311,9 +335,16 @@ def room_edit(request, hotel_id, room_id):
     from .forms import RoomForm
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
     
+    
     # Check if user has access to this hotel
     user_role = RoleManager.get_user_role(request.user)
-    if user_role != 'SUPER_ADMIN' and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     
@@ -516,7 +547,13 @@ def company_list(request, hotel_id):
     
     # Check access
     user_role = RoleManager.get_user_role(request.user)
-    if user_role != 'SUPER_ADMIN' and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     
@@ -564,7 +601,13 @@ def company_create(request, hotel_id):
     
     # Check access
     user_role = RoleManager.get_user_role(request.user)
-    if user_role != 'SUPER_ADMIN' and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     
@@ -595,7 +638,13 @@ def company_edit(request, hotel_id, company_id):
     
     # Check access
     user_role = RoleManager.get_user_role(request.user)
-    if user_role != 'SUPER_ADMIN' and hotel_obj.owner != request.user:
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        hotel_obj.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == hotel_id)
+    )
+    
+    if not has_access:
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     

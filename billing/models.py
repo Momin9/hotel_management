@@ -60,16 +60,13 @@ class Invoice(models.Model):
     def calculate_totals(self):
         """Calculate invoice totals from charge items"""
         charge_items = self.charge_items.all()
-        self.subtotal = sum(item.amount for item in charge_items)
+        self.subtotal = sum(item.amount for item in charge_items) or Decimal('0')
         
         # Calculate tax amount based on tax rate
-        taxable_amount = self.subtotal - self.discount_amount
-        self.tax_amount = taxable_amount * (self.tax_rate / 100)
+        self.tax_amount = self.subtotal * (self.tax_rate / 100)
         
-        # Service charge is 5% default
-        self.service_charge = taxable_amount * Decimal('0.05')
-        
-        self.total_amount = self.subtotal + self.tax_amount + self.service_charge - self.discount_amount
+        # Calculate total
+        self.total_amount = self.subtotal + self.service_charge + self.tax_amount - self.discount_amount
         self.save()
 
 class ChargeItem(models.Model):
@@ -102,6 +99,14 @@ class ChargeItem(models.Model):
     def save(self, *args, **kwargs):
         self.amount = self.quantity * self.unit_price
         super().save(*args, **kwargs)
+        # Auto-calculate invoice totals
+        self.invoice.calculate_totals()
+    
+    def delete(self, *args, **kwargs):
+        invoice = self.invoice
+        super().delete(*args, **kwargs)
+        # Auto-calculate invoice totals after deletion
+        invoice.calculate_totals()
     
     def __str__(self):
         return f"{self.description} - {self.amount}"

@@ -66,40 +66,30 @@ class AuraStayDocTemplate(BaseDocTemplate):
             except:
                 pass
         
-        # Company name (centered)
-        canvas.setFont('Helvetica-Bold', 20)
-        canvas.setFillColor(colors.HexColor('#0284c7'))
-        company_name = site_config.company_name
-        name_width = canvas.stringWidth(company_name, 'Helvetica-Bold', 20)
-        canvas.drawString((page_width - name_width) / 2, header_y, company_name)
-        
-        # Site description (centered)
-        canvas.setFont('Helvetica', 12)
-        canvas.setFillColor(colors.HexColor('#475569'))
-        description = site_config.site_description
-        desc_width = canvas.stringWidth(description, 'Helvetica', 12)
-        canvas.drawString((page_width - desc_width) / 2, header_y - 0.25*inch, description)
-        
-        # Generation timestamp (centered)
-        canvas.setFont('Helvetica', 9)
-        canvas.setFillColor(colors.grey)
-        timestamp = f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-        time_width = canvas.stringWidth(timestamp, 'Helvetica', 9)
-        canvas.drawString((page_width - time_width) / 2, header_y - 0.45*inch, timestamp)
-        
-        # Header line (centered)
-        canvas.setStrokeColor(colors.HexColor('#0284c7'))
-        canvas.setLineWidth(2)
-        line_margin = 1*inch
-        canvas.line(line_margin, header_y - 0.6*inch, page_width - line_margin, header_y - 0.6*inch)
+        # Empty header - no content
         
         # Footer Section - All Centered
         footer_y = 0.8*inch
+        line_margin = 1*inch
         
         # Footer line (centered)
         canvas.setStrokeColor(colors.HexColor('#0284c7'))
         canvas.setLineWidth(1)
-        canvas.line(line_margin, footer_y + 0.3*inch, page_width - line_margin, footer_y + 0.3*inch)
+        canvas.line(line_margin, footer_y + 0.5*inch, page_width - line_margin, footer_y + 0.5*inch)
+        
+        # AuraStay branding (centered)
+        canvas.setFont('Helvetica-Bold', 14)
+        canvas.setFillColor(colors.HexColor('#1e3a8a'))
+        aurastay_text = "AuraStay"
+        aurastay_width = canvas.stringWidth(aurastay_text, 'Helvetica-Bold', 14)
+        canvas.drawString((page_width - aurastay_width) / 2, footer_y + 0.2*inch, aurastay_text)
+        
+        # Platform description (centered)
+        canvas.setFont('Helvetica', 10)
+        canvas.setFillColor(colors.HexColor('#6b7280'))
+        platform_text = "The world's most advanced hotel management platform"
+        platform_width = canvas.stringWidth(platform_text, 'Helvetica', 10)
+        canvas.drawString((page_width - platform_width) / 2, footer_y, platform_text)
         
         # Copyright text (centered)
         canvas.setFont('Helvetica', 9)
@@ -111,7 +101,7 @@ class AuraStayDocTemplate(BaseDocTemplate):
             footer_text = "© 2025 AuraStay. All rights reserved. | Design: MA Qureshi | Development: Momin Ali"
         
         footer_width = canvas.stringWidth(footer_text, 'Helvetica', 9)
-        canvas.drawString((page_width - footer_width) / 2, footer_y, footer_text)
+        canvas.drawString((page_width - footer_width) / 2, footer_y - 0.2*inch, footer_text)
         
         # Contact info (centered)
         if footer_info and footer_info.email and footer_info.phone:
@@ -119,14 +109,14 @@ class AuraStayDocTemplate(BaseDocTemplate):
             canvas.setFont('Helvetica', 8)
             canvas.setFillColor(colors.HexColor('#475569'))
             contact_width = canvas.stringWidth(contact_info, 'Helvetica', 8)
-            canvas.drawString((page_width - contact_width) / 2, footer_y - 0.2*inch, contact_info)
+            canvas.drawString((page_width - contact_width) / 2, footer_y - 0.35*inch, contact_info)
         
         # Page number (centered)
         canvas.setFont('Helvetica-Bold', 10)
         canvas.setFillColor(colors.HexColor('#0284c7'))
         page_text = f"Page {doc.page}"
         page_width_text = canvas.stringWidth(page_text, 'Helvetica-Bold', 10)
-        canvas.drawString((page_width - page_width_text) / 2, footer_y - 0.4*inch, page_text)
+        canvas.drawString((page_width - page_width_text) / 2, footer_y - 0.5*inch, page_text)
         
         canvas.restoreState()
 

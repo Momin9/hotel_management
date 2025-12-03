@@ -1,0 +1,302 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Maintenance Dashboard - {{ user.get_full_name }}{% endblock %}
+
+{% block page_title %}Maintenance Dashboard{% endblock %}
+{% block page_subtitle %}Manage maintenance requests and equipment status{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Active Requests</p>
+                    <p class="text-3xl font-bold text-luxury-900">15</p>
+                    <p class="text-sm text-red-600">5 urgent</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Priority Tasks</p>
+                    <p class="text-3xl font-bold text-luxury-900">8</p>
+                    <p class="text-sm text-yellow-600">high priority</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-star text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Inventory Alerts</p>
+                    <p class="text-3xl font-bold text-luxury-900">3</p>
+                    <p class="text-sm text-orange-600">low stock items</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-bell text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Completed This Week</p>
+                    <p class="text-3xl font-bold text-luxury-900">42</p>
+                    <p class="text-sm text-green-600">↗ +12% from last week</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Tasks -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Priority Maintenance Tasks</h2>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-6 bg-red-50 border-l-4 border-red-400 rounded-xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-luxury-900">HVAC System Failure</h3>
+                        <p class="text-sm text-luxury-600">Room 205 • Reported 2 hours ago</p>
+                        <p class="text-sm text-red-600">Critical - Guest complaint</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                        URGENT
+                    </span>
+                    <button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                        Start Work
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-6 bg-yellow-50 border-l-4 border-yellow-400 rounded-xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-wrench text-yellow-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-luxury-900">Elevator Maintenance</h3>
+                        <p class="text-sm text-luxury-600">Main elevator • Scheduled maintenance</p>
+                        <p class="text-sm text-yellow-600">High priority - Safety check</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                        HIGH
+                    </span>
+                    <button class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+                        Schedule
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-6 bg-blue-50 border-l-4 border-blue-400 rounded-xl">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-luxury-900">Lighting Issues</h3>
+                        <p class="text-sm text-luxury-600">Lobby area • Multiple bulbs out</p>
+                        <p class="text-sm text-blue-600">Medium priority</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        MEDIUM
+                    </span>
+                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        Assign
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Navigation -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Maintenance Operations</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if can_view_maintenance %}
+            <a href="{% url 'maintenance:issue_list' %}" class="group bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 hover:from-red-100 hover:to-red-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-exclamation-triangle text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Active Requests</h3>
+                    <p class="text-sm text-luxury-600">View pending issues</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_change_maintenance %}
+            <a href="{% url 'maintenance:issue_list' %}" class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 hover:from-green-100 hover:to-green-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-check-circle text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Completed Tasks</h3>
+                    <p class="text-sm text-luxury-600">Update job status</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_view_inventory %}
+            <a href="{% url 'inventory:dashboard' %}" class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-boxes text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Inventory</h3>
+                    <p class="text-sm text-luxury-600">Parts and tools</p>
+                </div>
+            </a>
+            {% endif %}
+
+            <a href="#" class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 hover:from-purple-100 hover:to-purple-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-cogs text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Equipment Status</h3>
+                    <p class="text-sm text-luxury-600">Monitor equipment</p>
+                </div>
+            </a>
+
+            {% if can_view_reports %}
+            <a href="{% url 'reporting:dashboard' %}" class="group bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-chart-bar text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Reports</h3>
+                    <p class="text-sm text-luxury-600">Maintenance reports</p>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Work Orders and Equipment Status -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Today's Work Orders</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-wrench text-yellow-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">WO-2024-001</p>
+                            <p class="text-sm text-luxury-600">Plumbing repair • Room 312</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                        In Progress
+                    </span>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-tools text-blue-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">WO-2024-002</p>
+                            <p class="text-sm text-luxury-600">AC maintenance • Floor 5</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        Scheduled
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">WO-2024-003</p>
+                            <p class="text-sm text-luxury-600">Light fixture • Lobby</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        Completed
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Equipment Status</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-wind text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">HVAC System A</p>
+                            <p class="text-sm text-luxury-600">Floors 1-4 • Last service: 2 days ago</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        Operational
+                    </span>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-elevator text-yellow-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Elevator #1</p>
+                            <p class="text-sm text-luxury-600">Main elevator • Service due</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                        Maintenance Due
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-fire text-red-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Fire Safety System</p>
+                            <p class="text-sm text-luxury-600">Building wide • Alarm test needed</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                        Attention Required
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

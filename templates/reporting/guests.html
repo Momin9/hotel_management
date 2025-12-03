@@ -1,37 +1,254 @@
 {% extends 'base_luxury.html' %}
 
-{% block title %}Guest Report{% endblock %}
+{% block title %}
+    {% if page_contents.guest_report %}
+        {{ page_contents.guest_report.page_title }}
+    {% else %}
+        Guest Insights
+    {% endif %} - AuraStay
+{% endblock %}
+
+{% block page_title %}
+    {% if page_contents.guest_report %}
+        {{ page_contents.guest_report.page_title }}
+    {% else %}
+        Guest Insights
+    {% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+    {% if page_contents.guest_report %}
+        {{ page_contents.guest_report.page_subtitle }}
+    {% else %}
+        Comprehensive guest analytics and insights
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Guest Report</h3>
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6 lg:mb-0">
+            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-users text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Guest Analytics</h2>
+                <p class="text-luxury-600 font-medium">Guest behavior and satisfaction insights</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="{% url 'reporting:export_guest_pdf' %}" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300 text-center">
+                <i class="fas fa-download mr-2"></i>Export Report
+            </a>
+        </div>
+    </div>
+
+    <!-- Guest Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user-friends text-white text-xl"></i>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="card bg-info text-white">
-                                <div class="card-body text-center">
-                                    <h4>{{ total_guests }}</h4>
-                                    <p>Total Guests</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card bg-warning text-white">
-                                <div class="card-body text-center">
-                                    <h4>{{ repeat_guests }}</h4>
-                                    <p>Repeat Guests</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-blue-600">{{ total_guests }}</p>
+                    <p class="text-luxury-600 font-medium">Total Guests</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user-plus text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-green-600">{{ new_guests_this_month }}</p>
+                    <p class="text-luxury-600 font-medium">New This Month</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-redo text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-amber-600">{{ repeat_guests }}</p>
+                    <p class="text-luxury-600 font-medium">Repeat Guests</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-bed text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-emerald-600">{{ current_guests }}</p>
+                    <p class="text-luxury-600 font-medium">Currently Staying</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Guest Type & Satisfaction -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-building text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-indigo-600">{{ corporate_guests }}</p>
+                    <p class="text-luxury-600 font-medium">Corporate</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-pink-600">{{ individual_guests }}</p>
+                    <p class="text-luxury-600 font-medium">Individual</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-teal-600">{{ total_reservations }}</p>
+                    <p class="text-luxury-600 font-medium">Total Bookings</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-star text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold text-yellow-600">{{ avg_satisfaction|floatformat:1 }}</p>
+                    <p class="text-luxury-600 font-medium">Satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Guests & Recent Guests -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Top Guests -->
+        <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+            <div class="p-8 border-b border-luxury-100">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-crown text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-luxury-800">Top Guests</h3>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                {% if top_guests %}
+                    <div class="space-y-4">
+                        {% for guest in top_guests %}
+                        <div class="bg-gradient-to-r from-gold-50 to-gold-100 rounded-2xl p-4 border border-gold-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-gold-800">{{ guest.guest__first_name }} {{ guest.guest__last_name }}</h4>
+                                    <p class="text-sm text-gold-600">{{ guest.guest__email }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-bold text-gold-600">{{ guest.reservation_count }} stays</p>
+                                    <p class="text-sm text-gold-500">${{ guest.total_spent|floatformat:0 }} spent</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-crown text-luxury-400 text-2xl"></i>
+                        </div>
+                        <p class="text-luxury-500 font-medium">No guest data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Guests -->
+        <div class="bg-white rounded-3xl luxury-shadow overflow-hidden">
+            <div class="p-8 border-b border-luxury-100">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-clock text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-luxury-800">Recent Guests</h3>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                {% if recent_guests %}
+                    <div class="space-y-4">
+                        {% for guest in recent_guests %}
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-4 border border-blue-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-blue-800">{{ guest.first_name }} {{ guest.last_name }}</h4>
+                                    <p class="text-sm text-blue-600">{{ guest.email }}</p>
+                                    <p class="text-xs text-blue-500">{{ guest.guest_type|title }} Guest</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-blue-600">Joined</p>
+                                    <p class="text-xs text-blue-500">{{ guest.created_at|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-users text-luxury-400 text-2xl"></i>
+                        </div>
+                        <p class="text-luxury-500 font-medium">No recent guests</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .from-gold-50 { background: linear-gradient(to right, #fefdf8, #fef7e0); }
+    .to-gold-100 { background: linear-gradient(to right, #fefdf8, #fef3c7); }
+    .from-gold-500 { background: linear-gradient(to right, #f59e0b, #d97706); }
+    .to-gold-600 { background: linear-gradient(to right, #f59e0b, #b45309); }
+    .border-gold-200 { border-color: #fde68a; }
+    .text-gold-800 { color: #92400e; }
+    .text-gold-600 { color: #d97706; }
+    .text-gold-500 { color: #f59e0b; }
+</style>
 {% endblock %}

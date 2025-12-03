@@ -1,0 +1,319 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Accountant Dashboard - {{ user.get_full_name }}{% endblock %}
+
+{% block page_title %}Accountant Dashboard{% endblock %}
+{% block page_subtitle %}Manage financial operations and accounting records{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Financial KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Daily Revenue</p>
+                    <p class="text-3xl font-bold text-luxury-900">$12,450</p>
+                    <p class="text-sm text-green-600">↗ +8.5% from yesterday</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-bar text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Outstanding Payments</p>
+                    <p class="text-3xl font-bold text-luxury-900">$8,920</p>
+                    <p class="text-sm text-yellow-600">15 pending invoices</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Monthly Revenue</p>
+                    <p class="text-3xl font-bold text-luxury-900">$285K</p>
+                    <p class="text-sm text-blue-600">78% of target</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Tax Summary</p>
+                    <p class="text-3xl font-bold text-luxury-900">$42K</p>
+                    <p class="text-sm text-purple-600">Q4 2024</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-file-alt text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Collection Rate</p>
+                    <p class="text-3xl font-bold text-luxury-900">94%</p>
+                    <p class="text-sm text-indigo-600">↗ +2% this month</p>
+                </div>
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tachometer-alt text-indigo-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Collection Chart -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Payment Collection Trends</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="h-64 bg-luxury-50 rounded-xl flex items-center justify-center">
+                    <div class="text-center">
+                        <i class="fas fa-chart-line text-luxury-400 text-4xl mb-4"></i>
+                        <p class="text-luxury-600">Payment Collection Chart</p>
+                        <p class="text-sm text-luxury-500">Interactive chart would be displayed here</p>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-green-50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-luxury-700">Cash Payments</span>
+                        <span class="text-sm font-bold text-green-600">35%</span>
+                    </div>
+                    <div class="w-full bg-green-200 rounded-full h-2 mt-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 35%"></div>
+                    </div>
+                </div>
+                <div class="bg-blue-50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-luxury-700">Card Payments</span>
+                        <span class="text-sm font-bold text-blue-600">55%</span>
+                    </div>
+                    <div class="w-full bg-blue-200 rounded-full h-2 mt-2">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 55%"></div>
+                    </div>
+                </div>
+                <div class="bg-purple-50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-luxury-700">Bank Transfers</span>
+                        <span class="text-sm font-bold text-purple-600">10%</span>
+                    </div>
+                    <div class="w-full bg-purple-200 rounded-full h-2 mt-2">
+                        <div class="bg-purple-500 h-2 rounded-full" style="width: 10%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accountant Navigation -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Financial Operations</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% if can_view_payments %}
+            <a href="{% url 'billing:payment_list' %}" class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 hover:from-green-100 hover:to-green-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-credit-card text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Payments</h3>
+                    <p class="text-sm text-luxury-600">Manage payments</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_view_billing %}
+            <a href="{% url 'billing:dashboard' %}" class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-file-invoice text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Billing</h3>
+                    <p class="text-sm text-luxury-600">Invoice management</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_view_reports %}
+            <a href="{% url 'reporting:dashboard' %}" class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 hover:from-purple-100 hover:to-purple-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Financial Reports</h3>
+                    <p class="text-sm text-luxury-600">Detailed analytics</p>
+                </div>
+            </a>
+            {% endif %}
+
+            {% if can_view_pos %}
+            <a href="{% url 'pos:dashboard' %}" class="group bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 hover:from-yellow-100 hover:to-yellow-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-cash-register text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">POS Transactions</h3>
+                    <p class="text-sm text-luxury-600">Sales data</p>
+                </div>
+            </a>
+            {% endif %}
+
+            <a href="#" class="group bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-file-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Tax Records</h3>
+                    <p class="text-sm text-luxury-600">Tax documentation</p>
+                </div>
+            </a>
+
+            <a href="#" class="group bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 hover:from-teal-100 hover:to-teal-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-teal-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-download text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Export Data</h3>
+                    <p class="text-sm text-luxury-600">Financial exports</p>
+                </div>
+            </a>
+
+            {% if can_view_reservations %}
+            <a href="{% url 'reservations:list' %}" class="group bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 hover:from-pink-100 hover:to-pink-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-calendar-check text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Reservations</h3>
+                    <p class="text-sm text-luxury-600">Financial data only</p>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Transactions and Outstanding Payments -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Recent Transactions</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-arrow-down text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Room Payment</p>
+                            <p class="text-sm text-luxury-600">John Doe • Room 205</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-green-600">+$450.00</p>
+                        <p class="text-xs text-luxury-500">2 hours ago</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-utensils text-blue-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Restaurant Bill</p>
+                            <p class="text-sm text-luxury-600">Table 12 • Dinner</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-green-600">+$125.50</p>
+                        <p class="text-xs text-luxury-500">4 hours ago</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-arrow-up text-red-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Supplier Payment</p>
+                            <p class="text-sm text-luxury-600">Linen Supply Co.</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-red-600">-$2,340.00</p>
+                        <p class="text-xs text-luxury-500">1 day ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Outstanding Payments</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-red-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Invoice #INV-2024-001</p>
+                            <p class="text-sm text-luxury-600">Corporate booking • 15 days overdue</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-red-600">$3,250.00</p>
+                        <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Overdue</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-yellow-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Invoice #INV-2024-002</p>
+                            <p class="text-sm text-luxury-600">Event booking • Due in 3 days</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-yellow-600">$1,890.00</p>
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Due Soon</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-calendar text-blue-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Invoice #INV-2024-003</p>
+                            <p class="text-sm text-luxury-600">Monthly contract • Due in 10 days</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-blue-600">$5,500.00</p>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

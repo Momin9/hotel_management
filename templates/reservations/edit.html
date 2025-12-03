@@ -1,225 +1,283 @@
 {% extends 'base_luxury.html' %}
 {% load static %}
 
-{% block title %}Edit Reservation{% endblock %}
+{% block title %}Edit Reservation - AuraStay{% endblock %}
+
+{% block page_title %}Edit Reservation{% endblock %}
+
+{% block page_subtitle %}Manage reservation details and additional services{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-edit me-2"></i>
-                        Edit Reservation - {{ reservation.guest.full_name }}
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <!-- Reservation Details -->
-                        <div class="col-md-6">
-                            <h5>Reservation Details</h5>
-                            <form method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="update_reservation">
-                                
-                                <div class="mb-3">
-                                    <label class="form-label"><strong>Guest:</strong></label>
-                                    <p class="form-control-plaintext">{{ reservation.guest.full_name }}</p>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label"><strong>Room:</strong></label>
-                                    <p class="form-control-plaintext">{{ reservation.room.room_number }} - {{ reservation.room.type }}</p>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label"><strong>Check-in:</strong></label>
-                                            <p class="form-control-plaintext">{{ reservation.check_in|date:"M d, Y" }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label"><strong>Check-out:</strong></label>
-                                            <p class="form-control-plaintext">{{ reservation.check_out|date:"M d, Y" }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="special_requests" class="form-label">Special Requests</label>
-                                    <textarea class="form-control" id="special_requests" name="special_requests" rows="3">{{ reservation.special_requests }}</textarea>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i>
-                                    Update Reservation
-                                </button>
-                            </form>
-                        </div>
-                        
-                        <!-- Expenses Management -->
-                        <div class="col-md-6">
-                            <h5>Additional Expenses</h5>
-                            
-                            <!-- Add New Expense Form -->
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                    <h6 class="mb-0">Add New Expense</h6>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="action" value="add_expense">
-                                        
-                                        <div class="mb-3">
-                                            <label for="description" class="form-label">Description</label>
-                                            <input type="text" class="form-control" id="description" name="description" required>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="expense_type" class="form-label">Type</label>
-                                            <select class="form-select" id="expense_type" name="expense_type" required>
-                                                {% for value, label in expense_types %}
-                                                    <option value="{{ value }}">{{ label }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="quantity" class="form-label">Quantity</label>
-                                                    <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="unit_price" class="form-label">Unit Price ($)</label>
-                                                    <input type="number" class="form-control" id="unit_price" name="unit_price" step="0.01" min="0" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="notes" class="form-label">Notes</label>
-                                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
-                                        </div>
-                                        
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fas fa-plus me-2"></i>
-                                            Add Expense
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            
-                            <!-- Existing Expenses List -->
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0">Current Expenses</h6>
-                                    <span class="badge bg-primary">${{ total_expenses|floatformat:2 }}</span>
-                                </div>
-                                <div class="card-body">
-                                    {% if expenses %}
-                                        <div class="table-responsive">
-                                            <table class="table table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Description</th>
-                                                        <th>Type</th>
-                                                        <th>Qty</th>
-                                                        <th>Price</th>
-                                                        <th>Total</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for expense in expenses %}
-                                                    <tr>
-                                                        <td>{{ expense.description }}</td>
-                                                        <td>
-                                                            <span class="badge bg-secondary">{{ expense.get_expense_type_display }}</span>
-                                                        </td>
-                                                        <td>{{ expense.quantity }}</td>
-                                                        <td>${{ expense.unit_price|floatformat:2 }}</td>
-                                                        <td><strong>${{ expense.total_amount|floatformat:2 }}</strong></td>
-                                                        <td>
-                                                            <form method="post" action="{% url 'reservations:delete_expense' expense.id %}" style="display: inline;">
-                                                                {% csrf_token %}
-                                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this expense?')">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr class="table-info">
-                                                        <th colspan="4">Total Additional Expenses:</th>
-                                                        <th>${{ total_expenses|floatformat:2 }}</th>
-                                                        <th></th>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        </div>
-                                    {% else %}
-                                        <div class="text-center py-3">
-                                            <i class="fas fa-receipt text-muted fa-2x mb-2"></i>
-                                            <p class="text-muted">No additional expenses added yet.</p>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Summary -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6>Billing Summary</h6>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <strong>Room Charges:</strong><br>
-                                            ${{ reservation.total_amount|floatformat:2 }}
-                                        </div>
-                                        <div class="col-md-3">
-                                            <strong>Additional Expenses:</strong><br>
-                                            ${{ total_expenses|floatformat:2 }}
-                                        </div>
-                                        <div class="col-md-3">
-                                            <strong>Subtotal:</strong><br>
-                                            ${{ reservation.total_amount|add:total_expenses|floatformat:2 }}
-                                        </div>
-                                        <div class="col-md-3">
-                                            <em>Final total will be calculated at checkout including taxes and service charges.</em>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <a href="{% url 'reservations:detail' reservation.id %}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>
-                            Back to Reservation
-                        </a>
-                        {% if reservation.status == 'checked_in' %}
-                        <a href="{% url 'billing:checkout_guest' reservation.stay.id %}" class="btn btn-warning">
-                            <i class="fas fa-sign-out-alt me-2"></i>
-                            Checkout & Create Invoice
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6">
+            <div class="w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-edit text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">Edit Reservation</h2>
+                <p class="text-luxury-600 font-medium">{{ reservation.guest.full_name }} - Room {{ reservation.room.room_number }}</p>
             </div>
         </div>
     </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Reservation Details Card -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user-edit text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Reservation Details</h3>
+            </div>
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_reservation">
+                
+                <!-- Guest Info -->
+                <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-2xl p-6 border border-emerald-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-user-circle text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-emerald-600 font-medium">Guest</p>
+                            <p class="text-xl font-bold text-emerald-800">{{ reservation.guest.full_name }}</p>
+                            <p class="text-sm text-emerald-600">{{ reservation.guest.email }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Room Info -->
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-bed text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-blue-600 font-medium">Room Details</p>
+                            <p class="text-xl font-bold text-blue-800">{{ reservation.room.room_number }} - {{ reservation.room.type }}</p>
+                            <p class="text-sm text-blue-600">${{ reservation.rate }}/night</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dates -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border border-green-200 text-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-plus text-white"></i>
+                        </div>
+                        <p class="text-sm text-green-600 font-medium">Check-in</p>
+                        <p class="text-lg font-bold text-green-800">{{ reservation.check_in|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 border border-red-200 text-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-minus text-white"></i>
+                        </div>
+                        <p class="text-sm text-red-600 font-medium">Check-out</p>
+                        <p class="text-lg font-bold text-red-800">{{ reservation.check_out|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+                
+                <!-- Special Requests -->
+                <div>
+                    <label for="special_requests" class="block text-sm font-medium text-luxury-700 mb-2">Special Requests</label>
+                    <textarea id="special_requests" name="special_requests" rows="4" class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" placeholder="Enter any special requests...">{{ reservation.special_requests }}</textarea>
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-royal-500 to-royal-600 text-white py-4 rounded-2xl font-bold text-lg hover-lift transition-all duration-300 group">
+                    <i class="fas fa-save mr-3 group-hover:scale-110 transition-transform"></i>
+                    Update Reservation
+                </button>
+            </form>
+        </div>
+                        
+        <!-- Additional Services Card -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-concierge-bell text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Additional Services</h3>
+            </div>
+            
+            <!-- Add New Service Form -->
+            <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-6 border border-amber-200 mb-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-plus text-white"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-amber-800">Add New Service</h4>
+                </div>
+                
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_expense">
+                    
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-amber-700 mb-2">Service Description</label>
+                        <input type="text" id="description" name="description" required class="w-full px-4 py-3 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="e.g., Room Service, Laundry, Spa Treatment">
+                    </div>
+                    
+                    <div>
+                        <label for="expense_type" class="block text-sm font-medium text-amber-700 mb-2">Service Type</label>
+                        <select id="expense_type" name="expense_type" required class="w-full px-4 py-3 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                            {% for value, label in expense_types %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium text-amber-700 mb-2">Quantity</label>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" required class="w-full px-4 py-3 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="unit_price" class="block text-sm font-medium text-amber-700 mb-2">Unit Price ($)</label>
+                            <input type="number" id="unit_price" name="unit_price" step="0.01" min="0" required class="w-full px-4 py-3 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-amber-700 mb-2">Notes</label>
+                        <textarea id="notes" name="notes" rows="3" class="w-full px-4 py-3 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="Additional notes or details..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover-lift transition-all duration-300 group">
+                        <i class="fas fa-plus mr-2 group-hover:scale-110 transition-transform"></i>
+                        Add Service
+                    </button>
+                </form>
+            </div>
+                            
+            <!-- Current Services List -->
+            <div class="bg-gradient-to-r from-luxury-50 to-luxury-100 rounded-2xl p-6 border border-luxury-200">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-luxury-500 to-luxury-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-list text-white"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-luxury-800">Current Services</h4>
+                    </div>
+                    <span class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-4 py-2 rounded-full font-bold">${{ total_expenses|floatformat:2 }}</span>
+                </div>
+                
+                {% if expenses %}
+                    <div class="space-y-3">
+                        {% for expense in expenses %}
+                        <div class="bg-white rounded-xl p-4 border border-luxury-200 hover:shadow-lg transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <h5 class="font-bold text-luxury-800">{{ expense.description }}</h5>
+                                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">{{ expense.get_expense_type_display }}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-6 text-sm text-luxury-600">
+                                        <span><i class="fas fa-hashtag mr-1"></i>Qty: {{ expense.quantity }}</span>
+                                        <span><i class="fas fa-dollar-sign mr-1"></i>Unit: ${{ expense.unit_price|floatformat:2 }}</span>
+                                        <span class="font-bold text-luxury-800"><i class="fas fa-calculator mr-1"></i>Total: ${{ expense.total_amount|floatformat:2 }}</span>
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'reservations:delete_expense' expense.id %}" class="ml-4">
+                                    {% csrf_token %}
+                                    <button type="submit" onclick="return confirm('Delete this service?')" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="bg-gradient-to-r from-royal-500 to-royal-600 rounded-xl p-4 text-white">
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold">Total Additional Services:</span>
+                                <span class="text-xl font-bold">${{ total_expenses|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-luxury-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-concierge-bell text-luxury-400 text-2xl"></i>
+                        </div>
+                        <p class="text-luxury-500 font-medium">No additional services added yet</p>
+                        <p class="text-sm text-luxury-400">Add services like room service, laundry, or spa treatments</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+                    
+    <!-- Billing Summary -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                <i class="fas fa-calculator text-white text-lg"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-800">Billing Summary</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 text-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-bed text-white"></i>
+                </div>
+                <p class="text-sm text-blue-600 font-medium mb-1">Room Charges</p>
+                <p class="text-2xl font-bold text-blue-800">${{ reservation.total_amount|floatformat:2 }}</p>
+            </div>
+            
+            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 border border-amber-200 text-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-concierge-bell text-white"></i>
+                </div>
+                <p class="text-sm text-amber-600 font-medium mb-1">Additional Services</p>
+                <p class="text-2xl font-bold text-amber-800">${{ total_expenses|floatformat:2 }}</p>
+            </div>
+            
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 border border-emerald-200 text-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-plus text-white"></i>
+                </div>
+                <p class="text-sm text-emerald-600 font-medium mb-1">Subtotal</p>
+                <p class="text-2xl font-bold text-emerald-800">${{ reservation.total_amount|add:total_expenses|floatformat:2 }}</p>
+            </div>
+            
+            <div class="bg-gradient-to-br from-luxury-50 to-luxury-100 rounded-2xl p-6 border border-luxury-200">
+                <div class="w-12 h-12 bg-gradient-to-r from-luxury-500 to-luxury-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-info-circle text-white"></i>
+                </div>
+                <p class="text-xs text-luxury-600 font-medium text-center">Final total calculated at checkout including taxes and service charges</p>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="{% url 'reservations:detail' reservation.id %}" class="flex-1 bg-gradient-to-r from-luxury-500 to-luxury-600 text-white py-4 rounded-2xl font-semibold text-center hover-lift transition-all duration-300 group">
+                <i class="fas fa-arrow-left mr-3 group-hover:scale-110 transition-transform"></i>
+                Back to Reservation
+            </a>
+            {% if reservation.status == 'checked_in' %}
+            <a href="{% url 'billing:checkout_guest' reservation.stay.id %}" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-2xl font-semibold text-center hover-lift transition-all duration-300 group">
+                <i class="fas fa-sign-out-alt mr-3 group-hover:scale-110 transition-transform"></i>
+                Checkout & Create Invoice
+            </a>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+    
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
 {% endblock %}

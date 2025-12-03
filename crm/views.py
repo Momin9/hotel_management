@@ -12,8 +12,8 @@ from reservations.models import Reservation
 def guest_list(request):
     # Check if user has permission to view guests
     if not (request.user.is_superuser or 
-            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_guests) or
-            request.user.role == 'Owner'):
+            request.user.role == 'Owner' or
+            request.user.can_view_guests):
         messages.error(request, 'You do not have permission to view guests.')
         return redirect('accounts:dashboard')
     """List guests based on user role with filtering"""
@@ -90,8 +90,8 @@ def guest_list(request):
 def guest_create(request, hotel_id=None):
     # Check if user has permission to create guests
     if not (request.user.is_superuser or 
-            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_create_guests) or
-            request.user.role == 'Owner'):
+            request.user.role == 'Owner' or
+            request.user.can_add_guests):
         messages.error(request, 'You do not have permission to create guests.')
         return redirect('crm:list')
     """Create new guest with company support"""
@@ -128,8 +128,8 @@ def guest_create(request, hotel_id=None):
 def guest_edit(request, guest_id, hotel_id=None):
     # Check if user has permission to edit guests
     if not (request.user.is_superuser or 
-            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_edit_guests) or
-            request.user.role == 'Owner'):
+            request.user.role == 'Owner' or
+            request.user.can_change_guests):
         messages.error(request, 'You do not have permission to edit guests.')
         return redirect('crm:list')
     """Edit guest with company support"""
@@ -197,8 +197,8 @@ def guest_edit(request, guest_id, hotel_id=None):
 def guest_detail(request, guest_id):
     # Check if user has permission to view guests
     if not (request.user.is_superuser or 
-            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_guests) or
-            request.user.role == 'Owner'):
+            request.user.role == 'Owner' or
+            request.user.can_view_guests):
         messages.error(request, 'You do not have permission to view guest details.')
         return redirect('crm:list')
     """Guest detail view"""
@@ -229,8 +229,8 @@ def guest_detail(request, guest_id):
 def send_email(request, guest_id):
     # Check if user has permission to view guests
     if not (request.user.is_superuser or 
-            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_guests) or
-            request.user.role == 'Owner'):
+            request.user.role == 'Owner' or
+            request.user.can_view_guests):
         messages.error(request, 'You do not have permission to send emails to guests.')
         return redirect('crm:list')
     """Send email to guest"""
@@ -261,8 +261,8 @@ def send_email(request, guest_id):
 def guest_history(request, guest_id):
     # Check if user has permission to view guests
     if not (request.user.is_superuser or 
-            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_guests) or
-            request.user.role == 'Owner'):
+            request.user.role == 'Owner' or
+            request.user.can_view_guests):
         messages.error(request, 'You do not have permission to view guest history.')
         return redirect('crm:list')
     """View guest reservation history"""

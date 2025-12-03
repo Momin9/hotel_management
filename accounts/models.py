@@ -32,7 +32,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ('Owner', 'Owner'),
         ('Manager', 'Manager'),
-        ('Staff', 'Staff'),
+        ('Receptionist', 'Receptionist/Front Desk'),
+        ('Housekeeping', 'Housekeeping Staff'),
+        ('Maintenance', 'Maintenance Staff'),
+        ('Accountant', 'Accountant'),
+        ('Staff', 'General Staff'),
     ]
     
     user_id = models.AutoField(primary_key=True)

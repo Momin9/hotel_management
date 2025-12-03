@@ -23,12 +23,16 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-luxury-700 mb-2">Reservation</label>
-                    <select name="reservation"
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Unpaid Reservations</label>
+                    <select name="stay" 
                             class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
-                        <option value="">Select Reservation (Optional)</option>
-                        <option value="1">Room 101 - Nov 18-20, 2024</option>
-                        <option value="2">Room 205 - Nov 19-22, 2024</option>
+                        <option value="">Select Unpaid Reservation</option>
+                        {% for stay in unpaid_stays %}
+                        <option value="{{ stay.id }}">
+                            {{ stay.reservation.guest.full_name }} - Room {{ stay.room.room_number }} 
+                            ({{ stay.actual_check_in|date:"M d" }} - {{ stay.actual_check_out|date:"M d, Y" }})
+                        </option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>

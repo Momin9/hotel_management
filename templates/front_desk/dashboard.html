@@ -1,323 +1,238 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front Desk - StaySuite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Front Desk Operations - AuraStay{% endblock %}
+
+{% block page_title %}Front Desk Operations{% endblock %}
+
+{% block page_subtitle %}Manage check-ins, check-outs, and guest services{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-blue-600">{{ arrivals_count }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Today's Arrivals</h3>
+            <p class="text-sm text-luxury-600">Guests checking in today</p>
+        </div>
         
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-        }
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-amber-600">{{ departures_count }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Today's Departures</h3>
+            <p class="text-sm text-luxury-600">Guests checking out today</p>
+        </div>
         
-        .header {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-bed text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-emerald-600">{{ occupied_rooms }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Occupied Rooms</h3>
+            <p class="text-sm text-luxury-600">Currently occupied</p>
+        </div>
         
-        .back-btn {
-            background: #6b7280;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-walking text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-purple-600">{{ walk_ins_count }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Walk-ins Today</h3>
+            <p class="text-sm text-luxury-600">New walk-in guests</p>
+        </div>
+    </div>
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <a href="{% url 'reservations:list' %}?status=checked_in" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-sign-in-alt text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-luxury-800 mb-2">Check-in Guest</h3>
+            <p class="text-sm text-luxury-600">Process guest arrivals</p>
+        </a>
         
-        .content {
-            padding: 2rem;
-        }
+        <a href="{% url 'reservations:list' %}?status=checked_out" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-sign-out-alt text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-luxury-800 mb-2">Check-out Guest</h3>
+            <p class="text-sm text-luxury-600">Process guest departures</p>
+        </a>
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
+        <a href="{% url 'reservations:create' %}" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-walking text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-luxury-800 mb-2">Walk-in Registration</h3>
+            <p class="text-sm text-luxury-600">Register new walk-in guests</p>
+        </a>
         
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
+        <a href="{% url 'crm:list' %}" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-search text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-luxury-800 mb-2">Guest Lookup</h3>
+            <p class="text-sm text-luxury-600">Find guest information</p>
+        </a>
+    </div>
+    <!-- Guest Lists -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Today's Arrivals -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Today's Arrivals</h3>
+            </div>
+            
+            {% if arrivals %}
+                <div class="space-y-4">
+                    {% for arrival in arrivals %}
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-4 border border-blue-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-blue-800">{{ arrival.guest.full_name }}</h4>
+                                <p class="text-sm text-blue-600">Room {{ arrival.room.room_number }} • {{ arrival.room.type }} • {{ arrival.adults }} Guest{{ arrival.adults|pluralize }}</p>
+                                <p class="text-xs text-blue-500">{{ arrival.check_in|date:"M d, Y" }}</p>
+                            </div>
+                            <button onclick="quickCheckIn('{{ arrival.id }}')" class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-xl font-semibold hover-lift transition-all duration-300">
+                                Check-in
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-calendar-check text-blue-400 text-2xl"></i>
+                    </div>
+                    <p class="text-luxury-500 font-medium">No arrivals scheduled for today</p>
+                </div>
+            {% endif %}
+        </div>
         
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-title {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 500;
-        }
-        
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .quick-action {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #1e293b;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        
-        .quick-action:hover {
-            border-color: #667eea;
-            background: #f8fafc;
-        }
-        
-        .quick-action i {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: #667eea;
-        }
-        
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        
-        .section {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .guest-list {
-            list-style: none;
-        }
-        
-        .guest-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .guest-info h4 {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        
-        .guest-info p {
-            font-size: 0.875rem;
-            color: #64748b;
-        }
-        
-        .action-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-        
-        .btn-warning {
-            background: #f59e0b;
-            color: white;
-        }
-        
-        @media (max-width: 768px) {
-            .main-grid {
-                grid-template-columns: 1fr;
+        <!-- Today's Departures -->
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">Today's Departures</h3>
+            </div>
+            
+            {% if departures %}
+                <div class="space-y-4">
+                    {% for departure in departures %}
+                    <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-4 border border-amber-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-amber-800">{{ departure.guest.full_name }}</h4>
+                                <p class="text-sm text-amber-600">Room {{ departure.room.room_number }} • {{ departure.room.type }}</p>
+                                <p class="text-xs text-amber-500">{{ departure.check_out|date:"M d, Y" }}</p>
+                            </div>
+                            <button onclick="quickCheckOut('{{ departure.id }}')" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl font-semibold hover-lift transition-all duration-300">
+                                Check-out
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-calendar-times text-amber-400 text-2xl"></i>
+                    </div>
+                    <p class="text-luxury-500 font-medium">No departures scheduled for today</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// CSRF token for AJAX requests
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <a href="{% url 'hotels:dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        <h1>Front Desk Operations</h1>
-    </div>
+    }
+    return cookieValue;
+}
+
+function quickCheckIn(reservationId) {
+    fetch(`/reservations/${reservationId}/quick-check-in/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+    });
+}
+
+function quickCheckOut(reservationId) {
+    fetch(`/reservations/${reservationId}/get-stay-id/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.stay_id) {
+            window.location.href = `/billing/checkout/${data.stay_id}/`;
+        } else {
+            alert('Error: Unable to find stay record for checkout.');
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+    });
+}
+</script>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
     
-    <div class="content">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Today's Arrivals</span>
-                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">
-                        <i class="fas fa-plane-arrival"></i>
-                    </div>
-                </div>
-                <div class="stat-value">8</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Today's Departures</span>
-                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">
-                        <i class="fas fa-plane-departure"></i>
-                    </div>
-                </div>
-                <div class="stat-value">6</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Occupied Rooms</span>
-                    <div class="stat-icon" style="background: #dcfce7; color: #10b981;">
-                        <i class="fas fa-bed"></i>
-                    </div>
-                </div>
-                <div class="stat-value">24</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">Walk-ins Today</span>
-                    <div class="stat-icon" style="background: #fce7f3; color: #ec4899;">
-                        <i class="fas fa-walking"></i>
-                    </div>
-                </div>
-                <div class="stat-value">3</div>
-            </div>
-        </div>
-        
-        <div class="quick-actions">
-            <a href="#" class="quick-action">
-                <i class="fas fa-sign-in-alt"></i>
-                <h3>Check-in Guest</h3>
-                <p>Process guest arrivals</p>
-            </a>
-            <a href="#" class="quick-action">
-                <i class="fas fa-sign-out-alt"></i>
-                <h3>Check-out Guest</h3>
-                <p>Process guest departures</p>
-            </a>
-            <a href="#" class="quick-action">
-                <i class="fas fa-walking"></i>
-                <h3>Walk-in Registration</h3>
-                <p>Register new walk-in guests</p>
-            </a>
-            <a href="#" class="quick-action">
-                <i class="fas fa-search"></i>
-                <h3>Guest Lookup</h3>
-                <p>Find guest information</p>
-            </a>
-        </div>
-        
-        <div class="main-grid">
-            <div class="section">
-                <h2 class="section-title">
-                    <i class="fas fa-plane-arrival" style="color: #3b82f6;"></i>
-                    Today's Arrivals
-                </h2>
-                
-                <ul class="guest-list">
-                    <li class="guest-item">
-                        <div class="guest-info">
-                            <h4>John Doe</h4>
-                            <p>Room 101 • Standard Room • 2 Guests</p>
-                        </div>
-                        <button class="action-btn btn-primary">Check-in</button>
-                    </li>
-                    <li class="guest-item">
-                        <div class="guest-info">
-                            <h4>Jane Smith</h4>
-                            <p>Room 205 • Deluxe Room • 1 Guest</p>
-                        </div>
-                        <button class="action-btn btn-primary">Check-in</button>
-                    </li>
-                    <li class="guest-item">
-                        <div class="guest-info">
-                            <h4>Bob Johnson</h4>
-                            <p>Room 301 • Suite • 4 Guests</p>
-                        </div>
-                        <button class="action-btn btn-warning">Pending</button>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-title">
-                    <i class="fas fa-plane-departure" style="color: #f59e0b;"></i>
-                    Today's Departures
-                </h2>
-                
-                <ul class="guest-list">
-                    <li class="guest-item">
-                        <div class="guest-info">
-                            <h4>Alice Brown</h4>
-                            <p>Room 102 • Standard Room • Balance: $0</p>
-                        </div>
-                        <button class="action-btn btn-success">Check-out</button>
-                    </li>
-                    <li class="guest-item">
-                        <div class="guest-info">
-                            <h4>Mike Wilson</h4>
-                            <p>Room 203 • Deluxe Room • Balance: $45</p>
-                        </div>
-                        <button class="action-btn btn-warning">Settle Bill</button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}
