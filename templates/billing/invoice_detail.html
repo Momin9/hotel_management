@@ -129,23 +129,29 @@
 
         <!-- Totals -->
         <div class="flex justify-end">
-            <div class="w-full md:w-1/2">
-                <div class="space-y-2">
-                    <div class="flex justify-between py-2">
+            <div class="w-full md:w-2/3 lg:w-1/2 xl:w-2/5">
+                <div class="space-y-2 bg-luxury-50 p-4 rounded-xl">
+                    <div class="flex justify-between items-center py-2">
                         <span class="text-luxury-600">Subtotal:</span>
-                        <span class="font-semibold">{{ invoice.currency }} {{ invoice.subtotal }}</span>
+                        <span class="font-semibold">{{ invoice.currency }} {{ invoice.subtotal|floatformat:2 }}</span>
                     </div>
-                    <div class="flex justify-between py-2">
-                        <span class="text-luxury-600">Service Charge:</span>
-                        <span class="font-semibold">{{ invoice.currency }} {{ invoice.service_charge }}</span>
+                    <div class="flex justify-between items-start py-2">
+                        <span class="text-luxury-600 pr-2">Service Charge:</span>
+                        <span class="font-semibold text-right">{{ invoice.currency }} {{ invoice.service_charge|floatformat:2 }}</span>
                     </div>
-                    <div class="flex justify-between py-2">
-                        <span class="text-luxury-600">Tax:</span>
-                        <span class="font-semibold">{{ invoice.currency }} {{ invoice.tax_amount }}</span>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-luxury-600">Tax ({{ invoice.tax_rate }}%):</span>
+                        <span class="font-semibold">{{ invoice.currency }} {{ invoice.tax_amount|floatformat:2 }}</span>
                     </div>
-                    <div class="flex justify-between py-3 border-t-2 border-luxury-300">
+                    {% if invoice.discount_amount > 0 %}
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-luxury-600">Discount:</span>
+                        <span class="font-semibold text-red-600">-{{ invoice.currency }} {{ invoice.discount_amount|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="flex justify-between items-center py-3 border-t-2 border-luxury-300">
                         <span class="text-lg font-bold text-luxury-800">Total:</span>
-                        <span class="text-lg font-bold text-royal-600">{{ invoice.currency }} {{ invoice.total_amount }}</span>
+                        <span class="text-lg font-bold text-royal-600">{{ invoice.currency }} {{ invoice.total_amount|floatformat:2 }}</span>
                     </div>
                 </div>
             </div>

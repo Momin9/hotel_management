@@ -5,38 +5,26 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hotelmanagement.settings')
 django.setup()
 
-from accounts.models import *
-from tenants.models import *
+from hotels.models import Hotel, Room
 
-print('=== DETAILED DATA ANALYSIS ===')
-
-print('\n--- FEATURES ---')
-for f in Feature.objects.all():
-    print(f'{f.title} - {f.color} - Order: {f.order}')
-
-print('\n--- SUBSCRIPTION PLANS ---')
-for p in SubscriptionPlan.objects.all():
-    print(f'{p.name} - Monthly: ${p.price_monthly} - Yearly: ${p.price_yearly} - Rooms: {p.max_rooms}')
-
-print('\n--- PAGE CONTENTS ---')
-for pc in PageContent.objects.all()[:15]:
-    print(f'{pc.page_name}: {pc.page_title}')
-
-print('\n--- FOOTER INFO ---')
-footer = Footer.objects.first()
-if footer:
-    print(f'Company: {footer.company_name}')
-    print(f'Email: {footer.email}')
-    print(f'Phone: {footer.phone}')
-
-print('\n--- ABOUT US ---')
-about = AboutUs.objects.first()
-if about:
-    print(f'Active: {about.is_active}')
-    print(f'Mission: {about.mission_statement[:100]}...')
-
-print('\n--- TERMS & PRIVACY ---')
-terms = TermsOfService.objects.first()
-privacy = PrivacyPolicy.objects.first()
-print(f'Terms: {terms.title if terms else "None"}')
-print(f'Privacy: {privacy.title if privacy else "None"}')
+print('🏨 Room Details by Hotel:')
+for hotel in Hotel.objects.all():
+    print(f'\n{hotel.name}:')
+    rooms = Room.objects.filter(hotel=hotel).order_by('room_number')
+    
+    # Group by room type
+    room_types = {}
+    for room in rooms:
+        rt = room.room_type.name if room.room_type else 'No Type'
+        if rt not in room_types:
+            room_types[rt] = []
+        room_types[rt].append(room)
+    
+    for room_type, room_list in room_types.items():
+        print(f'  {room_type}: {len(room_list)} rooms')
+        for room in room_list[:3]:  # Show first 3 rooms
+            bed = room.bed_type.name if room.bed_type else 'No Bed'
+            floor = f'Floor {room.floor.number}' if room.floor else 'No Floor'
+            print(f'    - Room {room.room_number}: {bed}, {floor}, ${room.price}/night')
+        if len(room_list) > 3:
+            print(f'    ... and {len(room_list) - 3} more rooms')

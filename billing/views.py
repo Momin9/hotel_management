@@ -299,15 +299,20 @@ def download_invoice_pdf(request, invoice_id):
     # Add empty row for spacing
     charge_data.append(['', '', '', ''])
     
+    # Calculate service charge percentage safely
+    service_charge_pct = 0
+    if invoice.subtotal > 0 and invoice.service_charge > 0:
+        service_charge_pct = (invoice.service_charge / invoice.subtotal) * 100
+    
     # Add totals with better formatting
     charge_data.extend([
         ['', '', 'Subtotal:', f"{invoice.currency} {invoice.subtotal:.2f}"],
-        ['', '', f'Service Charge ({((invoice.service_charge/invoice.subtotal)*100):.1f}%):', f"{invoice.currency} {invoice.service_charge:.2f}"] if invoice.service_charge > 0 else ['', '', 'Service Charge:', f"{invoice.currency} 0.00"],
+        ['', '', f'Service ({service_charge_pct:.1f}%):', f"{invoice.currency} {invoice.service_charge:.2f}"] if invoice.service_charge > 0 else ['', '', 'Service Charge:', f"{invoice.currency} 0.00"],
         ['', '', f'Tax ({invoice.tax_rate:.1f}%):', f"{invoice.currency} {invoice.tax_amount:.2f}"] if invoice.tax_rate > 0 else ['', '', 'Tax:', f"{invoice.currency} 0.00"],
         ['', '', 'TOTAL:', f"{invoice.currency} {invoice.total_amount:.2f}"]
     ])
     
-    charge_table = Table(charge_data, colWidths=[3.5*inch, 0.8*inch, 1.3*inch, 1.4*inch])
+    charge_table = Table(charge_data, colWidths=[3*inch, 0.7*inch, 1.8*inch, 1.5*inch])
     charge_table.setStyle(TableStyle([
         # Header styling
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a8a')),

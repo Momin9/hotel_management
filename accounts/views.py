@@ -490,18 +490,65 @@ def super_admin_dashboard(request):
 
 @login_required
 def owner_dashboard(request):
-    """Hotel Owner Dashboard"""
+    """Hotel Owner Dashboard with Real Data"""
     from .role_permissions import RolePermissions
+    from hotels.models import Room
+    from decimal import Decimal
+    from django.db.models import Count, Sum, Avg
+    from datetime import date, timedelta
     
-    # Get the first hotel owned by the user
-    hotel = Hotel.objects.filter(owner=request.user).first()
+    # Get hotels owned by the user
+    hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
+    hotel = hotels.first()
     hotel_name = hotel.name if hotel else 'Hotel Owner'
+    
+    # Calculate real statistics
+    total_hotels = hotels.count()
+    
+    # Room and occupancy data
+    total_rooms = 0
+    occupied_rooms = 0
+    available_rooms = 0
+    
+    for h in hotels:
+        hotel_rooms = Room.objects.filter(hotel=h)
+        total_rooms += hotel_rooms.count()
+        occupied_rooms += hotel_rooms.filter(status='Occupied').count()
+        available_rooms += hotel_rooms.filter(status='Available').count()
+    
+    # Calculate occupancy percentage
+    occupancy_percentage = round((occupied_rooms / total_rooms * 100) if total_rooms > 0 else 0, 1)
+    
+    # Revenue calculation from actual payments
+    from billing.models import Payment
+    from django.db.models import Sum
+    
+    # Get total revenue from completed payments for this owner's hotels
+    total_revenue = Payment.objects.filter(
+        invoice__stay__reservation__hotel__in=hotels,
+        status='completed'
+    ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    
+    # Staff count
+    total_staff = User.objects.filter(
+        assigned_hotel__in=hotels,
+        deleted_at__isnull=True,
+        is_active=True
+    ).count()
     
     context = {
         'user_role': 'Hotel Owner',
         'hotel_name': hotel_name,
         'hotel': hotel,
         'navbar_items': RolePermissions.get_role_navbar_items('Owner'),
+        # Real data
+        'total_hotels': total_hotels,
+        'occupancy_percentage': occupancy_percentage,
+        'total_revenue': total_revenue,
+        'total_staff': total_staff,
+        'total_rooms': total_rooms,
+        'occupied_rooms': occupied_rooms,
+        'available_rooms': available_rooms,
     }
     return render(request, 'accounts/dashboards/owner.html', context)
 
