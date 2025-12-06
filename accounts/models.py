@@ -490,3 +490,48 @@ class PrivacyPolicy(models.Model):
     
     def __str__(self):
         return f"{self.title} v{self.version} ({'Active' if self.is_active else 'Inactive'})"
+
+
+class TrustedHotel(models.Model):
+    """Hotels displayed in the 'Trusted By' section on landing page"""
+    name = models.CharField(max_length=100, help_text="Hotel name to display")
+    icon = models.CharField(max_length=50, default='fas fa-hotel', help_text="FontAwesome icon class (e.g., fas fa-hotel)")
+    is_active = models.BooleanField(default=True, help_text="Show on landing page")
+    order = models.PositiveIntegerField(default=0, help_text="Display order (lower numbers first)")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = "Trusted Hotel"
+        verbose_name_plural = "Trusted Hotels"
+
+    def __str__(self):
+        return self.name
+
+
+class LandingPageContent(models.Model):
+    """Editable content for landing page sections"""
+    section_title = models.CharField(max_length=100, default="Trusted By Leading Hotels")
+    section_subtitle = models.CharField(max_length=200, default="Join thousands of hotels worldwide using AuraStay")
+    is_active = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Landing Page Content"
+        verbose_name_plural = "Landing Page Content"
+
+    def __str__(self):
+        return f"Landing Page - {self.section_title}"
+
+    @classmethod
+    def get_content(cls):
+        """Get active landing page content or create default"""
+        content, created = cls.objects.get_or_create(
+            is_active=True,
+            defaults={
+                'section_title': 'Trusted By Leading Hotels',
+                'section_subtitle': 'Join thousands of hotels worldwide using AuraStay'
+            }
+        )
+        return content

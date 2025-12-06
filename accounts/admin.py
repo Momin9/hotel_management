@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP, Feature, SiteConfiguration, TermsOfService, PrivacyPolicy
+from .models import User, AboutUs, Footer, PageContent, ContactInquiry, PasswordResetOTP, Feature, SiteConfiguration, TermsOfService, PrivacyPolicy, TrustedHotel, LandingPageContent
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
@@ -220,6 +220,39 @@ class PrivacyPolicyAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         })
     )
+
+@admin.register(TrustedHotel)
+class TrustedHotelAdmin(admin.ModelAdmin):
+    list_display = ['name', 'icon', 'is_active', 'order']
+    list_filter = ['is_active']
+    list_editable = ['is_active', 'order']
+    search_fields = ['name']
+    ordering = ['order', 'name']
+    
+    fieldsets = (
+        ('Hotel Information', {
+            'fields': ('name', 'icon')
+        }),
+        ('Display Settings', {
+            'fields': ('is_active', 'order')
+        })
+    )
+
+
+@admin.register(LandingPageContent)
+class LandingPageContentAdmin(admin.ModelAdmin):
+    list_display = ['section_title', 'section_subtitle', 'is_active', 'updated_at']
+    list_filter = ['is_active']
+    fields = ['section_title', 'section_subtitle', 'is_active']
+    
+    def has_add_permission(self, request):
+        # Only allow adding if no active instance exists
+        return not LandingPageContent.objects.filter(is_active=True).exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        # Don't allow deletion
+        return False
+
 
 # Unregister the default Group admin_dashboard to prevent conflicts
 admin.site.unregister(Group)

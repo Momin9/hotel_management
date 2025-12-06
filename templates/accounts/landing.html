@@ -298,36 +298,29 @@
 <!-- Trusted By Section -->
 <div class="bg-white rounded-3xl p-8 luxury-shadow">
     <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-luxury-800 mb-4">Trusted By Leading Hotels</h2>
-        <p class="text-luxury-600">Join thousands of hotels worldwide using AuraStay</p>
+        <h2 class="text-2xl font-bold text-luxury-800 mb-4">{{ landing_content.section_title }}</h2>
+        <p class="text-luxury-600">{{ landing_content.section_subtitle }}</p>
     </div>
     
+    {% if trusted_hotels %}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
+        {% for hotel in trusted_hotels %}
         <div class="text-center">
             <div class="bg-luxury-50 rounded-xl p-4 mb-2">
-                <i class="fas fa-hotel text-2xl text-royal-500"></i>
+                <i class="{{ hotel.icon }} text-2xl text-royal-500"></i>
             </div>
-            <p class="font-semibold text-luxury-700 text-sm">Royal Palace</p>
+            <p class="font-semibold text-luxury-700 text-sm">{{ hotel.name }}</p>
         </div>
-        <div class="text-center">
-            <div class="bg-luxury-50 rounded-xl p-4 mb-2">
-                <i class="fas fa-building text-2xl text-royal-500"></i>
-            </div>
-            <p class="font-semibold text-luxury-700 text-sm">Grand Resort</p>
-        </div>
-        <div class="text-center">
-            <div class="bg-luxury-50 rounded-xl p-4 mb-2">
-                <i class="fas fa-bed text-2xl text-royal-500"></i>
-            </div>
-            <p class="font-semibold text-luxury-700 text-sm">Luxury Suites</p>
-        </div>
-        <div class="text-center">
-            <div class="bg-luxury-50 rounded-xl p-4 mb-2">
-                <i class="fas fa-star text-2xl text-royal-500"></i>
-            </div>
-            <p class="font-semibold text-luxury-700 text-sm">Elite Hotels</p>
-        </div>
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center py-8">
+        <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-hotel text-luxury-400 text-2xl"></i>
+        </div>
+        <p class="text-luxury-500">No trusted hotels configured yet.</p>
+    </div>
+    {% endif %}
 </div>
 
 

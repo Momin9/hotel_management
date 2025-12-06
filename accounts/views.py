@@ -18,13 +18,22 @@ def landing_page(request):
     """Landing page for AuraStay"""
     from .forms import ContactForm
     from .models import Feature
+    from .models import TrustedHotel, LandingPageContent
+    
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price_monthly')
     features = Feature.objects.filter(is_active=True).order_by('order', 'created_at')
     contact_form = ContactForm()
+    
+    # Get trusted hotels and landing page content
+    trusted_hotels = TrustedHotel.objects.filter(is_active=True).order_by('order', 'name')
+    landing_content = LandingPageContent.get_content()
+    
     return render(request, 'accounts/landing.html', {
         'plans': plans, 
         'contact_form': contact_form,
-        'features': features
+        'features': features,
+        'trusted_hotels': trusted_hotels,
+        'landing_content': landing_content
     })
 
 def about_page(request):
