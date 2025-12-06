@@ -3,9 +3,11 @@ import uuid
 
 class RoomType(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    hotel = models.ForeignKey('hotels.Hotel', on_delete=models.CASCADE, related_name='config_room_types')
+    hotels = models.ManyToManyField('hotels.Hotel', related_name='config_room_types')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    max_occupancy = models.IntegerField(default=2)
+    bed_configuration = models.CharField(max_length=200, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -17,7 +19,7 @@ class RoomType(models.Model):
 
 class BedType(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    hotel = models.ForeignKey('hotels.Hotel', on_delete=models.CASCADE, related_name='config_bed_types')
+    hotels = models.ManyToManyField('hotels.Hotel', related_name='config_bed_types')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
@@ -31,7 +33,7 @@ class BedType(models.Model):
 
 class Floor(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    hotel = models.ForeignKey('hotels.Hotel', on_delete=models.CASCADE, related_name='config_floors')
+    hotels = models.ManyToManyField('hotels.Hotel', related_name='config_floors')
     name = models.CharField(max_length=100)
     number = models.IntegerField()
     description = models.TextField(blank=True)
@@ -46,7 +48,7 @@ class Floor(models.Model):
 
 class Amenity(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    hotel = models.ForeignKey('hotels.Hotel', on_delete=models.CASCADE, related_name='config_amenities')
+    hotels = models.ManyToManyField('hotels.Hotel', related_name='config_amenities')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     icon = models.CharField(max_length=50, blank=True, help_text="FontAwesome icon class")

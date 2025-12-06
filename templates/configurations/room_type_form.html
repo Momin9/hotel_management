@@ -29,20 +29,33 @@
                         Basic Information
                     </h3>
                     
-                    {% if not room_type %}
                     <div>
-                        <label for="hotel" class="block text-sm font-medium text-luxury-700 mb-2">
-                            <i class="fas fa-building mr-2 text-blue-500"></i>Hotel
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-building mr-2 text-blue-500"></i>Hotels
                         </label>
-                        <select id="hotel" name="hotel" required
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer">
-                            <option value="">🏨 Select Hotel</option>
-                            {% for hotel in hotels %}
-                                <option value="{{ hotel.hotel_id }}">{{ hotel.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="bg-luxury-50 p-4 rounded-xl border border-luxury-200 max-h-48 overflow-y-auto">
+                            <div class="grid grid-cols-1 gap-3">
+                                {% for hotel in hotels %}
+                                <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-white transition-colors">
+                                    <input type="checkbox" name="hotels" value="{{ hotel.hotel_id }}" id="hotel_{{ hotel.hotel_id }}"
+                                           {% if room_type and hotel in room_type.hotels.all %}checked{% endif %}
+                                           class="rounded border-luxury-300 text-blue-600 focus:ring-blue-500">
+                                    <label for="hotel_{{ hotel.hotel_id }}" class="flex-1 cursor-pointer">
+                                        <div class="font-medium text-luxury-800 flex items-center">
+                                            <i class="fas fa-hotel mr-2 text-blue-600"></i>
+                                            {{ hotel.name }}
+                                        </div>
+                                    </label>
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-4 text-luxury-500">
+                                    <i class="fas fa-info-circle text-xl mb-2"></i>
+                                    <p>No hotels available</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
                     
                     <div>
                         <label for="name" class="block text-sm font-medium text-luxury-700 mb-2">

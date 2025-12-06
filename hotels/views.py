@@ -238,8 +238,8 @@ def room_list(request, hotel_id):
     
     # Get filter options
     from configurations.models import RoomType, Floor as ConfigFloor
-    room_types = RoomType.objects.filter(hotel=hotel_obj)
-    floors = ConfigFloor.objects.filter(hotel=hotel_obj)
+    room_types = RoomType.objects.filter(hotels=hotel_obj)
+    floors = ConfigFloor.objects.filter(hotels=hotel_obj)
     
     # Check permissions for room management
     can_add_room = request.user.role == 'Owner' or request.user.can_add_rooms
@@ -314,10 +314,10 @@ def room_create(request, hotel_id):
 
     # Get configuration data for the hotel
     from configurations.models import Amenity, RoomType, BedType, Floor
-    amenities = Amenity.objects.filter(hotel=hotel_obj, is_active=True)
-    room_types = RoomType.objects.filter(hotel=hotel_obj)
-    bed_types = BedType.objects.filter(hotel=hotel_obj)
-    floors = Floor.objects.filter(hotel=hotel_obj)
+    amenities = Amenity.objects.filter(hotels=hotel_obj, is_active=True)
+    room_types = RoomType.objects.filter(hotels=hotel_obj)
+    bed_types = BedType.objects.filter(hotels=hotel_obj)
+    floors = Floor.objects.filter(hotels=hotel_obj)
     services = hotel_obj.services.all()
     
     return render(request, 'hotels/room_form.html', {
@@ -408,10 +408,10 @@ def room_edit(request, hotel_id, room_id):
     
     # Get configuration data for the hotel
     from configurations.models import Amenity, RoomType, BedType, Floor
-    amenities = Amenity.objects.filter(hotel=hotel_obj, is_active=True)
-    room_types = RoomType.objects.filter(hotel=hotel_obj)
-    bed_types = BedType.objects.filter(hotel=hotel_obj)
-    floors = Floor.objects.filter(hotel=hotel_obj)
+    amenities = Amenity.objects.filter(hotels=hotel_obj, is_active=True)
+    room_types = RoomType.objects.filter(hotels=hotel_obj)
+    bed_types = BedType.objects.filter(hotels=hotel_obj)
+    floors = Floor.objects.filter(hotels=hotel_obj)
     services = hotel_obj.services.all()
     
     return render(request, 'hotels/room_form.html', {
@@ -458,7 +458,7 @@ def floor_create(request, hotel_id):
         floor_name = request.POST.get('floor_name')
         
         # Check if floor number already exists
-        if Floor.objects.filter(hotel=hotel_obj, floor_number=floor_number).exists():
+        if Floor.objects.filter(hotels=hotel_obj, floor_number=floor_number).exists():
             messages.error(request, f'Floor {floor_number} already exists in this hotel.')
         else:
             Floor.objects.create(
@@ -488,7 +488,7 @@ def floor_edit(request, hotel_id, floor_id):
         new_floor_number = request.POST.get('floor_number')
         
         # Check if floor number already exists (excluding current floor)
-        if Floor.objects.filter(hotel=hotel_obj, floor_number=new_floor_number).exclude(id=floor_id).exists():
+        if Floor.objects.filter(hotels=hotel_obj, floor_number=new_floor_number).exclude(id=floor_id).exists():
             messages.error(request, f'Floor {new_floor_number} already exists in this hotel.')
         else:
             floor.floor_number = new_floor_number
@@ -536,7 +536,7 @@ def room_category_create(request, hotel_id):
         name = request.POST.get('name')
         
         # Check if category name already exists
-        if RoomCategory.objects.filter(hotel=hotel_obj, name=name).exists():
+        if RoomCategory.objects.filter(hotels=hotel_obj, name=name).exists():
             messages.error(request, f'Room category "{name}" already exists in this hotel.')
         else:
             RoomCategory.objects.create(
@@ -567,7 +567,7 @@ def room_category_edit(request, hotel_id, category_id):
         new_name = request.POST.get('name')
         
         # Check if category name already exists (excluding current category)
-        if RoomCategory.objects.filter(hotel=hotel_obj, name=new_name).exclude(id=category_id).exists():
+        if RoomCategory.objects.filter(hotels=hotel_obj, name=new_name).exclude(id=category_id).exists():
             messages.error(request, f'Room category "{new_name}" already exists in this hotel.')
         else:
             category.name = new_name
@@ -656,22 +656,37 @@ def company_create(request, hotel_id):
         return redirect('hotels:hotel_list')
     
     if request.method == 'POST':
-        form = CompanyForm(request.POST)
+        selected_hotel_id = request.POST.get('hotel', hotel_id)
+        selected_hotel = get_object_or_404(Hotel, hotel_id=selected_hotel_id)
+        
+        form = CompanyForm(request.POST, hotel=selected_hotel)
         if form.is_valid():
-            # Check if company name already exists
             name = form.cleaned_data['name']
-            if Company.objects.filter(hotel=hotel_obj, name=name).exists():
+            if Company.objects.filter(hotels=selected_hotel, name=name).exists():
                 messages.error(request, f'Company "{name}" already exists in this hotel.')
             else:
                 company = form.save(commit=False)
-                company.hotel = hotel_obj
+                company.hotel = selected_hotel
                 company.save()
+                form.save_m2m()
                 messages.success(request, f'Company "{company.name}" created successfully!')
-                return redirect('hotels:company_list', hotel_id=hotel_id)
+                return redirect('hotels:company_list', hotel_id=selected_hotel_id)
     else:
-        form = CompanyForm()
+        form = CompanyForm(hotel=hotel_obj)
     
-    return render(request, 'hotels/company_form.html', {'hotel': hotel_obj, 'form': form})
+    # Get available hotels based on user role
+    if user_role == 'SUPER_ADMIN':
+        available_hotels = Hotel.objects.filter(deleted_at__isnull=True)
+    elif request.user.role == 'Owner':
+        available_hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
+    else:
+        available_hotels = [hotel_obj] if hotel_obj else []
+    
+    return render(request, 'hotels/company_form.html', {
+        'hotel': hotel_obj, 
+        'form': form, 
+        'available_hotels': available_hotels
+    })
 
 @owner_or_permission_required('change_hotel')
 def company_edit(request, hotel_id, company_id):
@@ -693,29 +708,37 @@ def company_edit(request, hotel_id, company_id):
         return redirect('hotels:hotel_list')
     
     if request.method == 'POST':
-        form = CompanyForm(request.POST, instance=company)
+        form = CompanyForm(request.POST, instance=company, hotel=hotel_obj)
         if form.is_valid():
-            # Check if company name already exists (excluding current company)
             new_name = form.cleaned_data['name']
-            if Company.objects.filter(hotel=hotel_obj, name=new_name).exclude(id=company_id).exists():
+            if Company.objects.filter(hotels=hotel_obj, name=new_name).exclude(id=company_id).exists():
                 messages.error(request, f'Company "{new_name}" already exists in this hotel.')
             else:
-                company = form.save()
+                form.save()
                 messages.success(request, f'Company "{company.name}" updated successfully!')
                 return redirect('hotels:company_list', hotel_id=hotel_id)
     else:
-        form = CompanyForm(instance=company)
+        form = CompanyForm(instance=company, hotel=hotel_obj)
+    
+    # Get available hotels for edit (read-only for non-owners)
+    if user_role == 'SUPER_ADMIN':
+        available_hotels = Hotel.objects.filter(deleted_at__isnull=True)
+    elif request.user.role == 'Owner':
+        available_hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
+    else:
+        available_hotels = [hotel_obj]
     
     return render(request, 'hotels/company_form.html', {
         'hotel': hotel_obj,
         'company': company,
-        'form': form
+        'form': form,
+        'available_hotels': available_hotels
     })
 
 # Service Management Views
 @owner_or_permission_required('view_hotel')
 def service_list(request, hotel_id):
-    """List services for a hotel"""
+    """List services for a hotel with filtering"""
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
     
     # Check access
@@ -730,7 +753,22 @@ def service_list(request, hotel_id):
         messages.error(request, 'You do not have access to this hotel.')
         return redirect('hotels:hotel_list')
     
-    services = hotel_obj.services.all().order_by('name')
+    services = hotel_obj.services.all()
+    
+    # Apply filters
+    search = request.GET.get('search')
+    if search:
+        services = services.filter(name__icontains=search)
+    
+    min_price = request.GET.get('min_price')
+    if min_price:
+        services = services.filter(price__gte=min_price)
+    
+    max_price = request.GET.get('max_price')
+    if max_price:
+        services = services.filter(price__lte=max_price)
+    
+    services = services.order_by('name')
     
     return render(request, 'hotels/service_list.html', {
         'hotel': hotel_obj,
@@ -741,7 +779,7 @@ def service_list(request, hotel_id):
 def service_detail(request, hotel_id, service_id):
     """View service details"""
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
-    service = get_object_or_404(Service, service_id=service_id, hotel=hotel_obj)
+    service = get_object_or_404(Service, service_id=service_id, hotels=hotel_obj)
     
     # Check access
     user_role = RoleManager.get_user_role(request.user)
@@ -778,23 +816,27 @@ def service_create(request, hotel_id):
         return redirect('hotels:hotel_list')
     
     if request.method == 'POST':
-        # Get selected hotel from form
-        selected_hotel_id = request.POST.get('hotel_id', hotel_id)
-        selected_hotel = get_object_or_404(Hotel, hotel_id=selected_hotel_id)
+        hotel_ids = request.POST.getlist('hotels')
         
-        name = request.POST.get('name')
-        description = request.POST.get('description', '')
-        price = request.POST.get('price', 0)
-        
-        Service.objects.create(
-            hotel=selected_hotel,
-            name=name,
-            description=description,
-            price=price
-        )
-        
-        messages.success(request, f'Service "{name}" created successfully for {selected_hotel.name}!')
-        return redirect('hotels:service_list', hotel_id=selected_hotel_id)
+        if not hotel_ids:
+            messages.error(request, 'Please select at least one hotel.')
+        else:
+            name = request.POST.get('name')
+            description = request.POST.get('description', '')
+            price = request.POST.get('price', 0)
+            
+            service = Service.objects.create(
+                name=name,
+                description=description,
+                price=price
+            )
+            
+            for hotel_id_str in hotel_ids:
+                selected_hotel = get_object_or_404(Hotel, hotel_id=hotel_id_str)
+                service.hotels.add(selected_hotel)
+            
+            messages.success(request, f'Service "{name}" created for {len(hotel_ids)} hotel(s)!')
+            return redirect('hotels:service_list', hotel_id=hotel_id)
     
     # Get available hotels for dropdown
     if user_role == 'SUPER_ADMIN':
@@ -811,7 +853,7 @@ def service_create(request, hotel_id):
 def service_edit(request, hotel_id, service_id):
     """Edit service"""
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
-    service = get_object_or_404(Service, service_id=service_id, hotel=hotel_obj)
+    service = get_object_or_404(Service, service_id=service_id, hotels=hotel_obj)
     
     # Check access
     user_role = RoleManager.get_user_role(request.user)
@@ -826,24 +868,41 @@ def service_edit(request, hotel_id, service_id):
         return redirect('hotels:hotel_list')
     
     if request.method == 'POST':
-        service.name = request.POST.get('name')
-        service.description = request.POST.get('description', '')
-        service.price = request.POST.get('price', 0)
-        service.save()
+        hotel_ids = request.POST.getlist('hotels')
         
-        messages.success(request, f'Service "{service.name}" updated successfully!')
-        return redirect('hotels:service_list', hotel_id=hotel_id)
+        if not hotel_ids:
+            messages.error(request, 'Please select at least one hotel.')
+        else:
+            service.name = request.POST.get('name')
+            service.description = request.POST.get('description', '')
+            service.price = request.POST.get('price', 0)
+            service.save()
+            
+            service.hotels.clear()
+            for hotel_id_str in hotel_ids:
+                selected_hotel = get_object_or_404(Hotel, hotel_id=hotel_id_str)
+                service.hotels.add(selected_hotel)
+            
+            messages.success(request, f'Service "{service.name}" updated for {len(hotel_ids)} hotel(s)!')
+            return redirect('hotels:service_list', hotel_id=hotel_id)
+    
+    # Get available hotels for dropdown
+    if user_role == 'SUPER_ADMIN':
+        available_hotels = Hotel.objects.filter(deleted_at__isnull=True)
+    else:
+        available_hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
     
     return render(request, 'hotels/service_form.html', {
         'hotel': hotel_obj,
-        'service': service
+        'service': service,
+        'available_hotels': available_hotels
     })
 
 @owner_or_permission_required('change_hotel')
 def service_delete(request, hotel_id, service_id):
     """Delete service"""
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
-    service = get_object_or_404(Service, service_id=service_id, hotel=hotel_obj)
+    service = get_object_or_404(Service, service_id=service_id, hotels=hotel_obj)
     
     # Check access
     user_role = RoleManager.get_user_role(request.user)

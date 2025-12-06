@@ -1,9 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 app_name = 'hotels'
 
 urlpatterns = [
+    # API URLs
+    path('api/', include('hotels.api_urls')),
     path('dashboard/', views.hotel_dashboard, name='dashboard'),
     path('overview/', views.hotel_overview, name='overview'),
     path('hotels/', views.hotel_list, name='hotel_list'),

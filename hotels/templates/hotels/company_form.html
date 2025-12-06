@@ -38,14 +38,14 @@
 
             <!-- Form Content -->
             <div class="p-8">
-                <form method="post" class="space-y-8">
+                <form method="post" enctype="multipart/form-data" class="space-y-8">
                     {% csrf_token %}
                     
                     <!-- Company Information -->
                     <div class="space-y-6">
                         <div class="flex items-center space-x-3 mb-6">
                             <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-info-circle text-orange-600"></i>
+                                <i class="fas fa-building text-orange-600"></i>
                             </div>
                             <h3 class="text-xl font-bold text-luxury-800">Company Information</h3>
                         </div>
@@ -53,97 +53,249 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label for="name" class="block text-sm font-semibold text-luxury-700">Company Name *</label>
-                                <input type="text" id="name" name="name" 
-                                       value="{{ company.name|default:'' }}" 
-                                       class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                                       placeholder="Enter company name" required>
+                                {{ form.name }}
                             </div>
                             
                             <div class="space-y-2">
-                                <label for="contact_person" class="block text-sm font-semibold text-luxury-700">Contact Person</label>
-                                <input type="text" id="contact_person" name="contact_person" 
-                                       value="{{ company.contact_person|default:'' }}" 
-                                       class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                                       placeholder="Primary contact name">
+                                <label for="business_type" class="block text-sm font-semibold text-luxury-700">Business Type</label>
+                                {{ form.business_type }}
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label for="email" class="block text-sm font-semibold text-luxury-700">Email Address</label>
-                                <input type="email" id="email" name="email" 
-                                       value="{{ company.email|default:'' }}" 
-                                       class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                                       placeholder="company@example.com">
+                                <label for="logo" class="block text-sm font-semibold text-luxury-700">Company Logo (Optional)</label>
+                                {{ form.logo }}
                             </div>
                             
                             <div class="space-y-2">
+                                <label for="registration_number" class="block text-sm font-semibold text-luxury-700">Registration/Tax Number</label>
+                                {{ form.registration_number }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-luxury-800">Contact Information</h3>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="address" class="block text-sm font-semibold text-luxury-700">Registered Address</label>
+                            {{ form.address }}
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label for="city" class="block text-sm font-semibold text-luxury-700">City</label>
+                                {{ form.city }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="state" class="block text-sm font-semibold text-luxury-700">State/Province</label>
+                                {{ form.state }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="country" class="block text-sm font-semibold text-luxury-700">Country</label>
+                                {{ form.country }}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
                                 <label for="phone" class="block text-sm font-semibold text-luxury-700">Phone Number</label>
-                                <input type="text" id="phone" name="phone" 
-                                       value="{{ company.phone|default:'' }}" 
-                                       class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                                       placeholder="+1 (555) 123-4567">
+                                {{ form.phone }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="email" class="block text-sm font-semibold text-luxury-700">Company Email</label>
+                                {{ form.email }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="website" class="block text-sm font-semibold text-luxury-700">Website (Optional)</label>
+                                {{ form.website }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Authorized Person -->
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-tie text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-luxury-800">Authorized Person</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="contact_person" class="block text-sm font-semibold text-luxury-700">Contact Person Name</label>
+                                {{ form.contact_person }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="designation" class="block text-sm font-semibold text-luxury-700">Designation</label>
+                                {{ form.designation }}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="mobile_number" class="block text-sm font-semibold text-luxury-700">Mobile Number</label>
+                                {{ form.mobile_number }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="contact_email" class="block text-sm font-semibold text-luxury-700">Contact Email</label>
+                                {{ form.contact_email }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contract Details -->
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-contract text-purple-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-luxury-800">Contract Details</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="contract_start_date" class="block text-sm font-semibold text-luxury-700">Contract Start Date</label>
+                                {{ form.contract_start_date }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="contract_end_date" class="block text-sm font-semibold text-luxury-700">Contract End Date</label>
+                                {{ form.contract_end_date }}
                             </div>
                         </div>
 
                         <div class="space-y-2">
-                            <label for="address" class="block text-sm font-semibold text-luxury-700">Company Address</label>
-                            <textarea id="address" name="address" rows="3" 
-                                      class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                                      placeholder="Enter complete company address">{{ company.address|default:'' }}</textarea>
+                            <label for="hotel_select" class="block text-sm font-semibold text-luxury-700">Hotel</label>
+                            <select id="hotel_select" name="hotel" class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" onchange="loadRoomTypes()" {% if not user.is_superuser and user.role != 'Owner' %}disabled{% endif %}>
+                                {% if user.is_superuser or user.role == 'Owner' %}
+                                <option value="">Select Hotel</option>
+                                {% for hotel_option in available_hotels %}
+                                <option value="{{ hotel_option.hotel_id }}" {% if hotel_option == hotel %}selected{% endif %}>{{ hotel_option.name }}</option>
+                                {% endfor %}
+                                {% else %}
+                                <option value="{{ hotel.hotel_id }}" selected>{{ hotel.name }}</option>
+                                {% endif %}
+                            </select>
                         </div>
 
                         <div class="space-y-2">
-                            <label for="tax_id" class="block text-sm font-semibold text-luxury-700">Tax ID / Registration Number</label>
-                            <input type="text" id="tax_id" name="tax_id" 
-                                   value="{{ company.tax_id|default:'' }}" 
-                                   class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                                   placeholder="Tax identification number">
+                            <label class="block text-sm font-semibold text-luxury-700">Approved Room Types</label>
+                            <div class="bg-luxury-50 p-6 rounded-xl border border-luxury-200" id="room-types-container">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="room-types-grid">
+                                    {% for choice in form.approved_room_types %}
+                                    <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                        {{ choice.tag }}
+                                        <label for="{{ choice.id_for_label }}" class="flex-1 cursor-pointer">
+                                            <div class="font-medium text-luxury-800 flex items-center">
+                                                <i class="fas fa-bed mr-2 text-orange-600"></i>
+                                                {{ choice.choice_label }}
+                                            </div>
+                                        </label>
+                                    </div>
+                                    {% empty %}
+                                    <div class="col-span-full text-center py-8 text-luxury-500" id="no-room-types">
+                                        <i class="fas fa-info-circle text-2xl mb-2"></i>
+                                        <p>Select a hotel to view room types.</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                        function loadRoomTypes() {
+                            const hotelId = document.getElementById('hotel_select').value;
+                            const container = document.getElementById('room-types-grid');
+                            
+                            if (!hotelId) {
+                                container.innerHTML = '<div class="col-span-full text-center py-8 text-luxury-500"><i class="fas fa-info-circle text-2xl mb-2"></i><p>Select a hotel to view room types.</p></div>';
+                                return;
+                            }
+                            
+                            fetch(`/hotels/api/room-types/${hotelId}/`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.room_types.length === 0) {
+                                        container.innerHTML = '<div class="col-span-full text-center py-8 text-luxury-500"><i class="fas fa-info-circle text-2xl mb-2"></i><p>No room types configured for this hotel.</p></div>';
+                                        return;
+                                    }
+                                    
+                                    let html = '';
+                                    data.room_types.forEach(roomType => {
+                                        html += `
+                                            <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                                                <input type="checkbox" name="approved_room_types" value="${roomType.id}" id="id_approved_room_types_${roomType.id}" class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                                                <label for="id_approved_room_types_${roomType.id}" class="flex-1 cursor-pointer">
+                                                    <div class="font-medium text-luxury-800 flex items-center">
+                                                        <i class="fas fa-bed mr-2 text-orange-600"></i>
+                                                        ${roomType.name}
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        `;
+                                    });
+                                    container.innerHTML = html;
+                                })
+                                .catch(error => {
+                                    console.error('Error loading room types:', error);
+                                    container.innerHTML = '<div class="col-span-full text-center py-8 text-luxury-500"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><p>Error loading room types.</p></div>';
+                                });
+                        }
+                        </script>
+
+
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label for="corporate_discount" class="block text-sm font-semibold text-luxury-700">Corporate Discount (%)</label>
+                                {{ form.corporate_discount }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="billing_mode" class="block text-sm font-semibold text-luxury-700">Billing Mode</label>
+                                {{ form.billing_mode }}
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="status" class="block text-sm font-semibold text-luxury-700">Status</label>
+                                {{ form.status }}
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Contract Terms -->
+                    <!-- Legacy Contract Terms -->
                     <div class="space-y-6">
                         <div class="flex items-center space-x-3 mb-6">
                             <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-handshake text-green-600"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-luxury-800">Contract Terms</h3>
+                            <h3 class="text-xl font-bold text-luxury-800">Additional Terms</h3>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label for="discount_percentage" class="block text-sm font-semibold text-luxury-700">Discount Percentage (%)</label>
-                                <div class="relative">
-                                    <input type="number" id="discount_percentage" name="discount_percentage" 
-                                           value="{{ company.discount_percentage|default:0 }}" 
-                                           class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                                           min="0" max="100" step="0.01" placeholder="0.00">
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <span class="text-luxury-500 text-sm">%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="space-y-2">
-                                <label for="credit_limit" class="block text-sm font-semibold text-luxury-700">Credit Limit ($)</label>
-                                <div class="relative">
-                                    <input type="number" id="credit_limit" name="credit_limit" 
-                                           value="{{ company.credit_limit|default:0 }}" 
-                                           class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all duration-200"
-                                           min="0" step="0.01" placeholder="0.00">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-luxury-500 text-sm">$</span>
-                                    </div>
-                                </div>
+                                <label for="credit_limit" class="block text-sm font-semibold text-luxury-700">Credit Limit</label>
+                                {{ form.credit_limit }}
                             </div>
                             
                             <div class="space-y-2">
                                 <label for="payment_terms" class="block text-sm font-semibold text-luxury-700">Payment Terms</label>
-                                <input type="text" id="payment_terms" name="payment_terms" 
-                                       value="{{ company.payment_terms|default:'' }}" 
-                                       class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       placeholder="e.g., Net 30 days">
+                                {{ form.payment_terms }}
                             </div>
                         </div>
                     </div>
@@ -159,22 +311,8 @@
 
                         <div class="space-y-2">
                             <label for="notes" class="block text-sm font-semibold text-luxury-700">Contract Notes</label>
-                            <textarea id="notes" name="notes" rows="4" 
-                                      class="w-full px-4 py-3 border border-luxury-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                      placeholder="Additional notes, special terms, or important information about this contract">{{ company.notes|default:'' }}</textarea>
+                            {{ form.notes }}
                         </div>
-
-                        {% if company %}
-                        <div class="flex items-center space-x-3 p-4 bg-luxury-50 rounded-2xl">
-                            <input type="checkbox" id="is_active" name="is_active" 
-                                   {% if company.is_active %}checked{% endif %}
-                                   class="w-5 h-5 text-orange-600 border-luxury-300 rounded focus:ring-orange-500">
-                            <label for="is_active" class="text-sm font-medium text-luxury-700">
-                                Active Contract
-                                <span class="block text-xs text-luxury-500">Uncheck to deactivate this contract</span>
-                            </label>
-                        </div>
-                        {% endif %}
                     </div>
 
                     <!-- Form Actions -->

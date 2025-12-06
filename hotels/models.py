@@ -138,13 +138,62 @@ class Floor(models.Model):
 
 class Company(models.Model):
     """Company/Corporate client model for hotels"""
+    BUSINESS_TYPE_CHOICES = [
+        ('corporation', 'Corporation'),
+        ('government', 'Government'),
+        ('ngo', 'NGO/Non-Profit'),
+        ('travel_agency', 'Travel Agency'),
+        ('airline', 'Airline'),
+        ('embassy', 'Embassy/Consulate'),
+        ('multinational', 'Multinational Company'),
+        ('local_business', 'Local Business'),
+        ('other', 'Other'),
+    ]
+    
+    BILLING_MODE_CHOICES = [
+        ('company_pays', 'Company Pays'),
+        ('guest_pays', 'Guest Pays'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+        ('blacklisted', 'Blacklisted'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='companies')
-    name = models.CharField(max_length=200)
-    contact_person = models.CharField(max_length=100, blank=True)
-    email = models.EmailField(blank=True)
-    phone = models.CharField(max_length=25, blank=True)
-    address = models.TextField(blank=True)
+    
+    # Company Information
+    name = models.CharField(max_length=200, help_text='Company Name')
+    business_type = models.CharField(max_length=20, choices=BUSINESS_TYPE_CHOICES, default='corporation')
+    logo = models.ImageField(upload_to='company_logos/', blank=True, null=True, help_text='Company Logo (optional)')
+    registration_number = models.CharField(max_length=100, blank=True, help_text='Registration/Tax Number (optional)')
+    
+    # Contact Information
+    address = models.TextField(blank=True, help_text='Registered Address')
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(max_length=25, blank=True, help_text='Phone Number')
+    email = models.EmailField(blank=True, help_text='Company Email')
+    website = models.URLField(blank=True, help_text='Website (optional)')
+    
+    # Authorized Person
+    contact_person = models.CharField(max_length=100, blank=True, help_text='Contact Person Name')
+    designation = models.CharField(max_length=100, blank=True, help_text='Designation')
+    mobile_number = models.CharField(max_length=25, blank=True, help_text='Mobile Number')
+    contact_email = models.EmailField(blank=True, help_text='Contact Person Email')
+    
+    # Contract Details
+    contract_start_date = models.DateField(null=True, blank=True, help_text='Contract Start Date')
+    contract_end_date = models.DateField(null=True, blank=True, help_text='Contract End Date')
+    approved_room_types = models.ManyToManyField('configurations.RoomType', blank=True, related_name='approved_companies', help_text='Approved Room Types')
+    corporate_discount = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text='Corporate Discount (%)')
+    billing_mode = models.CharField(max_length=20, choices=BILLING_MODE_CHOICES, default='company_pays')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='active')
+    
+    # Legacy fields (keeping for backward compatibility)
     tax_id = models.CharField(max_length=50, blank=True, help_text='Tax ID or Registration Number')
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text='Corporate discount percentage')
     credit_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text='Credit limit for corporate bookings')
@@ -159,6 +208,32 @@ class Company(models.Model):
     
     def __str__(self):
         return f"{self.name} - {self.hotel.name}"
+    
+    @property
+    def is_contract_active(self):
+        """Check if contract is currently active based on dates"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        return self.contract_start_date <= today <= self.contract_end_date
+
+
+class CompanyRoomRate(models.Model):
+    """Fixed corporate rates for specific room types"""
+    id = models.AutoField(primary_key=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='room_rates')
+    room_type = models.ForeignKey('configurations.RoomType', on_delete=models.CASCADE)
+    rate_per_night = models.DecimalField(max_digits=12, decimal_places=2, help_text='Fixed rate per night')
+    currency = models.CharField(max_length=3, default='PKR')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ['company', 'room_type']
+        verbose_name = 'Company Room Rate'
+        verbose_name_plural = 'Company Room Rates'
+    
+    def __str__(self):
+        return f"{self.company.name} - {self.room_type.name}: {self.currency} {self.rate_per_night}/night"
 
 class RoomCategory(models.Model):
     """Room category model for each hotel"""
@@ -324,7 +399,7 @@ class Room(models.Model):
 class Service(models.Model):
     """Hotel services model"""
     service_id = models.AutoField(primary_key=True)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='services')
+    hotels = models.ManyToManyField(Hotel, related_name='services')
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=255, blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0)

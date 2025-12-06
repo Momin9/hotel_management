@@ -1,6 +1,6 @@
 from django import forms
 from django_countries.widgets import CountrySelectWidget
-from .models import Room, Company
+from .models import Room, Company, CompanyRoomRate
 from configurations.models import RoomType, BedType, Floor, Amenity
 from crm.models import GuestProfile
 
@@ -71,32 +71,92 @@ class RoomForm(forms.ModelForm):
         
         if hotel:
             # Filter choices based on hotel
-            self.fields['floor'].queryset = Floor.objects.filter(hotel=hotel)
-            self.fields['room_type'].queryset = RoomType.objects.filter(hotel=hotel)
-            self.fields['bed_type'].queryset = BedType.objects.filter(hotel=hotel)
-            self.fields['amenities'].queryset = Amenity.objects.filter(hotel=hotel)
+            self.fields['floor'].queryset = Floor.objects.filter(hotels=hotel)
+            self.fields['room_type'].queryset = RoomType.objects.filter(hotels=hotel)
+            self.fields['bed_type'].queryset = BedType.objects.filter(hotels=hotel)
+            self.fields['amenities'].queryset = Amenity.objects.filter(hotels=hotel)
 
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
         fields = [
-            'name', 'contact_person', 'email', 'phone', 'address', 
-            'tax_id', 'discount_percentage', 'credit_limit', 
-            'payment_terms', 'is_active', 'notes'
+            # Company Information
+            'name', 'business_type', 'logo', 'registration_number',
+            # Contact Information  
+            'address', 'city', 'state', 'country', 'phone', 'email', 'website',
+            # Authorized Person
+            'contact_person', 'designation', 'mobile_number', 'contact_email',
+            # Contract Details
+            'contract_start_date', 'contract_end_date', 'approved_room_types',
+            'corporate_discount', 'billing_mode', 'status',
+            # Legacy fields
+            'credit_limit', 'payment_terms', 'notes'
         ]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'contact_person': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'tax_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'discount_percentage': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'max': '100'}),
-            'credit_limit': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
-            'payment_terms': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Net 30 days'}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            # Company Information
+            'name': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'Enter company name'}),
+            'business_type': forms.Select(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent'}),
+            'logo': forms.FileInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'accept': 'image/*'}),
+            'registration_number': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'Registration/Tax Number'}),
+            
+            # Contact Information
+            'address': forms.Textarea(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'rows': 3, 'placeholder': 'Registered address'}),
+            'city': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'City'}),
+            'state': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'State/Province'}),
+            'country': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'Country'}),
+            'phone': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': '+92 300 1234567'}),
+            'email': forms.EmailInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'company@example.com'}),
+            'website': forms.URLInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'https://company.com'}),
+            
+            # Authorized Person
+            'contact_person': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'Contact person name'}),
+            'designation': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'Manager, Director, etc.'}),
+            'mobile_number': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': '+92 300 1234567'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'contact@example.com'}),
+            
+            # Contract Details
+            'contract_start_date': forms.DateInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'type': 'date'}),
+            'contract_end_date': forms.DateInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'type': 'date'}),
+            'approved_room_types': forms.CheckboxSelectMultiple(attrs={'class': 'rounded border-luxury-300 text-royal-600 focus:ring-royal-500'}),
+            'corporate_discount': forms.NumberInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'step': '0.01', 'min': '0', 'max': '100', 'placeholder': '10.00'}),
+            'billing_mode': forms.Select(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent'}),
+            'status': forms.Select(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent'}),
+            
+            # Legacy fields
+            'credit_limit': forms.NumberInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'step': '0.01', 'min': '0', 'placeholder': '100000.00'}),
+            'payment_terms': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'Net 30 days'}),
+            'notes': forms.Textarea(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'rows': 4, 'placeholder': 'Additional notes about the company'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        hotel = kwargs.pop('hotel', None)
+        super().__init__(*args, **kwargs)
+        
+        if hotel:
+            self.fields['approved_room_types'].queryset = RoomType.objects.filter(hotels=hotel, is_active=True)
+        else:
+            self.fields['approved_room_types'].queryset = RoomType.objects.none()
+
+
+class CompanyRoomRateForm(forms.ModelForm):
+    class Meta:
+        model = CompanyRoomRate
+        fields = ['room_type', 'rate_per_night', 'currency', 'is_active']
+        widgets = {
+            'room_type': forms.Select(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent'}),
+            'rate_per_night': forms.NumberInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'step': '0.01', 'min': '0', 'placeholder': '8000.00'}),
+            'currency': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent', 'placeholder': 'PKR'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'w-5 h-5 text-royal-600 bg-gray-100 border-gray-300 rounded focus:ring-royal-500'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        hotel = kwargs.pop('hotel', None)
+        super().__init__(*args, **kwargs)
+        
+        if hotel:
+            self.fields['room_type'].queryset = RoomType.objects.filter(hotels=hotel)
+        else:
+            self.fields['room_type'].queryset = RoomType.objects.none()
 
 class GuestForm(forms.ModelForm):
     class Meta:

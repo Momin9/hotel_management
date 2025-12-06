@@ -8,11 +8,7 @@ class RoomInline(admin.TabularInline):
     max_num = 20
     fields = ['room_number', 'room_type', 'bed_type', 'max_guests', 'price', 'status']
 
-class ServiceInline(admin.TabularInline):
-    model = Service
-    extra = 0
-    max_num = 10
-    fields = ['name', 'description', 'price']
+# Removed ServiceInline since Service now has ManyToMany relationship with Hotel
 
 @admin.register(Hotel)
 class HotelAdmin(admin.ModelAdmin):
@@ -20,7 +16,7 @@ class HotelAdmin(admin.ModelAdmin):
     list_filter = ['is_active', 'city', 'country', 'created_at']
     search_fields = ['name', 'address', 'phone', 'email', 'owner__username']
     readonly_fields = ['hotel_id', 'created_at']
-    inlines = [RoomInline, ServiceInline]
+    inlines = [RoomInline]
     
     fieldsets = (
         ('Basic Information', {
@@ -108,9 +104,10 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ['name', 'hotel', 'price', 'created_at']
-    list_filter = ['hotel', 'created_at']
-    search_fields = ['name', 'description', 'hotel__name']
+    list_display = ['name', 'price', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['name', 'description']
+    filter_horizontal = ['hotels']
 
 @admin.register(RoomCategory)
 class RoomCategoryAdmin(admin.ModelAdmin):
