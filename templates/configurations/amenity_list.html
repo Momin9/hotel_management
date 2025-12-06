@@ -110,9 +110,16 @@
                     </span>
                 </div>
                 
-                <div class="flex items-center text-sm text-luxury-600">
-                    <i class="fas fa-building mr-2"></i>
-                    <span class="amenity-hotel">{{ amenity.hotel.name }}</span>
+                <div class="flex items-center justify-between text-sm text-luxury-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-building mr-2"></i>
+                        <span class="amenity-hotel">{{ amenity.hotels.first.name }}</span>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium
+                          {% if amenity.is_active %}bg-green-100 text-green-800
+                          {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {% if amenity.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
                 </div>
             </div>
             
@@ -211,7 +218,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-luxury-700">{{ amenity.hotel.name }}</td>
+                        <td class="px-6 py-4 text-luxury-700">{{ amenity.hotels.first.name }}</td>
                         <td class="px-6 py-4 text-luxury-600">{{ amenity.description|truncatechars:50 }}</td>
                         <td class="px-6 py-4">
                             {% if amenity.icon %}

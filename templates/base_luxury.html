@@ -607,6 +607,47 @@
 
 
 
+    <!-- Beautiful Modal Component -->
+    <div id="beautifulModal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        
+        <!-- Modal -->
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl luxury-shadow max-w-md w-full transform transition-all scale-95 opacity-0" id="modalContent">
+                <!-- Header -->
+                <div class="p-6 border-b border-luxury-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" id="modalIcon">
+                                <i class="text-2xl" id="modalIconClass"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-luxury-800" id="modalTitle">Confirm Action</h3>
+                        </div>
+                        <button onclick="closeModal()" class="text-luxury-400 hover:text-luxury-600 transition-colors">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Body -->
+                <div class="p-6">
+                    <p class="text-luxury-600 leading-relaxed" id="modalMessage">Are you sure you want to proceed?</p>
+                </div>
+                
+                <!-- Footer -->
+                <div class="p-6 border-t border-luxury-200 flex space-x-3" id="modalFooter">
+                    <button onclick="closeModal()" class="flex-1 px-4 py-3 bg-luxury-100 hover:bg-luxury-200 text-luxury-700 rounded-2xl font-semibold transition-colors">
+                        Cancel
+                    </button>
+                    <button onclick="confirmAction()" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-semibold transition-colors" id="confirmBtn">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Include upgrade modal for authenticated users -->
     {% if user.is_authenticated %}
     {% include 'modals/upgrade_modal.html' %}
@@ -643,6 +684,91 @@
             }
         })
         .catch(error => console.error('Error:', error));
+    }
+    
+    // Beautiful Modal Functions
+    let modalCallback = null;
+    
+    function showModal(options = {}) {
+        const modal = document.getElementById('beautifulModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalIconClass = document.getElementById('modalIconClass');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const confirmBtn = document.getElementById('confirmBtn');
+        
+        // Set modal content
+        modalTitle.textContent = options.title || 'Confirm Action';
+        modalMessage.textContent = options.message || 'Are you sure you want to proceed?';
+        
+        // Set icon and colors based on type
+        const type = options.type || 'warning';
+        if (type === 'danger' || type === 'delete') {
+            modalIcon.className = 'w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center';
+            modalIconClass.className = 'fas fa-trash text-2xl text-red-600';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-semibold transition-colors';
+            confirmBtn.textContent = options.confirmText || 'Delete';
+        } else if (type === 'warning') {
+            modalIcon.className = 'w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center';
+            modalIconClass.className = 'fas fa-exclamation-triangle text-2xl text-yellow-600';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-2xl font-semibold transition-colors';
+            confirmBtn.textContent = options.confirmText || 'Confirm';
+        } else if (type === 'success') {
+            modalIcon.className = 'w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center';
+            modalIconClass.className = 'fas fa-check text-2xl text-green-600';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-semibold transition-colors';
+            confirmBtn.textContent = options.confirmText || 'OK';
+        } else {
+            modalIcon.className = 'w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center';
+            modalIconClass.className = 'fas fa-info text-2xl text-blue-600';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-semibold transition-colors';
+            confirmBtn.textContent = options.confirmText || 'OK';
+        }
+        
+        // Store callback
+        modalCallback = options.onConfirm || null;
+        
+        // Show modal with animation
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+    
+    function closeModal() {
+        const modal = document.getElementById('beautifulModal');
+        const modalContent = document.getElementById('modalContent');
+        
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modalCallback = null;
+        }, 200);
+    }
+    
+    function confirmAction() {
+        if (modalCallback) {
+            modalCallback();
+        }
+        closeModal();
+    }
+    
+    // Delete confirmation function
+    function showDeleteConfirm(event, itemName, deleteUrl) {
+        event.preventDefault();
+        showModal({
+            title: 'Delete Confirmation',
+            message: `Are you sure you want to delete "${itemName}"? This action cannot be undone.`,
+            type: 'danger',
+            confirmText: 'Delete',
+            onConfirm: () => {
+                window.location.href = deleteUrl;
+            }
+        });
     }
     </script>
 </body>

@@ -107,9 +107,16 @@
                     </span>
                 </div>
                 
-                <div class="flex items-center text-sm text-luxury-600">
-                    <i class="fas fa-building mr-2"></i>
-                    <span class="room-type-hotel">{{ room_type.hotel.name }}</span>
+                <div class="flex items-center justify-between text-sm text-luxury-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-building mr-2"></i>
+                        <span class="room-type-hotel">{{ room_type.hotels.first.name }}</span>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium
+                          {% if room_type.is_active %}bg-green-100 text-green-800
+                          {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {% if room_type.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
                 </div>
             </div>
             
@@ -214,7 +221,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-luxury-700">{{ room_type.hotel.name }}</td>
+                        <td class="px-6 py-4 text-luxury-700">{{ room_type.hotels.first.name }}</td>
                         <td class="px-6 py-4 text-luxury-600">{{ room_type.description|truncatechars:50 }}</td>
                         <td class="px-6 py-4 text-luxury-700">{{ room_type.max_occupancy }} Guest{{ room_type.max_occupancy|pluralize }}</td>
                         <td class="px-6 py-4">
