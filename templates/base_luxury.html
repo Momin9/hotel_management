@@ -770,6 +770,19 @@
             }
         });
     }
+    
+    // Delete modal function (used in templates)
+    function showDeleteModal(itemId, itemName, deleteUrl) {
+        showModal({
+            title: 'Delete Confirmation',
+            message: `Are you sure you want to delete "${itemName}"? This action cannot be undone.`,
+            type: 'danger',
+            confirmText: 'Delete',
+            onConfirm: () => {
+                window.location.href = deleteUrl;
+            }
+        });
+    }
     </script>
 </body>
 </html>
