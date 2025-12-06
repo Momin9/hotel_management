@@ -139,14 +139,18 @@ class Floor(models.Model):
 class Company(models.Model):
     """Company/Corporate client model for hotels"""
     BUSINESS_TYPE_CHOICES = [
-        ('corporation', 'Corporation'),
-        ('government', 'Government'),
-        ('ngo', 'NGO/Non-Profit'),
-        ('travel_agency', 'Travel Agency'),
-        ('airline', 'Airline'),
-        ('embassy', 'Embassy/Consulate'),
-        ('multinational', 'Multinational Company'),
-        ('local_business', 'Local Business'),
+        ('it_software', 'IT / Software'),
+        ('banking_finance', 'Banking & Finance'),
+        ('government_public', 'Government / Public Sector'),
+        ('education', 'Education'),
+        ('healthcare', 'Healthcare'),
+        ('manufacturing_industrial', 'Manufacturing & Industrial'),
+        ('construction_realestate', 'Construction / Real Estate'),
+        ('consulting_services', 'Consulting / Services'),
+        ('logistics_transportation', 'Logistics & Transportation'),
+        ('retail_fmcg', 'Retail / FMCG'),
+        ('hospitality_tourism', 'Hospitality / Tourism'),
+        ('ngo_nonprofit', 'NGO / Non-Profit'),
         ('other', 'Other'),
     ]
     
@@ -166,7 +170,7 @@ class Company(models.Model):
     
     # Company Information
     name = models.CharField(max_length=200, help_text='Company Name')
-    business_type = models.CharField(max_length=20, choices=BUSINESS_TYPE_CHOICES, default='corporation')
+    business_type = models.CharField(max_length=30, choices=BUSINESS_TYPE_CHOICES, default='it_software')
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True, help_text='Company Logo (optional)')
     registration_number = models.CharField(max_length=100, blank=True, help_text='Registration/Tax Number (optional)')
     
@@ -403,6 +407,7 @@ class Service(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=255, blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

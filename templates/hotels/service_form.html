@@ -101,6 +101,22 @@
                 <p class="text-sm text-luxury-600 mt-2">Provide a detailed description to help guests understand your service offering</p>
             </div>
             
+            <!-- Service Status -->
+            <div class="bg-green-50 rounded-2xl p-6">
+                <label class="block text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-toggle-on text-green-600 mr-2"></i>
+                    Service Status
+                </label>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" name="is_active" id="is_active" {% if not service or service.is_active %}checked{% endif %}
+                           class="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500">
+                    <label for="is_active" class="text-luxury-700 font-medium cursor-pointer">
+                        Active (Service available for booking)
+                    </label>
+                </div>
+                <p class="text-sm text-luxury-600 mt-2">Toggle to enable/disable this service for guests</p>
+            </div>
+            
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-luxury-200">
                 <button type="submit" class="flex-1 bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">

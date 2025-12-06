@@ -828,7 +828,8 @@ def service_create(request, hotel_id):
             service = Service.objects.create(
                 name=name,
                 description=description,
-                price=price
+                price=price,
+                is_active=request.POST.get('is_active') == 'on'
             )
             
             for hotel_id_str in hotel_ids:
@@ -876,6 +877,7 @@ def service_edit(request, hotel_id, service_id):
             service.name = request.POST.get('name')
             service.description = request.POST.get('description', '')
             service.price = request.POST.get('price', 0)
+            service.is_active = request.POST.get('is_active') == 'on'
             service.save()
             
             service.hotels.clear()

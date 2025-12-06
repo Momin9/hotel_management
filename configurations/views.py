@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import RoomType, BedType, Floor, Amenity
+from .forms import RoomTypeForm, BedTypeForm, FloorForm, AmenityForm
 from hotels.models import Hotel
 from accounts.decorators import owner_or_permission_required
 
@@ -63,18 +64,13 @@ def room_type_create(request):
         messages.error(request, 'You do not have permission to create configurations.')
         return redirect('configurations:room_type_list')
     if request.method == 'POST':
+        form = RoomTypeForm(request.POST)
         hotel_ids = request.POST.getlist('hotels')
         
         if not hotel_ids:
             messages.error(request, 'Please select at least one hotel.')
-        else:
-            room_type = RoomType.objects.create(
-                name=request.POST.get('name'),
-                description=request.POST.get('description', ''),
-                max_occupancy=request.POST.get('max_occupancy', 2),
-                bed_configuration=request.POST.get('bed_configuration', ''),
-                is_active=request.POST.get('is_active') == 'on'
-            )
+        elif form.is_valid():
+            room_type = form.save()
             
             # Add selected hotels
             for hotel_id in hotel_ids:
@@ -83,6 +79,8 @@ def room_type_create(request):
             
             messages.success(request, f'Room type "{room_type.name}" created for {len(hotel_ids)} hotel(s)!')
             return redirect('configurations:room_type_list')
+    else:
+        form = RoomTypeForm()
     
     # Get available hotels
     if request.user.is_superuser:
@@ -92,7 +90,7 @@ def room_type_create(request):
     else:
         hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
     
-    return render(request, 'configurations/room_type_form.html', {'hotels': hotels})
+    return render(request, 'configurations/room_type_form.html', {'form': form, 'hotels': hotels})
 
 @login_required
 def room_type_detail(request, pk):
@@ -129,17 +127,13 @@ def room_type_edit(request, pk):
     # Check permission - skip for ManyToMany relationship
     
     if request.method == 'POST':
+        form = RoomTypeForm(request.POST, instance=room_type)
         hotel_ids = request.POST.getlist('hotels')
         
         if not hotel_ids:
             messages.error(request, 'Please select at least one hotel.')
-        else:
-            room_type.name = request.POST.get('name')
-            room_type.description = request.POST.get('description', '')
-            room_type.max_occupancy = request.POST.get('max_occupancy', 2)
-            room_type.bed_configuration = request.POST.get('bed_configuration', '')
-            room_type.is_active = request.POST.get('is_active') == 'on'
-            room_type.save()
+        elif form.is_valid():
+            room_type = form.save()
             
             # Update hotels
             room_type.hotels.clear()
@@ -149,6 +143,8 @@ def room_type_edit(request, pk):
             
             messages.success(request, f'Room type "{room_type.name}" updated for {len(hotel_ids)} hotel(s)!')
             return redirect('configurations:room_type_list')
+    else:
+        form = RoomTypeForm(instance=room_type)
     
     # Get available hotels
     if request.user.is_superuser:
@@ -158,7 +154,7 @@ def room_type_edit(request, pk):
     else:
         hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
     
-    return render(request, 'configurations/room_type_form.html', {'room_type': room_type, 'hotels': hotels})
+    return render(request, 'configurations/room_type_form.html', {'form': form, 'room_type': room_type, 'hotels': hotels})
 
 @login_required
 def room_type_delete(request, pk):
