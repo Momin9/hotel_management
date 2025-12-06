@@ -21,18 +21,18 @@
             </div>
             
             <div class="flex space-x-3">
-                {% if user.role == 'Owner' or user.is_superuser %}
-                <a href="{% url 'staff:permissions' staff.user_id %}" 
-                   class="bg-purple-500 text-white px-6 py-3 rounded-xl hover:bg-purple-600 transition-colors flex items-center space-x-2">
-                    <i class="fas fa-key"></i>
-                    <span>Manage Permissions</span>
-                </a>
-                {% endif %}
                 <a href="{% url 'staff:edit' staff.user_id %}" 
                    class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors flex items-center space-x-2">
                     <i class="fas fa-edit"></i>
                     <span>Edit Details</span>
                 </a>
+                {% if can_delete_staff %}
+                <button onclick="showDeleteModal('{{ staff.user_id }}', '{{ staff.get_full_name }}', '{% url 'staff:delete' staff.user_id %}')" 
+                        class="bg-red-500 text-white px-6 py-3 rounded-xl hover:bg-red-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete Staff</span>
+                </button>
+                {% endif %}
             </div>
         </div>
         

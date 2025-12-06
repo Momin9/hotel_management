@@ -170,10 +170,11 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     {% endif %}
-                                    {% if user.role == 'Owner' %}
-                                    <a href="{% url 'staff:permissions' staff.user_id %}" class="text-green-600 hover:text-green-800 transition-colors">
-                                        <i class="fas fa-key"></i>
-                                    </a>
+                                    {% if can_delete_staff %}
+                                    <button onclick="showDeleteModal('{{ staff.user_id }}', '{{ staff.first_name }} {{ staff.last_name }}', '{% url 'staff:delete' staff.user_id %}')" 
+                                            class="text-red-600 hover:text-red-800 transition-colors">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                     {% endif %}
                                 </div>
                             </td>
