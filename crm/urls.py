@@ -8,6 +8,7 @@ urlpatterns = [
     path('new/', views.guest_create, name='create'),
     path('<uuid:guest_id>/', views.guest_detail, name='detail'),
     path('<uuid:guest_id>/edit/', views.guest_edit, name='edit'),
+    path('<uuid:guest_id>/delete/', views.guest_delete, name='delete'),
     path('<uuid:guest_id>/send-email/', views.send_email, name='send_email'),
     path('<uuid:guest_id>/history/', views.guest_history, name='guest_history'),
 ]

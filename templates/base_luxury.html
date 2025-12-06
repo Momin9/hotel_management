@@ -303,6 +303,43 @@
                                 </a>
                             </div>
                         </div>
+                        {% if can_view_configurations %}
+                        <div class="relative" x-data="{ configOpen: false }">
+                            <button @click="configOpen = !configOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                                <i class="fas fa-cog mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium">Configuration</span>
+                                <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': configOpen }"></i>
+                            </button>
+                            <div x-show="configOpen" @click.away="configOpen = false" x-transition class="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl luxury-shadow py-2 z-50">
+                                <a href="{% url 'configurations:room_type_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-bed mr-3 text-luxury-500"></i>
+                                    Room Types
+                                </a>
+                                <a href="{% url 'configurations:bed_type_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-bed mr-3 text-luxury-500"></i>
+                                    Bed Types
+                                </a>
+                                <a href="{% url 'configurations:floor_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-building mr-3 text-luxury-500"></i>
+                                    Floors
+                                </a>
+                                <a href="{% url 'configurations:amenity_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-star mr-3 text-luxury-500"></i>
+                                    Amenities
+                                </a>
+                                {% if user.owned_hotels.first %}
+                                <a href="{% url 'hotels:service_list' user.owned_hotels.first.hotel_id %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-concierge-bell mr-3 text-luxury-500"></i>
+                                    Room Services
+                                </a>
+                                <a href="{% url 'hotels:company_list' user.owned_hotels.first.hotel_id %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-handshake mr-3 text-luxury-500"></i>
+                                    Company Contracts
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
                     {% else %}
                         <!-- Staff role gets basic navigation -->
                         <a href="{% url 'staff:performance' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">

@@ -29,6 +29,13 @@ urlpatterns = [
     path('hotels/<int:hotel_id>/companies/create/', views.company_create, name='company_create'),
     path('hotels/<int:hotel_id>/companies/<int:company_id>/edit/', views.company_edit, name='company_edit'),
     
+    # Service Management
+    path('hotels/<int:hotel_id>/services/', views.service_list, name='service_list'),
+    path('hotels/<int:hotel_id>/services/create/', views.service_create, name='service_create'),
+    path('hotels/<int:hotel_id>/services/<int:service_id>/', views.service_detail, name='service_detail'),
+    path('hotels/<int:hotel_id>/services/<int:service_id>/edit/', views.service_edit, name='service_edit'),
+    path('hotels/<int:hotel_id>/services/<int:service_id>/delete/', views.service_delete, name='service_delete'),
+    
     # Google Drive Configuration
     path('hotels/<int:hotel_id>/google-drive-config/', views.google_drive_config, name='google_drive_config'),
 ]

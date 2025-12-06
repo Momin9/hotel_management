@@ -1,0 +1,142 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{% if service %}Edit Service{% else %}Add Service{% endif %} - {{ hotel.name }}{% endblock %}
+{% block page_title %}{% if service %}Edit Service{% else %}Add New Service{% endif %}{% endblock %}
+{% block page_subtitle %}{% if service %}Update service details and pricing{% else %}Create premium service for your guests{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-4 mb-6">
+            <div class="w-16 h-16 bg-gradient-to-r from-royal-500 to-royal-600 rounded-2xl flex items-center justify-center luxury-shadow">
+                <i class="fas fa-{% if service %}edit{% else %}plus{% endif %} text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-luxury-800">
+                    {% if service %}Edit Service{% else %}Create New Service{% endif %}
+                </h2>
+                <p class="text-luxury-600 font-medium">
+                    {% if service %}Update "{{ service.name }}" details{% else %}Add premium service to {{ hotel.name }}{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Hotel Selection (if multiple hotels) -->
+            {% if available_hotels.count > 1 %}
+            <div class="bg-blue-50 rounded-2xl p-6">
+                <label class="block text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-hotel text-royal-500 mr-2"></i>
+                    Select Hotel
+                </label>
+                <select name="hotel_id" required
+                        class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent bg-white text-luxury-800 font-medium">
+                    {% for available_hotel in available_hotels %}
+                    <option value="{{ available_hotel.hotel_id }}" {% if available_hotel.hotel_id == hotel.hotel_id %}selected{% endif %}>
+                        {{ available_hotel.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <p class="text-sm text-luxury-600 mt-2">Choose which hotel this service belongs to</p>
+            </div>
+            {% else %}
+            <input type="hidden" name="hotel_id" value="{{ hotel.hotel_id }}">
+            {% endif %}
+            
+            <!-- Service Details Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Service Name -->
+                <div class="bg-luxury-50 rounded-2xl p-6">
+                    <label class="block text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                        <i class="fas fa-tag text-royal-500 mr-2"></i>
+                        Service Name
+                    </label>
+                    <input type="text" name="name" value="{% if service %}{{ service.name }}{% endif %}" required
+                           class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent bg-white text-luxury-800 font-medium"
+                           placeholder="e.g., Room Service, Laundry, Spa Treatment">
+                    <p class="text-sm text-luxury-600 mt-2">Enter a clear, descriptive name for your service</p>
+                </div>
+                
+                <!-- Service Price -->
+                <div class="bg-green-50 rounded-2xl p-6">
+                    <label class="block text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                        <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                        Price ({{ hotel.currency }})
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-600 font-medium">{{ hotel.currency }}</span>
+                        <input type="number" name="price" step="0.01" min="0" value="{% if service %}{{ service.price }}{% endif %}" required
+                               class="w-full pl-12 pr-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent bg-white text-luxury-800 font-medium"
+                               placeholder="0.00">
+                    </div>
+                    <p class="text-sm text-luxury-600 mt-2">Set competitive pricing for your service</p>
+                </div>
+            </div>
+            
+            <!-- Service Description -->
+            <div class="bg-luxury-50 rounded-2xl p-6">
+                <label class="block text-lg font-semibold text-luxury-800 mb-4 flex items-center">
+                    <i class="fas fa-align-left text-royal-500 mr-2"></i>
+                    Service Description
+                </label>
+                <textarea name="description" rows="4"
+                          class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent bg-white text-luxury-800 resize-none"
+                          placeholder="Describe your service in detail. What makes it special? What can guests expect?">{% if service %}{{ service.description }}{% endif %}</textarea>
+                <p class="text-sm text-luxury-600 mt-2">Provide a detailed description to help guests understand your service offering</p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-luxury-200">
+                <button type="submit" class="flex-1 bg-gradient-to-r from-royal-500 to-royal-600 text-white px-8 py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                    <i class="fas fa-{% if service %}save{% else %}plus{% endif %} mr-2 group-hover:{% if service %}rotate-12{% else %}rotate-90{% endif %} transition-transform duration-300"></i>
+                    {% if service %}Update Service{% else %}Create Service{% endif %}
+                </button>
+                <a href="{% url 'hotels:service_list' hotel.hotel_id %}" 
+                   class="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-8 py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center">
+                    <i class="fas fa-times mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Help Section -->
+    <div class="bg-gradient-to-r from-blue-50 to-royal-50 rounded-3xl p-6 border border-blue-100">
+        <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-lightbulb text-blue-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-luxury-800 mb-2">Service Creation Tips</h3>
+                <ul class="text-sm text-luxury-700 space-y-1">
+                    <li>• Use clear, descriptive names that guests will easily understand</li>
+                    <li>• Set competitive prices based on your market and service quality</li>
+                    <li>• Write detailed descriptions to set proper expectations</li>
+                    <li>• Consider seasonal pricing and special packages</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .hover-lift {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    }
+</style>
+{% endblock %}

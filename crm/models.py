@@ -16,16 +16,33 @@ class GuestProfile(models.Model):
         ('company', 'Company'),
     ]
     
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+        ('prefer_not_to_say', 'Prefer not to say'),
+    ]
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     guest_type = models.CharField(max_length=20, choices=GUEST_TYPE_CHOICES, default='individual')
     company = models.ForeignKey('hotels.Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='guests')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, help_text="Optional for record & reporting")
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
     date_of_birth = models.DateField(blank=True, null=True)
     nationality = CountryField(blank=True)
     address = models.TextField(blank=True)
+    
+    # Travel Documents
+    passport_number = models.CharField(max_length=50, blank=True, help_text="For foreign guests")
+    visa_number = models.CharField(max_length=50, blank=True, help_text="For international guest verification")
+    
+    # Emergency Contact
+    emergency_contact_name = models.CharField(max_length=100, blank=True, help_text="Safety")
+    emergency_contact_phone = models.CharField(max_length=20, blank=True, help_text="Safety")
+    
     notes = models.TextField(blank=True)
     id_number = models.CharField(max_length=50, blank=True)
     national_id_card = models.CharField(max_length=50, unique=True, help_text="National Identity Card Number")

@@ -24,32 +24,24 @@
                     </div>
                     
                     <div>
-                        <label for="type" class="block text-sm font-medium text-luxury-700 mb-2">Room Type</label>
-                        <select name="type" id="type" 
-                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
-                                required>
-                            <option value="">Select Type</option>
-                            <option value="Single" {% if room and room.type == 'Single' %}selected{% endif %}>Single</option>
-                            <option value="Double" {% if room and room.type == 'Double' %}selected{% endif %}>Double</option>
-                            <option value="Twin" {% if room and room.type == 'Twin' %}selected{% endif %}>Twin</option>
-                            <option value="Triple" {% if room and room.type == 'Triple' %}selected{% endif %}>Triple</option>
-                            <option value="Quad" {% if room and room.type == 'Quad' %}selected{% endif %}>Quad</option>
+                        <label for="room_type" class="block text-sm font-medium text-luxury-700 mb-2">Room Type</label>
+                        <select name="room_type" id="room_type" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="">Select Room Type</option>
+                            {% for room_type in room_types %}
+                            <option value="{{ room_type.id }}" {% if room and room.room_type_id == room_type.id %}selected{% endif %}>{{ room_type.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     
                     <div>
-                        <label for="category" class="block text-sm font-medium text-luxury-700 mb-2">Category</label>
-                        <select name="category" id="category" 
-                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
-                                required>
-                            <option value="">Select Category</option>
-                            <option value="Standard" {% if room and room.category == 'Standard' %}selected{% endif %}>Standard</option>
-                            <option value="Deluxe" {% if room and room.category == 'Deluxe' %}selected{% endif %}>Deluxe</option>
-                            <option value="SuperDeluxe" {% if room and room.category == 'SuperDeluxe' %}selected{% endif %}>Super Deluxe</option>
-                            <option value="Executive" {% if room and room.category == 'Executive' %}selected{% endif %}>Executive</option>
-                            <option value="Suite" {% if room and room.category == 'Suite' %}selected{% endif %}>Suite</option>
-                            <option value="JuniorSuite" {% if room and room.category == 'JuniorSuite' %}selected{% endif %}>Junior Suite</option>
-                            <option value="PresidentialSuite" {% if room and room.category == 'PresidentialSuite' %}selected{% endif %}>Presidential Suite</option>
+                        <label for="floor" class="block text-sm font-medium text-luxury-700 mb-2">Floor</label>
+                        <select name="floor" id="floor" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="">Select Floor</option>
+                            {% for floor in floors %}
+                            <option value="{{ floor.id }}" {% if room and room.floor_id == floor.id %}selected{% endif %}>{{ floor.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -59,15 +51,13 @@
                     <h3 class="text-lg font-semibold text-luxury-800 mb-4">Room Details</h3>
                     
                     <div>
-                        <label for="bed" class="block text-sm font-medium text-luxury-700 mb-2">Bed Type</label>
-                        <select name="bed" id="bed" 
-                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
-                                required>
+                        <label for="bed_type" class="block text-sm font-medium text-luxury-700 mb-2">Bed Type</label>
+                        <select name="bed_type" id="bed_type" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                             <option value="">Select Bed Type</option>
-                            <option value="King" {% if room and room.bed == 'King' %}selected{% endif %}>King</option>
-                            <option value="Queen" {% if room and room.bed == 'Queen' %}selected{% endif %}>Queen</option>
-                            <option value="DoubleBed" {% if room and room.bed == 'DoubleBed' %}selected{% endif %}>Double Bed</option>
-                            <option value="TwinBed" {% if room and room.bed == 'TwinBed' %}selected{% endif %}>Twin Bed</option>
+                            {% for bed_type in bed_types %}
+                            <option value="{{ bed_type.id }}" {% if room and room.bed_type_id == bed_type.id %}selected{% endif %}>{{ bed_type.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     

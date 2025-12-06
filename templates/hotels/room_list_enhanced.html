@@ -19,6 +19,18 @@
         </div>
         
         <div class="flex flex-col sm:flex-row gap-4">
+            <!-- View Toggle -->
+            <div class="flex bg-luxury-100 rounded-2xl p-1">
+                <button onclick="switchView('kanban')" id="kanbanBtn" 
+                        class="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 bg-white text-luxury-800 shadow-sm">
+                    <i class="fas fa-th-large mr-2"></i>Cards
+                </button>
+                <button onclick="switchView('list')" id="listBtn" 
+                        class="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 text-luxury-600 hover:text-luxury-800">
+                    <i class="fas fa-list mr-2"></i>List
+                </button>
+            </div>
+            
             {% if can_add_room %}
             <a href="{% url 'hotels:room_create' hotel.hotel_id %}" 
                class="inline-flex items-center px-6 py-3 bg-royal-600 hover:bg-royal-700 text-white font-semibold rounded-2xl transition-all duration-300">
@@ -125,8 +137,8 @@
         </form>
     </div>
 
-    <!-- Rooms Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Kanban View -->
+    <div id="kanbanView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for room in rooms %}
         <div class="bg-white rounded-3xl overflow-hidden luxury-shadow hover-lift transition-all duration-300">
             <!-- Room Image -->
@@ -163,10 +175,17 @@
             <div class="p-6">
                 <!-- Room Type & Title -->
                 <div class="mb-4">
-                    <h3 class="text-xl font-bold text-luxury-800 mb-1">{{ room.get_type_display }}</h3>
-                    {% if room.view_type %}
-                    <p class="text-luxury-600">{{ room.get_view_type_display }}</p>
-                    {% endif %}
+                    <h3 class="text-xl font-bold text-luxury-800 mb-1">
+                        {% if room.room_type %}{{ room.room_type.name }}{% else %}Standard Room{% endif %}
+                    </h3>
+                    <div class="flex items-center space-x-4 text-sm text-luxury-600">
+                        {% if room.floor %}
+                        <span><i class="fas fa-building mr-1"></i>{{ room.floor.name }}</span>
+                        {% endif %}
+                        {% if room.view_type %}
+                        <span><i class="fas fa-eye mr-1"></i>{{ room.get_view_type_display }}</span>
+                        {% endif %}
+                    </div>
                 </div>
                 
                 <!-- Room Stats -->
@@ -189,7 +208,9 @@
                         <div class="w-10 h-10 bg-royal-100 rounded-xl flex items-center justify-center mx-auto mb-2">
                             <i class="fas fa-bed text-royal-600"></i>
                         </div>
-                        <p class="text-sm font-medium text-luxury-700">{{ room.get_bed_type_display }}</p>
+                        <p class="text-sm font-medium text-luxury-700">
+                            {% if room.bed_type %}{{ room.bed_type.name }}{% else %}Standard{% endif %}
+                        </p>
                     </div>
                 </div>
                 
@@ -249,9 +270,126 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- List View -->
+    <div id="listView" class="hidden bg-white rounded-3xl luxury-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-luxury-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Room</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Type</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Floor</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Guests</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Price</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-luxury-200">
+                    {% for room in rooms %}
+                    <tr class="hover:bg-luxury-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-royal-100 rounded-xl flex items-center justify-center mr-3">
+                                    <i class="fas fa-bed text-royal-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-luxury-800">Room {{ room.room_number }}</p>
+                                    <p class="text-sm text-luxury-600">{{ room.room_size }} sq ft</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-luxury-700">
+                            {% if room.room_type %}{{ room.room_type.name }}{% else %}Standard{% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-luxury-700">
+                            {% if room.floor %}{{ room.floor.name }}{% else %}-{% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                  {% if room.status == 'Available' %}bg-green-100 text-green-800
+                                  {% elif room.status == 'Occupied' %}bg-red-100 text-red-800
+                                  {% elif room.status == 'Reserved' %}bg-blue-100 text-blue-800
+                                  {% elif room.status == 'Cleaning' %}bg-yellow-100 text-yellow-800
+                                  {% elif room.status == 'Dirty' %}bg-orange-100 text-orange-800
+                                  {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ room.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-luxury-700">{{ room.max_guests }}</td>
+                        <td class="px-6 py-4">
+                            <p class="font-semibold text-luxury-800">{{ hotel.currency }} {{ room.price }}</p>
+                            <p class="text-sm text-luxury-600">per night</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <a href="{% url 'hotels:room_detail' hotel.hotel_id room.room_id %}" 
+                                   class="p-2 text-royal-600 hover:text-royal-800 hover:bg-royal-50 rounded-lg transition-colors" 
+                                   title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if can_change_room %}
+                                <a href="{% url 'hotels:room_edit' hotel.hotel_id room.room_id %}" 
+                                   class="p-2 text-luxury-600 hover:text-luxury-800 hover:bg-luxury-50 rounded-lg transition-colors" 
+                                   title="Edit Room">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-16 text-center">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-luxury-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-bed text-luxury-400 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-luxury-700 mb-2">No Rooms Found</h3>
+                                <p class="text-luxury-500 mb-4">Create your first room to get started</p>
+                                {% if can_add_room %}
+                                <a href="{% url 'hotels:room_create' hotel.hotel_id %}" class="bg-royal-600 hover:bg-royal-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Add Room
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
+function switchView(viewType) {
+    const kanbanView = document.getElementById('kanbanView');
+    const listView = document.getElementById('listView');
+    const kanbanBtn = document.getElementById('kanbanBtn');
+    const listBtn = document.getElementById('listBtn');
+    
+    if (viewType === 'kanban') {
+        kanbanView.classList.remove('hidden');
+        listView.classList.add('hidden');
+        kanbanBtn.classList.add('bg-white', 'text-luxury-800', 'shadow-sm');
+        kanbanBtn.classList.remove('text-luxury-600');
+        listBtn.classList.remove('bg-white', 'text-luxury-800', 'shadow-sm');
+        listBtn.classList.add('text-luxury-600');
+    } else {
+        kanbanView.classList.add('hidden');
+        listView.classList.remove('hidden');
+        listBtn.classList.add('bg-white', 'text-luxury-800', 'shadow-sm');
+        listBtn.classList.remove('text-luxury-600');
+        kanbanBtn.classList.remove('bg-white', 'text-luxury-800', 'shadow-sm');
+        kanbanBtn.classList.add('text-luxury-600');
+    }
+    
+    // Save preference
+    localStorage.setItem('roomViewPreference', viewType);
+}
+
 function clearRoomFilters() {
     const form = document.getElementById('roomFilterForm');
     const inputs = form.querySelectorAll('input, select');
@@ -265,7 +403,7 @@ function clearRoomFilters() {
     form.submit();
 }
 
-// Auto-submit form on filter change
+// Auto-submit form on filter change and load saved view preference
 document.addEventListener('DOMContentLoaded', function() {
     const filterForm = document.getElementById('roomFilterForm');
     if (filterForm) {
@@ -276,6 +414,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Load saved view preference
+    const savedView = localStorage.getItem('roomViewPreference') || 'kanban';
+    switchView(savedView);
 });
 </script>
 

@@ -18,11 +18,11 @@ def guest_list(request):
         return redirect('accounts:dashboard')
     """List guests based on user role with filtering"""
     if request.user.is_superuser:
-        guests = GuestProfile.objects.all()
+        guests = GuestProfile.objects.filter(deleted_at__isnull=True)
     elif request.user.role == 'Owner':
-        guests = GuestProfile.objects.all()
+        guests = GuestProfile.objects.filter(deleted_at__isnull=True)
     else:
-        guests = GuestProfile.objects.all()
+        guests = GuestProfile.objects.filter(deleted_at__isnull=True)
     
     # Apply filters
     search = request.GET.get('search')
@@ -287,3 +287,38 @@ def guest_history(request, guest_id):
         'guest': guest,
         'reservations': reservations
     })
+
+@login_required
+def guest_delete(request, guest_id):
+    # Check if user has permission to delete guests
+    if not (request.user.is_superuser or 
+            request.user.role == 'Owner' or
+            request.user.can_delete_guests):
+        messages.error(request, 'You do not have permission to delete guests.')
+        return redirect('crm:list')
+    """Delete guest (soft delete)"""
+    guest = get_object_or_404(GuestProfile, id=guest_id)
+    
+    if request.method == 'POST':
+        # Check if guest has any reservations
+        try:
+            from reservations.models import Reservation
+            active_reservations = Reservation.objects.filter(
+                guest=guest, 
+                status__in=['confirmed', 'checked_in']
+            )
+            if active_reservations.exists():
+                messages.error(request, f'Cannot delete guest "{guest.full_name}" - they have active reservations.')
+                return redirect('crm:detail', guest_id=guest_id)
+        except ImportError:
+            pass
+        
+        # Soft delete
+        from django.utils import timezone
+        guest.deleted_at = timezone.now()
+        guest.save()
+        
+        messages.success(request, f'Guest "{guest.full_name}" deleted successfully!')
+        return redirect('crm:list')
+    
+    return render(request, 'crm/delete.html', {'guest': guest})
