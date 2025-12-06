@@ -300,11 +300,64 @@ def navigation_context(request):
 def contact_form(request):
     """Handle contact form submission"""
     from .forms import ContactForm
+    from django.core.mail import EmailMultiAlternatives
+    from django.template.loader import render_to_string
+    from django.conf import settings
     
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
             contact_inquiry = form.save()
+            
+            # Send email to super admin users
+            try:
+                # Get all super admin users
+                super_admin_users = User.objects.filter(is_superuser=True, is_active=True)
+                
+                if super_admin_users.exists():
+                    subject = f'🔔 New {contact_inquiry.get_subject_display()} - AuraStay Contact Form'
+                    
+                    # Plain text version
+                    text_message = f'''
+New Contact Form Submission - AuraStay
+
+Contact Details:
+- Name: {contact_inquiry.full_name}
+- Email: {contact_inquiry.work_email}
+- Phone: {contact_inquiry.phone_number}
+- Job Title: {contact_inquiry.job_title}
+
+Hotel Information:
+- Hotel Name: {contact_inquiry.hotel_name}
+- Number of Rooms: {contact_inquiry.get_number_of_rooms_display()}
+
+Inquiry Details:
+- Subject: {contact_inquiry.get_subject_display()}
+- How they heard about us: {contact_inquiry.get_hear_about_us_display() if contact_inquiry.hear_about_us else 'Not specified'}
+
+Message:
+{contact_inquiry.message}
+
+---
+Submitted on: {contact_inquiry.created_at.strftime('%B %d, %Y at %I:%M %p')}
+AuraStay Contact System
+'''
+                    
+                    # Send to all super admin emails
+                    admin_emails = [admin.email for admin in super_admin_users if admin.email]
+                    
+                    if admin_emails:
+                        email_msg = EmailMultiAlternatives(
+                            subject,
+                            text_message,
+                            settings.DEFAULT_FROM_EMAIL,
+                            admin_emails
+                        )
+                        email_msg.send(fail_silently=False)
+                
+            except Exception as e:
+                # Log the error but don't fail the form submission
+                print(f"Failed to send contact form email: {e}")
             
             # Create notification for admin users
             try:

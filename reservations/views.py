@@ -79,6 +79,10 @@ def reservation_list(request):
         'can_delete_reservations': can_delete_reservations,
         'can_add_checkins': can_add_checkins,
         'can_change_checkins': can_change_checkins,
+        'can_checkin': can_add_checkins,  # Template compatibility
+        'can_checkout': can_change_checkins,  # Template compatibility
+        'can_view_reservations': True,  # Template compatibility
+        'can_change_reservation': can_change_reservations,  # Template compatibility
     })
 
 @owner_or_permission_required('add_reservation')

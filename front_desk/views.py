@@ -6,9 +6,10 @@ from django.utils import timezone
 from django.db.models import Q, Sum
 from .models import CheckInOut, WalkInReservation, GuestFolio, FolioCharge, NightAudit
 from reservations.models import Reservation
-from hotels.models import Room
+from hotels.models import Room, Hotel
 from crm.models import GuestProfile
 import json
+from django.views.decorators.http import require_http_methods
 
 @login_required
 def front_desk_dashboard(request):
@@ -314,3 +315,168 @@ def check_in_list(request):
 def check_out_list(request):
     """List of guests to check out"""
     return render(request, 'front_desk/check_out_list.html')
+
+@login_required
+def room_availability(request):
+    """Room availability dashboard with floor filtering"""
+    from hotels.models import Hotel
+    from configurations.models import Floor as ConfigFloor
+    
+    # Get user's hotel
+    if hasattr(request.user, 'assigned_hotel') and request.user.assigned_hotel:
+        hotel = request.user.assigned_hotel
+    else:
+        # For owners, get their first hotel
+        hotel = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True).first()
+    
+    if not hotel:
+        messages.error(request, 'No hotel assigned to your account.')
+        return redirect('front_desk:dashboard')
+    
+    # Get all rooms for the hotel
+    rooms = hotel.rooms.all().select_related('floor', 'room_type', 'bed_type')
+    
+    # Apply floor filter if provided
+    floor_filter = request.GET.get('floor')
+    if floor_filter:
+        rooms = rooms.filter(floor_id=floor_filter)
+    
+    # Apply status filter if provided
+    status_filter = request.GET.get('status')
+    if status_filter:
+        rooms = rooms.filter(status=status_filter)
+    
+    # Apply search filter if provided
+    search_query = request.GET.get('search')
+    if search_query:
+        rooms = rooms.filter(
+            Q(room_number__icontains=search_query) |
+            Q(room_type__name__icontains=search_query)
+        )
+    
+    # Get available floors for the hotel
+    floors = ConfigFloor.objects.filter(hotels=hotel, is_active=True).order_by('number')
+    
+    # Room status choices for filtering
+    status_choices = Room.ROOM_STATUS_CHOICES
+    
+    # Group rooms by floor for better display
+    rooms_by_floor = {}
+    for room in rooms:
+        floor_name = room.floor.name if room.floor else 'No Floor Assigned'
+        if floor_name not in rooms_by_floor:
+            rooms_by_floor[floor_name] = []
+        rooms_by_floor[floor_name].append(room)
+    
+    # Room statistics
+    total_rooms = rooms.count()
+    available_rooms = rooms.filter(status='Available').count()
+    occupied_rooms = rooms.filter(status='Occupied').count()
+    dirty_rooms = rooms.filter(status='Dirty').count()
+    maintenance_rooms = rooms.filter(status='Maintenance').count()
+    
+    context = {
+        'hotel': hotel,
+        'rooms': rooms,
+        'rooms_by_floor': rooms_by_floor,
+        'floors': floors,
+        'status_choices': status_choices,
+        'selected_floor': floor_filter,
+        'selected_status': status_filter,
+        'search_query': search_query,
+        'total_rooms': total_rooms,
+        'available_rooms': available_rooms,
+        'occupied_rooms': occupied_rooms,
+        'dirty_rooms': dirty_rooms,
+        'maintenance_rooms': maintenance_rooms,
+    }
+    
+    return render(request, 'front_desk/room_availability.html', context)
+
+@login_required
+def room_details_ajax(request, room_id):
+    """Get room details via AJAX"""
+    try:
+        room = get_object_or_404(Room, room_id=room_id)
+        
+        # Check if user has access to this room's hotel
+        user_hotel = None
+        if hasattr(request.user, 'assigned_hotel') and request.user.assigned_hotel:
+            user_hotel = request.user.assigned_hotel
+        else:
+            user_hotel = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True).first()
+        
+        if not user_hotel or room.hotel != user_hotel:
+            return JsonResponse({'error': 'Access denied'}, status=403)
+        
+        # Get current reservation if room is occupied
+        current_reservation = None
+        if room.status == 'Occupied':
+            from reservations.models import Reservation
+            current_reservation = Reservation.objects.filter(
+                room=room,
+                status='checked_in'
+            ).select_related('guest').first()
+        
+        room_data = {
+            'room_number': room.room_number,
+            'status': room.status,
+            'room_type': room.room_type.name if room.room_type else 'N/A',
+            'bed_type': room.bed_type.name if room.bed_type else 'N/A',
+            'floor': room.floor.name if room.floor else 'N/A',
+            'max_guests': room.max_guests,
+            'price': str(room.price),
+            'amenities': room.amenities_list,
+            'current_guest': None
+        }
+        
+        if current_reservation:
+            room_data['current_guest'] = {
+                'name': current_reservation.guest.full_name,
+                'check_in': current_reservation.check_in.strftime('%Y-%m-%d'),
+                'check_out': current_reservation.check_out.strftime('%Y-%m-%d'),
+                'adults': current_reservation.adults,
+                'children': current_reservation.children
+            }
+        
+        return JsonResponse(room_data)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def update_room_status(request, room_id):
+    """Update room status via AJAX"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        room = get_object_or_404(Room, room_id=room_id)
+        
+        # Check if user has access to this room's hotel
+        user_hotel = None
+        if hasattr(request.user, 'assigned_hotel') and request.user.assigned_hotel:
+            user_hotel = request.user.assigned_hotel
+        else:
+            user_hotel = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True).first()
+        
+        if not user_hotel or room.hotel != user_hotel:
+            return JsonResponse({'error': 'Access denied'}, status=403)
+        
+        new_status = request.POST.get('status')
+        valid_statuses = [choice[0] for choice in Room.ROOM_STATUS_CHOICES]
+        
+        if new_status not in valid_statuses:
+            return JsonResponse({'error': 'Invalid status'}, status=400)
+        
+        room.status = new_status
+        room.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Room {room.room_number} status updated to {new_status}',
+            'new_status': new_status
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

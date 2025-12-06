@@ -12,4 +12,7 @@ urlpatterns = [
     path('walk-in/', views.walk_in_registration, name='walk_in'),
     path('folio/<uuid:folio_id>/', views.folio_management, name='folio'),
     path('night-audit/', views.night_audit, name='night_audit'),
+    path('room-availability/', views.room_availability, name='room_availability'),
+    path('room-details/<int:room_id>/', views.room_details_ajax, name='room_details_ajax'),
+    path('update-room-status/<int:room_id>/', views.update_room_status, name='update_room_status'),
 ]

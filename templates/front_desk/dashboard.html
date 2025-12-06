@@ -81,14 +81,33 @@
             <p class="text-sm text-luxury-600">Register new walk-in guests</p>
         </a>
         
-        <a href="{% url 'crm:list' %}" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
+        <a href="{% url 'front_desk:room_availability' %}" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
             <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-bed text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-luxury-800 mb-2">Room Availability</h3>
+            <p class="text-sm text-luxury-600">View rooms by floor</p>
+        </a>
+    </div>
+    <!-- Additional Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <a href="{% url 'crm:list' %}" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <i class="fas fa-search text-white text-2xl"></i>
             </div>
             <h3 class="text-lg font-bold text-luxury-800 mb-2">Guest Lookup</h3>
             <p class="text-sm text-luxury-600">Find guest information</p>
         </a>
+        
+        <a href="{% url 'billing:dashboard' %}" class="bg-white rounded-3xl p-6 luxury-shadow hover-lift transition-all duration-300 group text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-receipt text-white text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-luxury-800 mb-2">Billing & Invoices</h3>
+            <p class="text-sm text-luxury-600">Manage guest billing</p>
+        </a>
     </div>
+    
     <!-- Guest Lists -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Today's Arrivals -->

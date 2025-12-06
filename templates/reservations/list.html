@@ -188,14 +188,20 @@
                                     </a>
                                     {% else %}
                                     {% if can_checkout %}
-                                    {% if reservation.status == 'checked_in' and not reservation.stay.invoice %}
-                                    <button onclick="quickCheckOut('{{ reservation.id }}')" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Check Out">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                    </button>
-                                    {% elif reservation.status == 'checked_in' and reservation.stay.invoice %}
-                                    <a href="{% url 'billing:invoice_detail' reservation.stay.invoice.id %}" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="View Invoice">
-                                        <i class="fas fa-file-invoice"></i>
-                                    </a>
+                                    {% if reservation.status == 'checked_in' %}
+                                        {% if reservation.stay and not reservation.stay.invoice %}
+                                        <button onclick="quickCheckOut('{{ reservation.id }}')" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Check Out">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                        </button>
+                                        {% elif reservation.stay.invoice %}
+                                        <a href="{% url 'billing:invoice_detail' reservation.stay.invoice.id %}" class="text-green-600 hover:text-green-800 transition-colors p-2 rounded-lg hover:bg-green-50" title="View Invoice">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </a>
+                                        {% else %}
+                                        <button onclick="quickCheckOut('{{ reservation.id }}')" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Check Out">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                        </button>
+                                        {% endif %}
                                     {% endif %}
                                     {% endif %}
                                     {% if can_change_reservation and reservation.status != 'checked_out' %}
@@ -355,18 +361,26 @@
                     </a>
                     {% else %}
                     {% if can_checkout %}
-                    {% if reservation.status == 'checked_in' and not reservation.stay.invoice %}
-                    <button onclick="quickCheckOut('{{ reservation.id }}')" 
-                            class="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
-                        <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
-                        Check Out & Bill
-                    </button>
-                    {% elif reservation.status == 'checked_in' and reservation.stay.invoice %}
-                    <a href="{% url 'billing:invoice_detail' reservation.stay.invoice.id %}" 
-                       class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
-                        <i class="fas fa-file-invoice mr-2 group-hover:scale-110 transition-transform"></i>
-                        View Invoice
-                    </a>
+                    {% if reservation.status == 'checked_in' %}
+                        {% if reservation.stay and not reservation.stay.invoice %}
+                        <button onclick="quickCheckOut('{{ reservation.id }}')" 
+                                class="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                            <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                            Check Out & Bill
+                        </button>
+                        {% elif reservation.stay.invoice %}
+                        <a href="{% url 'billing:invoice_detail' reservation.stay.invoice.id %}" 
+                           class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group text-center block">
+                            <i class="fas fa-file-invoice mr-2 group-hover:scale-110 transition-transform"></i>
+                            View Invoice
+                        </a>
+                        {% else %}
+                        <button onclick="quickCheckOut('{{ reservation.id }}')" 
+                                class="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-2xl font-semibold hover-lift transition-all duration-300 group">
+                            <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                            Check Out & Bill
+                        </button>
+                        {% endif %}
                     {% endif %}
                     {% endif %}
                     {% endif %}

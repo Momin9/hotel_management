@@ -16,19 +16,22 @@ def staff_list(request):
     
     user_role = RoleManager.get_user_role(request.user)
     
+    # Base queryset - exclude soft-deleted users
+    base_queryset = User.objects.exclude(role='Owner').exclude(is_superuser=True).filter(deleted_at__isnull=True)
+    
     if user_role == 'SUPER_ADMIN':
-        # Super admin sees all staff (excluding owners and superusers)
-        staff_users = User.objects.exclude(role='Owner').exclude(is_superuser=True).filter(deleted_at__isnull=True)
+        # Super admin sees all active staff
+        staff_users = base_queryset
         hotels = Hotel.objects.filter(deleted_at__isnull=True)
     elif request.user.role == 'Owner':
-        # Hotel owners see only staff assigned to their hotels (excluding owners)
+        # Hotel owners see only staff assigned to their hotels
         owned_hotels = Hotel.objects.filter(owner=request.user, deleted_at__isnull=True)
-        staff_users = User.objects.exclude(role='Owner').exclude(is_superuser=True).filter(assigned_hotel__in=owned_hotels, deleted_at__isnull=True)
+        staff_users = base_queryset.filter(assigned_hotel__in=owned_hotels)
         hotels = owned_hotels
     else:
         # Staff see only other staff in their assigned hotel
         if request.user.assigned_hotel:
-            staff_users = User.objects.exclude(role='Owner').exclude(is_superuser=True).filter(assigned_hotel=request.user.assigned_hotel, deleted_at__isnull=True)
+            staff_users = base_queryset.filter(assigned_hotel=request.user.assigned_hotel)
             hotels = Hotel.objects.filter(hotel_id=request.user.assigned_hotel.hotel_id)
         else:
             staff_users = User.objects.none()
@@ -92,6 +95,22 @@ def staff_create(request):
             if user_role != 'SUPER_ADMIN' and assigned_hotel.owner != request.user:
                 messages.error(request, 'You can only assign staff to your own hotels.')
                 return render(request, 'staff/create.html', {'available_hotels': available_hotels})
+        
+        # Check if username already exists (including soft-deleted users)
+        if User.objects.filter(username=username).exists():
+            messages.error(request, f'Username "{username}" already exists. Please choose a different username.')
+            return render(request, 'staff/create.html', {
+                'available_hotels': available_hotels,
+                'available_roles': ['Manager', 'Staff', 'Receptionist', 'Housekeeper', 'Maintenance', 'Kitchen', 'Accountant']
+            })
+        
+        # Check if email already exists (including soft-deleted users)
+        if User.objects.filter(email=email).exists():
+            messages.error(request, f'Email "{email}" already exists. Please use a different email address.')
+            return render(request, 'staff/create.html', {
+                'available_hotels': available_hotels,
+                'available_roles': ['Manager', 'Staff', 'Receptionist', 'Housekeeper', 'Maintenance', 'Kitchen', 'Accountant']
+            })
         
         # Create user account
         password = request.POST.get('password', 'password123')
@@ -226,7 +245,13 @@ def staff_edit(request, staff_id):
 def staff_delete(request, staff_id):
     """Soft delete staff member"""
     from django.utils import timezone
-    user = get_object_or_404(User, user_id=staff_id, role='Staff')
+    user = get_object_or_404(User, user_id=staff_id, deleted_at__isnull=True)
+    
+    # Prevent deletion of owners and superusers
+    if user.role == 'Owner' or user.is_superuser:
+        messages.error(request, 'Cannot delete owners or administrators.')
+        return redirect('staff:list')
+    
     user_name = user.get_full_name() or user.username
     user.deleted_at = timezone.now()
     user.is_active = False

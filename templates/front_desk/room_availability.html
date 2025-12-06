@@ -1,0 +1,428 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Room Availability - {{ hotel.name }} - AuraStay{% endblock %}
+
+{% block page_title %}Room Availability Dashboard{% endblock %}
+
+{% block page_subtitle %}{{ hotel.name }} - Real-time room status and floor filtering{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-bed text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-blue-600">{{ total_rooms }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Total Rooms</h3>
+            <p class="text-sm text-luxury-600">All rooms in hotel</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-emerald-600">{{ available_rooms }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Available</h3>
+            <p class="text-sm text-luxury-600">Ready for check-in</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-red-600">{{ occupied_rooms }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Occupied</h3>
+            <p class="text-sm text-luxury-600">Currently occupied</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-broom text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-amber-600">{{ dirty_rooms }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Dirty</h3>
+            <p class="text-sm text-luxury-600">Need cleaning</p>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tools text-white text-lg"></i>
+                </div>
+                <span class="text-3xl font-bold text-purple-600">{{ maintenance_rooms }}</span>
+            </div>
+            <h3 class="text-lg font-semibold text-luxury-800 mb-1">Maintenance</h3>
+            <p class="text-sm text-luxury-600">Under maintenance</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <i class="fas fa-filter text-white text-lg"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-luxury-800">Filter Rooms</h3>
+        </div>
+        
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Search Filter -->
+            <div>
+                <label for="search" class="block text-sm font-semibold text-luxury-700 mb-2">Search Rooms</label>
+                <input type="text" name="search" id="search" value="{{ search_query }}" placeholder="Room number or type..." class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            </div>
+            <!-- Floor Filter -->
+            <div>
+                <label for="floor" class="block text-sm font-semibold text-luxury-700 mb-2">Filter by Floor</label>
+                <select name="floor" id="floor" class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    <option value="">All Floors</option>
+                    {% for floor in floors %}
+                        <option value="{{ floor.id }}" {% if selected_floor == floor.id|stringformat:"s" %}selected{% endif %}>
+                            Floor {{ floor.number }} - {{ floor.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Status Filter -->
+            <div>
+                <label for="status" class="block text-sm font-semibold text-luxury-700 mb-2">Filter by Status</label>
+                <select name="status" id="status" class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    <option value="">All Statuses</option>
+                    {% for status_code, status_name in status_choices %}
+                        <option value="{{ status_code }}" {% if selected_status == status_code %}selected{% endif %}>
+                            {{ status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Filter Button -->
+            <div class="flex items-end">
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
+                    <i class="fas fa-search mr-2"></i>Apply Filters
+                </button>
+            </div>
+        </form>
+        
+        {% if selected_floor or selected_status or search_query %}
+        <div class="mt-4">
+            <a href="{% url 'front_desk:room_availability' %}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+                <i class="fas fa-times mr-2"></i>Clear All Filters
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Room Grid -->
+    {% if rooms_by_floor %}
+        {% for floor_name, floor_rooms in rooms_by_floor.items %}
+        <div class="bg-white rounded-3xl p-8 luxury-shadow">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-slate-500 to-slate-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-building text-white text-lg"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-luxury-800">{{ floor_name }}</h3>
+                <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-medium">
+                    {{ floor_rooms|length }} room{{ floor_rooms|length|pluralize }}
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                {% for room in floor_rooms %}
+                <div class="room-card bg-gradient-to-br {% if room.status == 'Available' %}from-emerald-50 to-emerald-100 border-emerald-200{% elif room.status == 'Occupied' %}from-red-50 to-red-100 border-red-200{% elif room.status == 'Dirty' %}from-amber-50 to-amber-100 border-amber-200{% elif room.status == 'Maintenance' %}from-purple-50 to-purple-100 border-purple-200{% else %}from-gray-50 to-gray-100 border-gray-200{% endif %} rounded-2xl p-4 border-2 hover-lift transition-all duration-300 cursor-pointer" onclick="showRoomDetails('{{ room.room_id }}')">
+                    <div class="text-center">
+                        <!-- Room Number -->
+                        <div class="text-2xl font-bold {% if room.status == 'Available' %}text-emerald-800{% elif room.status == 'Occupied' %}text-red-800{% elif room.status == 'Dirty' %}text-amber-800{% elif room.status == 'Maintenance' %}text-purple-800{% else %}text-gray-800{% endif %} mb-2">
+                            {{ room.room_number }}
+                        </div>
+                        
+                        <!-- Room Type -->
+                        {% if room.room_type %}
+                        <div class="text-sm font-medium text-luxury-600 mb-2">
+                            {{ room.room_type.name }}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Status Badge -->
+                        <div class="status-badge {% if room.status == 'Available' %}bg-emerald-500{% elif room.status == 'Occupied' %}bg-red-500{% elif room.status == 'Dirty' %}bg-amber-500{% elif room.status == 'Maintenance' %}bg-purple-500{% else %}bg-gray-500{% endif %} text-white px-3 py-1 rounded-full text-xs font-semibold mb-2">
+                            {{ room.status }}
+                        </div>
+                        
+                        <!-- Price -->
+                        <div class="text-sm font-medium text-luxury-700">
+                            ${{ room.price }}/night
+                        </div>
+                        
+                        <!-- Max Guests -->
+                        <div class="text-xs text-luxury-500 mt-1">
+                            <i class="fas fa-users mr-1"></i>{{ room.max_guests }} guest{{ room.max_guests|pluralize }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="bg-white rounded-3xl p-8 luxury-shadow text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-bed text-gray-400 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-luxury-800 mb-2">No Rooms Found</h3>
+            <p class="text-luxury-600">No rooms match your current filter criteria.</p>
+            <a href="{% url 'front_desk:room_availability' %}" class="inline-block mt-4 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover-lift transition-all duration-300">
+                View All Rooms
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Room Details Modal -->
+<div id="roomModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-luxury-800">Room Details</h3>
+            <button onclick="closeRoomModal()" class="text-luxury-400 hover:text-luxury-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div id="roomModalContent">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+// CSRF token for AJAX requests
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showRoomDetails(roomId) {
+    const modal = document.getElementById('roomModal');
+    const content = document.getElementById('roomModalContent');
+    
+    // Show loading state
+    content.innerHTML = `
+        <div class="text-center">
+            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-spinner fa-spin text-indigo-600 text-2xl"></i>
+            </div>
+            <p class="text-luxury-600">Loading room details...</p>
+        </div>
+    `;
+    
+    modal.classList.remove('hidden');
+    
+    // Fetch room details
+    fetch(`/front-desk/room-details/${roomId}/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            content.innerHTML = `
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                    </div>
+                    <p class="text-red-600 mb-4">Error: ${data.error}</p>
+                </div>
+            `;
+        } else {
+            let statusColor = 'gray';
+            if (data.status === 'Available') statusColor = 'emerald';
+            else if (data.status === 'Occupied') statusColor = 'red';
+            else if (data.status === 'Dirty') statusColor = 'amber';
+            else if (data.status === 'Maintenance') statusColor = 'purple';
+            
+            let guestInfo = '';
+            if (data.current_guest) {
+                guestInfo = `
+                    <div class="bg-${statusColor}-50 rounded-xl p-4 mb-4">
+                        <h4 class="font-semibold text-${statusColor}-800 mb-2">Current Guest</h4>
+                        <p class="text-sm text-${statusColor}-700"><strong>Name:</strong> ${data.current_guest.name}</p>
+                        <p class="text-sm text-${statusColor}-700"><strong>Check-in:</strong> ${data.current_guest.check_in}</p>
+                        <p class="text-sm text-${statusColor}-700"><strong>Check-out:</strong> ${data.current_guest.check_out}</p>
+                        <p class="text-sm text-${statusColor}-700"><strong>Guests:</strong> ${data.current_guest.adults} adults, ${data.current_guest.children} children</p>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = `
+                <div>
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-${statusColor}-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-bed text-${statusColor}-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-luxury-800">Room ${data.room_number}</h4>
+                        <span class="inline-block bg-${statusColor}-500 text-white px-3 py-1 rounded-full text-sm font-semibold mt-2">
+                            ${data.status}
+                        </span>
+                    </div>
+                    
+                    ${guestInfo}
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-luxury-600">Room Type:</span>
+                            <span class="font-semibold text-luxury-800">${data.room_type}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-luxury-600">Bed Type:</span>
+                            <span class="font-semibold text-luxury-800">${data.bed_type}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-luxury-600">Floor:</span>
+                            <span class="font-semibold text-luxury-800">${data.floor}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-luxury-600">Max Guests:</span>
+                            <span class="font-semibold text-luxury-800">${data.max_guests}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-luxury-600">Price:</span>
+                            <span class="font-semibold text-luxury-800">$${data.price}/night</span>
+                        </div>
+                    </div>
+                    
+                    ${data.amenities.length > 0 ? `
+                        <div class="mt-6">
+                            <h5 class="font-semibold text-luxury-800 mb-2">Amenities</h5>
+                            <div class="flex flex-wrap gap-2">
+                                ${data.amenities.map(amenity => `<span class="bg-luxury-100 text-luxury-700 px-2 py-1 rounded-lg text-xs">${amenity}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="mt-6 pt-6 border-t border-luxury-200">
+                        <h5 class="font-semibold text-luxury-800 mb-3">Quick Status Update</h5>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="updateRoomStatus(${roomId}, 'Available')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Available
+                            </button>
+                            <button onclick="updateRoomStatus(${roomId}, 'Dirty')" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Dirty
+                            </button>
+                            <button onclick="updateRoomStatus(${roomId}, 'Cleaning')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Cleaning
+                            </button>
+                            <button onclick="updateRoomStatus(${roomId}, 'Maintenance')" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Maintenance
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        content.innerHTML = `
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                <p class="text-red-600 mb-4">Error loading room details</p>
+                <p class="text-sm text-luxury-500">${error.message}</p>
+            </div>
+        `;
+    });
+}
+
+function updateRoomStatus(roomId, newStatus) {
+    fetch(`/front-desk/update-room-status/${roomId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `status=${newStatus}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            alert(data.message);
+            // Close modal and refresh page
+            closeRoomModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error updating room status: ' + error.message);
+    });
+}
+
+function closeRoomModal() {
+    document.getElementById('roomModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('roomModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRoomModal();
+    }
+});
+
+// Auto-refresh every 30 seconds
+setInterval(function() {
+    location.reload();
+}, 30000);
+</script>
+
+<style>
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+}
+
+.luxury-shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.room-card:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.status-badge {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+</style>
+{% endblock %}
