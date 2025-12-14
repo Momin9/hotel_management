@@ -394,19 +394,26 @@ def floor_create(request):
         messages.error(request, 'You do not have permission to create configurations.')
         return redirect('configurations:floor_list')
     if request.method == 'POST':
-        hotel_id = request.POST.get('hotel')
-        hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
-        
-        # Check permission
-        if not request.user.is_superuser and request.user.role != 'Owner' and hotel != request.user.assigned_hotel:
-            messages.error(request, 'You do not have permission to create floors for this hotel.')
-            return redirect('configurations:floor_list')
-        
         hotel_ids = request.POST.getlist('hotels')
         
         if not hotel_ids:
             messages.error(request, 'Please select at least one hotel.')
         else:
+            # Check permissions for each selected hotel
+            for hotel_id in hotel_ids:
+                try:
+                    hotel = Hotel.objects.get(hotel_id=hotel_id)
+                    if not request.user.is_superuser and request.user.role != 'Owner':
+                        if not hasattr(request.user, 'assigned_hotel') or hotel != request.user.assigned_hotel:
+                            messages.error(request, f'You do not have permission to create floors for {hotel.name}.')
+                            return redirect('configurations:floor_list')
+                    elif request.user.role == 'Owner' and hotel.owner != request.user:
+                        messages.error(request, f'You do not have permission to create floors for {hotel.name}.')
+                        return redirect('configurations:floor_list')
+                except Hotel.DoesNotExist:
+                    messages.error(request, f'Hotel with ID {hotel_id} does not exist.')
+                    return redirect('configurations:floor_list')
+            
             floor = Floor.objects.create(
                 name=request.POST.get('name'),
                 number=int(request.POST.get('number')),
@@ -415,13 +422,11 @@ def floor_create(request):
             )
             
             for hotel_id in hotel_ids:
-                hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
+                hotel = Hotel.objects.get(hotel_id=hotel_id)
                 floor.hotels.add(hotel)
             
             messages.success(request, f'Floor "{floor.name}" created for {len(hotel_ids)} hotel(s)!')
             return redirect('configurations:floor_list')
-        messages.success(request, 'Floor created successfully!')
-        return redirect('configurations:floor_list')
     
     # Get available hotels
     if request.user.is_superuser:
