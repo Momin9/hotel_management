@@ -219,6 +219,12 @@ def staff_edit(request, staff_id):
             user.role = request.POST.get('role')
             user.is_active = request.POST.get('is_active') == 'true'
             
+            # Update password if provided
+            new_password = request.POST.get('new_password')
+            if new_password and new_password.strip():
+                user.set_password(new_password)
+                messages.success(request, 'Password updated successfully!')
+            
             # Update assigned hotel
             hotel_id = request.POST.get('assigned_hotel')
             if hotel_id:
