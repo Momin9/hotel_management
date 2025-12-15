@@ -211,13 +211,34 @@
                             <span class="font-medium">Reports</span>
                         </a>
                     {% elif user.role == 'Housekeeping' %}
-                        <a href="{% url 'hotels:room_list' user.assigned_hotel.hotel_id %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
-                            <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
-                            <span class="font-medium">Room Status</span>
-                        </a>
+                        <div class="relative" x-data="{ roomsOpen: false }">
+                            <button @click="roomsOpen = !roomsOpen" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                                <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium">Rooms</span>
+                                <i class="fas fa-chevron-down ml-2 transition-transform" :class="{ 'rotate-180': roomsOpen }"></i>
+                            </button>
+                            <div x-show="roomsOpen" @click.away="roomsOpen = false" x-transition class="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl luxury-shadow py-2 z-50">
+                                <a href="{% url 'housekeeping:room_status_list' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-list mr-3 text-luxury-500"></i>
+                                    List View
+                                </a>
+                                <a href="{% url 'housekeeping:room_status_list' %}?view=kanban" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-th-large mr-3 text-luxury-500"></i>
+                                    Kanban View
+                                </a>
+                            </div>
+                        </div>
                         <a href="{% url 'housekeeping:task_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                             <i class="fas fa-broom mr-2 group-hover:scale-110 transition-transform"></i>
                             <span class="font-medium">Tasks</span>
+                        </a>
+                        <a href="{% url 'housekeeping:schedule_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-calendar mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Schedules</span>
+                        </a>
+                        <a href="{% url 'housekeeping:room_assignments' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-clipboard-list mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Assignments</span>
                         </a>
                     {% elif user.role == 'Maintenance' %}
                         <a href="{% url 'maintenance:issue_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
@@ -342,9 +363,14 @@
                         {% endif %}
                     {% else %}
                         <!-- Staff role gets basic navigation -->
-                        <a href="{% url 'staff:performance' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                        <a href="{% url 'housekeeping:task_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
                             <i class="fas fa-calendar mr-2 group-hover:scale-110 transition-transform"></i>
                             <span class="font-medium">My Schedule</span>
+                        </a>
+                    <!-- Staff role gets basic navigation -->
+                        <a href="{% url 'housekeeping:room_status_list' %}" class="flex items-center px-4 py-2 rounded-xl text-luxury-700 hover:bg-white/20 hover:text-royal-600 transition-all duration-200 group">
+                            <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Rooms</span>
                         </a>
                     {% endif %}
                     {% endif %}

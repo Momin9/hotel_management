@@ -168,6 +168,30 @@ def staff_create(request):
             can_delete_configurations=request.POST.get('can_delete_configurations') == 'on'
         )
         
+        # Set permissions based on role
+        if role == 'Housekeeping':
+            # Housekeeping Staff Permissions - as per requirements
+            user.can_view_rooms = True           # View Room Status
+            user.can_change_rooms = True         # Update Room Cleaning Status
+            user.can_view_housekeeping = True    # View Housekeeping Schedule
+            user.can_change_housekeeping = True  # Update task status
+            user.can_add_maintenance = True      # Request Maintenance for rooms
+            
+            # Restricted permissions - explicitly set to False
+            user.can_view_billing = False        # No Financial modules
+            user.can_view_payments = False       # No Financial modules
+            user.can_view_reports = False        # No Financial modules
+            user.can_view_reservations = False   # No Reservations
+            user.can_view_guests = False         # No Guest personal data
+            user.can_delete_guests = False       # No Guest personal data
+            user.can_change_guests = False       # No Guest personal data
+            user.can_add_guests = False          # No Guest personal data
+            user.can_view_staff = False          # No staff management
+            user.can_add_staff = False           # No staff management
+            user.can_change_staff = False        # No staff management
+            user.can_delete_staff = False        # No staff management
+            user.save()
+        
         # Assign default permissions based on role
         assign_default_permissions(user)
         

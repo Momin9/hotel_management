@@ -16,8 +16,8 @@ DEFAULT_PERMISSIONS = {
         'view_hotel', 'view_room', 'view_reservation', 'add_reservation', 'change_reservation',
         'view_guest', 'add_guest', 'change_guest', 'view_checkin', 'add_checkin', 'change_checkin'
     ],
-    'Housekeeper': [
-        'view_hotel', 'view_room', 'change_room', 'view_housekeeping', 'add_housekeeping', 'change_housekeeping'
+    'Housekeeping': [
+        'view_rooms', 'change_rooms', 'view_housekeeping', 'change_housekeeping', 'add_maintenance'
     ],
     'Maintenance': [
         'view_hotel', 'view_room', 'view_maintenance', 'add_maintenance', 'change_maintenance', 'delete_maintenance'

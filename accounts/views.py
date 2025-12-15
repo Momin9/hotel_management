@@ -11,14 +11,15 @@ from .decorators import super_admin_required
 from .email_utils import send_subscription_welcome_email, send_subscription_update_email, send_employee_welcome_email
 from tenants.models import SubscriptionPlan
 from hotels.models import Hotel, HotelSubscription, Payment, SubscriptionHistory
-
+from .models import Footer
+# from .role_permissions import RolePermissions
 User = get_user_model()
 
+from .forms import ContactForm
+from .models import Feature
+from .models import TrustedHotel, LandingPageContent
 def landing_page(request):
     """Landing page for AuraStay"""
-    from .forms import ContactForm
-    from .models import Feature
-    from .models import TrustedHotel, LandingPageContent
     
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price_monthly')
     features = Feature.objects.filter(is_active=True).order_by('order', 'created_at')
@@ -194,8 +195,6 @@ def navigation_context(request):
     if not request.user.is_authenticated:
         return {}
     
-    from .role_permissions import RolePermissions
-    
     # Get unread notification count
     unread_notifications_count = 0
     try:
@@ -207,10 +206,9 @@ def navigation_context(request):
     nav_permissions = {}
     
     # Use role-based permissions if user has a defined role
-    if hasattr(request.user, 'role') and request.user.role in RolePermissions.ROLE_PERMISSIONS:
-        role_perms = RolePermissions.ROLE_PERMISSIONS[request.user.role]
-        for perm, value in role_perms.items():
-            nav_permissions[perm] = value
+    if hasattr(request.user, 'role') and request.user.role == 'Housekeeping':
+        from .role_permissions import get_housekeeper_permissions
+        nav_permissions.update(get_housekeeper_permissions())
     else:
         # Fallback to existing permission system
         nav_permissions = {
@@ -387,8 +385,7 @@ AuraStay Contact System
 
 def custom_login(request):
     """Custom login view with automatic role detection and permission assignment"""
-    from .models import Footer
-    from .role_permissions import RolePermissions
+   
     footer = Footer.objects.first()
     
     if request.user.is_authenticated:
@@ -412,8 +409,9 @@ def custom_login(request):
                     return render(request, 'accounts/login_luxury.html', {'footer': footer})
             
             # Apply role-based permissions
-            if user.role in RolePermissions.ROLE_PERMISSIONS:
-                RolePermissions.apply_role_permissions(user)
+            if user.role == 'Housekeeping':
+                from .role_permissions import apply_housekeeper_permissions
+                apply_housekeeper_permissions(user)
             
             login(request, user)
             
@@ -553,7 +551,6 @@ def super_admin_dashboard(request):
 @login_required
 def owner_dashboard(request):
     """Hotel Owner Dashboard with Real Data"""
-    from .role_permissions import RolePermissions
     from hotels.models import Room
     from decimal import Decimal
     from django.db.models import Count, Sum, Avg
@@ -602,7 +599,7 @@ def owner_dashboard(request):
         'user_role': 'Hotel Owner',
         'hotel_name': hotel_name,
         'hotel': hotel,
-        'navbar_items': RolePermissions.get_role_navbar_items('Owner'),
+        # 'navbar_items': [],
         # Real data
         'total_hotels': total_hotels,
         'occupancy_percentage': occupancy_percentage,
@@ -623,20 +620,17 @@ def employee_dashboard(request):
 @login_required
 def manager_dashboard(request):
     """Manager Dashboard"""
-    from .role_permissions import RolePermissions
-    
     # Get manager-specific data
     context = {
         'user_role': 'Manager',
-        'navbar_items': RolePermissions.get_role_navbar_items('Manager'),
-        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Manager'),
+        # 'navbar_items': [],
+        # 'dashboard_widgets': [],
     }
     return render(request, 'accounts/dashboards/manager.html', context)
 
 @login_required
 def receptionist_dashboard(request):
     """Receptionist/Front Desk Dashboard"""
-    from .role_permissions import RolePermissions
     from reservations.models import Reservation
     from billing.models import Invoice
     from hotels.models import Room
@@ -683,8 +677,8 @@ def receptionist_dashboard(request):
     
     context = {
         'user_role': 'Receptionist/Front Desk',
-        'navbar_items': RolePermissions.get_role_navbar_items('Receptionist'),
-        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Receptionist'),
+        # 'navbar_items': [],
+        # 'dashboard_widgets': [],
         # Real data
         'todays_checkins': todays_checkins,
         'todays_checkouts': todays_checkouts,
@@ -703,39 +697,33 @@ def receptionist_dashboard(request):
 @login_required
 def housekeeping_dashboard(request):
     """Housekeeping Staff Dashboard"""
-    from .role_permissions import RolePermissions
-    
     # Get housekeeping-specific data
     context = {
         'user_role': 'Housekeeping Staff',
-        'navbar_items': RolePermissions.get_role_navbar_items('Housekeeping'),
-        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Housekeeping'),
+        # 'navbar_items': [],
+        # 'dashboard_widgets': [],
     }
     return render(request, 'accounts/dashboards/housekeeping.html', context)
 
 @login_required
 def maintenance_dashboard(request):
     """Maintenance Staff Dashboard"""
-    from .role_permissions import RolePermissions
-    
     # Get maintenance-specific data
     context = {
         'user_role': 'Maintenance Staff',
-        'navbar_items': RolePermissions.get_role_navbar_items('Maintenance'),
-        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Maintenance'),
+        # 'navbar_items': [],
+        # 'dashboard_widgets': [],
     }
     return render(request, 'accounts/dashboards/maintenance.html', context)
 
 @login_required
 def accountant_dashboard(request):
     """Accountant Dashboard"""
-    from .role_permissions import RolePermissions
-    
     # Get accountant-specific data
     context = {
         'user_role': 'Accountant',
-        'navbar_items': RolePermissions.get_role_navbar_items('Accountant'),
-        'dashboard_widgets': RolePermissions.get_role_dashboard_widgets('Accountant'),
+        # 'navbar_items': [],
+        # 'dashboard_widgets': [],
     }
     return render(request, 'accounts/dashboards/accountant.html', context)
 

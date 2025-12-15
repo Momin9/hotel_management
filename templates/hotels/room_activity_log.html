@@ -1,0 +1,243 @@
+{% load static %}
+
+<div class="activity-log-container">
+    <div class="activity-header d-flex justify-content-between align-items-center mb-3">
+        <h5><i class="fas fa-history"></i> Room Activity History</h5>
+        <button class="btn btn-sm btn-outline-primary" onclick="addNote()">
+            <i class="fas fa-plus"></i> Add Note
+        </button>
+    </div>
+    
+    <div class="activity-timeline">
+        {% for activity in activities %}
+        <div class="activity-item">
+            <div class="activity-icon">
+                {% if activity.action == 'status_change' %}
+                    <i class="fas fa-exchange-alt text-warning"></i>
+                {% elif activity.action == 'maintenance_request' %}
+                    <i class="fas fa-tools text-danger"></i>
+                {% elif activity.action == 'cleaning_completed' %}
+                    <i class="fas fa-broom text-success"></i>
+                {% elif activity.action == 'price_change' %}
+                    <i class="fas fa-dollar-sign text-info"></i>
+                {% elif activity.action == 'note_added' %}
+                    <i class="fas fa-sticky-note text-primary"></i>
+                {% elif activity.action == 'guest_checkin' %}
+                    <i class="fas fa-sign-in-alt text-success"></i>
+                {% elif activity.action == 'guest_checkout' %}
+                    <i class="fas fa-sign-out-alt text-info"></i>
+                {% elif activity.action == 'payment_received' %}
+                    <i class="fas fa-credit-card text-success"></i>
+                {% elif activity.action == 'reservation_created' %}
+                    <i class="fas fa-calendar-plus text-primary"></i>
+                {% elif activity.action == 'reservation_cancelled' %}
+                    <i class="fas fa-calendar-times text-danger"></i>
+                {% elif activity.action == 'housekeeping_assigned' %}
+                    <i class="fas fa-user-check text-info"></i>
+                {% else %}
+                    <i class="fas fa-info-circle text-secondary"></i>
+                {% endif %}
+            </div>
+            
+            <div class="activity-content">
+                <div class="activity-header">
+                    <strong>{{ activity.get_user_display }}</strong>
+                    <span class="activity-action">{{ activity.get_action_display }}</span>
+                    <small class="text-muted">{{ activity.get_time_ago }} ago</small>
+                </div>
+                
+                <div class="activity-description">
+                    {{ activity.description }}
+                    
+                    {% if activity.metadata %}
+                        {% if activity.metadata.guest_name %}
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-user"></i> Guest: {{ activity.metadata.guest_name }}
+                                </small>
+                            </div>
+                        {% endif %}
+                        
+                        {% if activity.metadata.total_amount %}
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-money-bill"></i> Amount: {{ activity.metadata.currency|default:"PKR" }} {{ activity.metadata.total_amount }}
+                                </small>
+                            </div>
+                        {% endif %}
+                        
+                        {% if activity.metadata.check_in and activity.metadata.check_out %}
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> {{ activity.metadata.check_in }} to {{ activity.metadata.check_out }}
+                                </small>
+                            </div>
+                        {% endif %}
+                        
+                        {% if activity.metadata.payment_method %}
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-credit-card"></i> Payment Method: {{ activity.metadata.payment_method }}
+                                </small>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                {% if activity.old_value and activity.new_value %}
+                <div class="activity-changes mt-2">
+                    <small class="text-muted">
+                        <span class="badge badge-light">{{ activity.old_value }}</span>
+                        <i class="fas fa-arrow-right mx-1"></i>
+                        <span class="badge badge-primary">{{ activity.new_value }}</span>
+                    </small>
+                </div>
+                {% endif %}
+                
+                <div class="activity-timestamp">
+                    <small class="text-muted">{{ activity.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted py-4">
+            <i class="fas fa-history fa-2x mb-2"></i>
+            <p>No activity recorded yet</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Note Modal -->
+<div class="modal fade" id="addNoteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Note</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form id="addNoteForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Note</label>
+                        <textarea class="form-control" name="note" rows="3" required placeholder="Enter your note..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.activity-log-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.activity-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.activity-timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.activity-item {
+    position: relative;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    border-left: 3px solid #007bff;
+}
+
+.activity-icon {
+    position: absolute;
+    left: -45px;
+    top: 15px;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.activity-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.activity-action {
+    background: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.activity-description {
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.activity-changes {
+    padding: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+}
+
+.activity-timestamp {
+    font-size: 11px;
+}
+</style>
+
+<script>
+function addNote() {
+    $('#addNoteModal').modal('show');
+}
+
+$('#addNoteForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    const note = $(this).find('[name="note"]').val();
+    
+    $.ajax({
+        url: '{% url "hotels:add_room_note" room.room_id %}',
+        method: 'POST',
+        data: {
+            'note': note,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                location.reload(); // Reload to show new note
+            } else {
+                alert('Error adding note: ' + response.error);
+            }
+        },
+        error: function() {
+            alert('Error adding note');
+        }
+    });
+});
+</script>

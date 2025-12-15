@@ -1,0 +1,411 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Room Status - Housekeeping{% endblock %}
+
+{% block page_title %}Room Status Management{% endblock %}
+{% block page_subtitle %}View and update room cleaning status{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Rooms</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ total_rooms }}</p>
+                    <p class="text-sm text-blue-600">all rooms</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-bed text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Available</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ available_rooms }}</p>
+                    <p class="text-sm text-green-600">ready</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Occupied</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ occupied_rooms }}</p>
+                    <p class="text-sm text-purple-600">guests</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Dirty</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ dirty_rooms }}</p>
+                    <p class="text-sm text-red-600">need cleaning</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Cleaning</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ cleaning_rooms }}</p>
+                    <p class="text-sm text-orange-600">in progress</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-broom text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Maintenance</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ maintenance_rooms }}</p>
+                    <p class="text-sm text-yellow-600">repairs</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tools text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Toggle -->
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex space-x-2">
+            <a href="?view=list{% if status_filter %}&status={{ status_filter }}{% endif %}{% if floor_filter %}&floor={{ floor_filter }}{% endif %}" 
+               class="px-4 py-2 rounded-xl font-medium transition-colors {% if view_type == 'list' %}bg-royal-500 text-white{% else %}bg-luxury-100 text-luxury-700 hover:bg-luxury-200{% endif %}">
+                <i class="fas fa-list mr-2"></i>List View
+            </a>
+            <a href="?view=kanban{% if status_filter %}&status={{ status_filter }}{% endif %}{% if floor_filter %}&floor={{ floor_filter }}{% endif %}" 
+               class="px-4 py-2 rounded-xl font-medium transition-colors {% if view_type == 'kanban' %}bg-royal-500 text-white{% else %}bg-luxury-100 text-luxury-700 hover:bg-luxury-200{% endif %}">
+                <i class="fas fa-th-large mr-2"></i>Kanban View
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <h2 class="text-xl font-bold text-luxury-900 mb-4">Filter Rooms</h2>
+        <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                <select name="status" class="w-full px-4 py-2 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Status</option>
+                    {% for value, label in room_status_choices %}
+                        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Floor</label>
+                <select name="floor" class="w-full px-4 py-2 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Floors</option>
+                    {% for floor in floors %}
+                        <option value="{{ floor }}" {% if floor_filter == floor|stringformat:"s" %}selected{% endif %}>Floor {{ floor }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="w-full bg-royal-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-royal-600 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Room Grid -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-luxury-900">Room Status</h2>
+            {% if user_hotel %}
+                <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-xl font-medium">
+                    <i class="fas fa-building mr-2"></i>{{ user_hotel.name }}
+                </span>
+            {% endif %}
+        </div>
+
+        {% if view_type == 'kanban' %}
+            <!-- Kanban View -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <!-- Available Column -->
+                <div class="bg-green-50 rounded-xl p-4">
+                    <h3 class="font-bold text-green-800 mb-4 flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>Available ({{ available_rooms_list.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for room in available_rooms_list %}
+                        <div class="bg-white rounded-lg p-3 border border-green-200">
+                            <div class="font-semibold">Room {{ room.room_number }}</div>
+                            <div class="text-sm text-gray-600">{{ room.room_type.name|default:"Standard" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Dirty Column -->
+                <div class="bg-red-50 rounded-xl p-4">
+                    <h3 class="font-bold text-red-800 mb-4 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Dirty ({{ dirty_rooms_list.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for room in dirty_rooms_list %}
+                        <div class="bg-white rounded-lg p-3 border border-red-200">
+                            <div class="font-semibold">Room {{ room.room_number }}</div>
+                            <div class="text-sm text-gray-600">{{ room.room_type.name|default:"Standard" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Cleaning Column -->
+                <div class="bg-orange-50 rounded-xl p-4">
+                    <h3 class="font-bold text-orange-800 mb-4 flex items-center">
+                        <i class="fas fa-broom mr-2"></i>Cleaning ({{ cleaning_rooms_list.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for room in cleaning_rooms_list %}
+                        <div class="bg-white rounded-lg p-3 border border-orange-200">
+                            <div class="font-semibold">Room {{ room.room_number }}</div>
+                            <div class="text-sm text-gray-600">{{ room.room_type.name|default:"Standard" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Occupied Column -->
+                <div class="bg-purple-50 rounded-xl p-4">
+                    <h3 class="font-bold text-purple-800 mb-4 flex items-center">
+                        <i class="fas fa-user mr-2"></i>Occupied ({{ occupied_rooms_list.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for room in occupied_rooms_list %}
+                        <div class="bg-white rounded-lg p-3 border border-purple-200">
+                            <div class="font-semibold">Room {{ room.room_number }}</div>
+                            <div class="text-sm text-gray-600">{{ room.room_type.name|default:"Standard" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Maintenance Column -->
+                <div class="bg-yellow-50 rounded-xl p-4">
+                    <h3 class="font-bold text-yellow-800 mb-4 flex items-center">
+                        <i class="fas fa-tools mr-2"></i>Maintenance ({{ maintenance_rooms_list.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for room in maintenance_rooms_list %}
+                        <div class="bg-white rounded-lg p-3 border border-yellow-200">
+                            <div class="font-semibold">Room {{ room.room_number }}</div>
+                            <div class="text-sm text-gray-600">{{ room.room_type.name|default:"Standard" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% elif rooms %}
+            <!-- List View -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for room in rooms %}
+                <div class="border border-luxury-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center
+                                {% if room.status == 'Available' %}bg-green-100{% elif room.status == 'Occupied' %}bg-purple-100{% elif room.status == 'Dirty' %}bg-red-100{% elif room.status == 'Cleaning' %}bg-orange-100{% elif room.status == 'Maintenance' %}bg-yellow-100{% else %}bg-gray-100{% endif %}">
+                                <i class="fas 
+                                    {% if room.status == 'Available' %}fa-check text-green-600{% elif room.status == 'Occupied' %}fa-user text-purple-600{% elif room.status == 'Dirty' %}fa-exclamation-triangle text-red-600{% elif room.status == 'Cleaning' %}fa-broom text-orange-600{% elif room.status == 'Maintenance' %}fa-tools text-yellow-600{% else %}fa-bed text-gray-600{% endif %} text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-luxury-900">Room {{ room.room_number }}</h3>
+                                {% if room.floor %}
+                                    <p class="text-sm text-luxury-600">Floor {{ room.floor.number }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                            {% if room.status == 'Available' %}bg-green-100 text-green-800{% elif room.status == 'Occupied' %}bg-purple-100 text-purple-800{% elif room.status == 'Dirty' %}bg-red-100 text-red-800{% elif room.status == 'Cleaning' %}bg-orange-100 text-orange-800{% elif room.status == 'Maintenance' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ room.status }}
+                        </span>
+                    </div>
+                    
+                    <div class="space-y-2 text-sm text-luxury-600 mb-4">
+                        {% if room.room_type %}
+                            <div class="flex items-center">
+                                <i class="fas fa-bed mr-2"></i>
+                                <span>{{ room.room_type.name }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="flex items-center">
+                            <i class="fas fa-users mr-2"></i>
+                            <span>Max {{ room.max_guests }} guests</span>
+                        </div>
+                        {% if room.price %}
+                            <div class="flex items-center">
+                                <i class="fas fa-dollar-sign mr-2"></i>
+                                <span>${{ room.price }}/night</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Status Update Form -->
+                    <form method="post" action="{% url 'housekeeping:update_room_status' room.room_id %}" class="space-y-3">
+                        {% csrf_token %}
+                        <div>
+                            <label class="block text-sm font-medium text-luxury-700 mb-1">Update Status</label>
+                            <select name="status" class="w-full px-3 py-2 border border-luxury-200 rounded-lg focus:ring-2 focus:ring-royal-500 focus:border-transparent text-sm">
+                                <option value="Available" {% if room.status == 'Available' %}selected{% endif %}>Available (Clean)</option>
+                                <option value="Dirty" {% if room.status == 'Dirty' %}selected{% endif %}>Dirty (Needs Cleaning)</option>
+                                <option value="Cleaning" {% if room.status == 'Cleaning' %}selected{% endif %}>Cleaning (In Progress)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button type="submit" class="flex-1 px-3 py-2 bg-royal-500 text-white rounded-lg hover:bg-royal-600 transition-colors text-sm font-medium">
+                                <i class="fas fa-save mr-1"></i>Update
+                            </button>
+                            <button type="button" onclick="showMaintenanceModal('{{ room.room_id }}', '{{ room.room_number }}')" 
+                                    class="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm font-medium">
+                                <i class="fas fa-tools"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="w-24 h-24 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-bed text-luxury-400 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-luxury-900 mb-2">No Rooms Found</h3>
+                <p class="text-luxury-600">No rooms match your current filters.</p>
+                <a href="{% url 'housekeeping:room_status_list' %}" class="inline-block mt-4 px-6 py-3 bg-royal-500 text-white rounded-xl font-semibold hover:bg-royal-600 transition-colors">
+                    <i class="fas fa-refresh mr-2"></i>Clear Filters
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Maintenance Request Modal -->
+<div id="maintenanceModal" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeMaintenanceModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl luxury-shadow max-w-md w-full transform transition-all scale-95 opacity-0" id="maintenanceModalContent">
+            <div class="p-6 border-b border-luxury-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-tools text-yellow-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-luxury-800">Report Maintenance Issue</h3>
+                    </div>
+                    <button onclick="closeMaintenanceModal()" class="text-luxury-400 hover:text-luxury-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form method="post" id="maintenanceForm" class="p-6">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Room</label>
+                    <input type="text" id="roomDisplay" class="w-full px-4 py-3 border border-luxury-200 rounded-xl bg-luxury-50" readonly>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Priority</label>
+                    <select name="priority" class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                        <option value="1">Low</option>
+                        <option value="2">Medium-Low</option>
+                        <option value="3" selected>Medium</option>
+                        <option value="4">Medium-High</option>
+                        <option value="5">High</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Issue Description</label>
+                    <textarea name="description" rows="4" class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" placeholder="Describe the maintenance issue..." required></textarea>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeMaintenanceModal()" class="flex-1 px-4 py-3 bg-luxury-100 hover:bg-luxury-200 text-luxury-700 rounded-2xl font-semibold transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-2xl font-semibold transition-colors">
+                        Report Issue
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showMaintenanceModal(roomId, roomNumber) {
+    const modal = document.getElementById('maintenanceModal');
+    const modalContent = document.getElementById('maintenanceModalContent');
+    const form = document.getElementById('maintenanceForm');
+    const roomDisplay = document.getElementById('roomDisplay');
+    
+    // Set form action and room display
+    form.action = `/housekeeping/maintenance/create/${roomId}/`;
+    roomDisplay.value = `Room ${roomNumber}`;
+    
+    // Show modal with animation
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeMaintenanceModal() {
+    const modal = document.getElementById('maintenanceModal');
+    const modalContent = document.getElementById('maintenanceModalContent');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+</script>
+
+<style>
+.luxury-shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+}
+</style>
+{% endblock %}

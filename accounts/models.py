@@ -86,6 +86,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     can_add_housekeeping = models.BooleanField(default=False, help_text='Can create housekeeping tasks')
     can_change_housekeeping = models.BooleanField(default=False, help_text='Can update task status')
     can_delete_housekeeping = models.BooleanField(default=False, help_text='Can delete tasks')
+    can_view_room_status = models.BooleanField(default=False, help_text='Can view room cleaning status')
+    can_update_room_status = models.BooleanField(default=False, help_text='Can update room cleaning status')
+    can_view_housekeeping_schedule = models.BooleanField(default=False, help_text='Can view housekeeping schedules')
+    can_request_maintenance = models.BooleanField(default=False, help_text='Can create maintenance requests')
+    can_view_room_assignments = models.BooleanField(default=False, help_text='Can view room assignments')
     
     # Maintenance Permissions
     can_view_maintenance = models.BooleanField(default=False, help_text='Can view maintenance issues')
