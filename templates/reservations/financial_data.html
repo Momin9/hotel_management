@@ -1,0 +1,320 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Financial Data - Reservations{% endblock %}
+{% block page_title %}Financial Data Overview{% endblock %}
+{% block page_subtitle %}Reservation revenue and billing analytics{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Revenue Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Today's Revenue -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Today's Revenue</p>
+                    <p class="text-3xl font-bold text-green-600">${{ today_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-luxury-500">{{ today_reservations }} reservations</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Revenue -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">This Week</p>
+                    <p class="text-3xl font-bold text-blue-600">${{ week_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-luxury-500">Weekly revenue</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Revenue -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">This Month</p>
+                    <p class="text-3xl font-bold text-purple-600">${{ month_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-luxury-500">Monthly revenue</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Payments -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Today's Payments</p>
+                    <p class="text-3xl font-bold text-orange-600">${{ today_payments|floatformat:2 }}</p>
+                    <p class="text-sm text-luxury-500">Received payments</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-credit-card text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Statistics -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Payment Summary -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-900 mb-6">Payment Summary</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                    <div>
+                        <p class="font-medium text-luxury-900">Weekly Payments</p>
+                        <p class="text-sm text-luxury-600">This week total</p>
+                    </div>
+                    <p class="font-bold text-blue-600">${{ week_payments|floatformat:2 }}</p>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-purple-50 rounded-xl">
+                    <div>
+                        <p class="font-medium text-luxury-900">Monthly Payments</p>
+                        <p class="text-sm text-luxury-600">This month total</p>
+                    </div>
+                    <p class="font-bold text-purple-600">${{ month_payments|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservation Status -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-900 mb-6">Reservation Status</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Pending</p>
+                        </div>
+                    </div>
+                    <p class="font-bold text-luxury-900">{{ pending_reservations }}</p>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">Confirmed</p>
+                        </div>
+                    </div>
+                    <p class="font-bold text-luxury-900">{{ confirmed_reservations }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Overview -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-900 mb-6">Invoice Overview</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div>
+                        <p class="font-medium text-luxury-900">Total Invoices</p>
+                        <p class="text-sm text-luxury-600">All time</p>
+                    </div>
+                    <p class="font-bold text-luxury-900">{{ total_invoices }}</p>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="text-center p-2 bg-green-50 rounded-lg">
+                        <p class="text-sm font-medium text-green-600">Paid</p>
+                        <p class="font-bold text-green-700">{{ paid_invoices }}</p>
+                    </div>
+                    <div class="text-center p-2 bg-yellow-50 rounded-lg">
+                        <p class="text-sm font-medium text-yellow-600">Pending</p>
+                        <p class="font-bold text-yellow-700">{{ pending_invoices }}</p>
+                    </div>
+                    <div class="text-center p-2 bg-red-50 rounded-lg">
+                        <p class="text-sm font-medium text-red-600">Overdue</p>
+                        <p class="font-bold text-red-700">{{ overdue_invoices }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Methods & Revenue by Status -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Payment Methods -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-900 mb-6">Payment Methods (This Month)</h2>
+            {% if payment_methods %}
+                <div class="space-y-4">
+                    {% for method in payment_methods %}
+                    <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                {% if method.method == 'cash' %}
+                                    <i class="fas fa-money-bill text-blue-600"></i>
+                                {% elif method.method == 'card' %}
+                                    <i class="fas fa-credit-card text-blue-600"></i>
+                                {% elif method.method == 'bank_transfer' %}
+                                    <i class="fas fa-university text-blue-600"></i>
+                                {% else %}
+                                    <i class="fas fa-payment text-blue-600"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="font-medium text-luxury-900">{{ method.method|title }}</p>
+                                <p class="text-sm text-luxury-600">{{ method.count }} transactions</p>
+                            </div>
+                        </div>
+                        <p class="font-bold text-luxury-900">${{ method.total|floatformat:2 }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-credit-card text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No payment data available</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Revenue by Status -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-900 mb-6">Revenue by Status (This Month)</h2>
+            {% if revenue_by_status %}
+                <div class="space-y-4">
+                    {% for status in revenue_by_status %}
+                    <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center
+                                {% if status.status == 'confirmed' %}bg-green-100{% elif status.status == 'checked_in' %}bg-blue-100{% elif status.status == 'checked_out' %}bg-purple-100{% else %}bg-gray-100{% endif %}">
+                                {% if status.status == 'confirmed' %}
+                                    <i class="fas fa-check text-green-600"></i>
+                                {% elif status.status == 'checked_in' %}
+                                    <i class="fas fa-door-open text-blue-600"></i>
+                                {% elif status.status == 'checked_out' %}
+                                    <i class="fas fa-door-closed text-purple-600"></i>
+                                {% else %}
+                                    <i class="fas fa-circle text-gray-600"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="font-medium text-luxury-900">{{ status.status|title }}</p>
+                                <p class="text-sm text-luxury-600">{{ status.count }} reservations</p>
+                            </div>
+                        </div>
+                        <p class="font-bold text-luxury-900">${{ status.total_revenue|floatformat:2 }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-chart-bar text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No revenue data available</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Data Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Recent Reservations -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-900 mb-6">Recent Reservations</h2>
+            {% if reservations %}
+                <div class="space-y-4">
+                    {% for reservation in reservations|slice:":10" %}
+                    <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-royal-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-bed text-royal-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-luxury-900">Room {{ reservation.room.number }}</p>
+                                <p class="text-sm text-luxury-600">{{ reservation.created_at|timesince }} ago</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-luxury-900">${{ reservation.rate|floatformat:2 }}</p>
+                            <p class="text-sm text-luxury-600">{{ reservation.status|title }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-inbox text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No recent reservations</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Invoices -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h2 class="text-2xl font-bold text-luxury-900 mb-6">Recent Invoices</h2>
+            {% if recent_invoices %}
+                <div class="space-y-4">
+                    {% for invoice in recent_invoices %}
+                    <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-file-invoice text-gold-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-luxury-900">{{ invoice.invoice_number }}</p>
+                                <p class="text-sm text-luxury-600">{{ invoice.created_at|timesince }} ago</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-luxury-900">${{ invoice.total_amount|floatformat:2 }}</p>
+                            <p class="text-sm text-luxury-600">{{ invoice.status|title }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-file-invoice text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No recent invoices</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-luxury-900">Quick Actions</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="{% url 'billing:payment_list' %}" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-credit-card text-xl"></i>
+                <span class="font-medium">View Payments</span>
+            </a>
+            
+            <a href="{% url 'billing:dashboard' %}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-file-invoice text-xl"></i>
+                <span class="font-medium">View Invoices</span>
+            </a>
+            
+            <a href="{% url 'pos:dashboard' %}" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-cash-register text-xl"></i>
+                <span class="font-medium">POS Dashboard</span>
+            </a>
+            
+            <a href="#" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-3">
+                <i class="fas fa-download text-xl"></i>
+                <span class="font-medium">Export Data</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

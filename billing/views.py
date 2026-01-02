@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
 from .models import Invoice, Payment
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from datetime import datetime, timedelta
 from django.utils import timezone
 from reportlab.pdfgen import canvas
@@ -22,26 +22,64 @@ import os
 
 @login_required
 def dashboard(request):
-    """Billing dashboard"""
+    """Billing dashboard with comprehensive real data"""
     today = datetime.now().date()
     month_start = today.replace(day=1)
+    week_start = today - timedelta(days=today.weekday())
     
+    # Revenue statistics
     total_revenue = Payment.objects.filter(status='completed').aggregate(Sum('amount'))['amount__sum'] or 0
-    pending_payments = Invoice.objects.filter(status='pending').aggregate(Sum('total_amount'))['total_amount__sum'] or 0
-    total_invoices = Invoice.objects.count()
+    today_revenue = Payment.objects.filter(
+        status='completed',
+        timestamp__date=today
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    week_revenue = Payment.objects.filter(
+        status='completed',
+        timestamp__date__gte=week_start
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
+    
     monthly_revenue = Payment.objects.filter(
         status='completed',
         timestamp__date__gte=month_start
     ).aggregate(Sum('amount'))['amount__sum'] or 0
     
-    recent_invoices = Invoice.objects.order_by('-created_at')[:5]
+    # Invoice statistics
+    total_invoices = Invoice.objects.count()
+    paid_invoices = Invoice.objects.filter(status='paid').count()
+    pending_invoices = Invoice.objects.filter(status__in=['draft', 'sent', 'pending']).count()
+    overdue_invoices = Invoice.objects.filter(status='overdue').count()
+    
+    # Payment statistics
+    pending_payments = Invoice.objects.filter(status__in=['pending', 'sent']).aggregate(
+        Sum('total_amount'))['total_amount__sum'] or 0
+    
+    # Payment method breakdown (this month)
+    payment_methods = Payment.objects.filter(
+        timestamp__date__gte=month_start,
+        status='completed'
+    ).values('method').annotate(
+        total=Sum('amount'),
+        count=Count('id')
+    ).order_by('-total')
+    
+    # Recent invoices and payments
+    recent_invoices = Invoice.objects.all().order_by('-created_at')[:10]
+    recent_payments = Payment.objects.all().order_by('-timestamp')[:10]
     
     context = {
         'total_revenue': total_revenue,
-        'pending_payments': pending_payments,
-        'total_invoices': total_invoices,
+        'today_revenue': today_revenue,
+        'week_revenue': week_revenue,
         'monthly_revenue': monthly_revenue,
+        'total_invoices': total_invoices,
+        'paid_invoices': paid_invoices,
+        'pending_invoices': pending_invoices,
+        'overdue_invoices': overdue_invoices,
+        'pending_payments': pending_payments,
+        'payment_methods': payment_methods,
         'recent_invoices': recent_invoices,
+        'recent_payments': recent_payments,
     }
     
     return render(request, 'billing/dashboard.html', context)

@@ -1,0 +1,162 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Update Issue - {{ issue.title }}{% endblock %}
+{% block page_title %}Update Issue{% endblock %}
+{% block page_subtitle %}{{ issue.title }} - {{ issue.property.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Issue Information (Read-only) -->
+            <div class="bg-luxury-50 rounded-2xl p-6 mb-6">
+                <h3 class="text-lg font-semibold text-luxury-800 mb-4">Issue Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-1">Property</label>
+                        <p class="text-luxury-900 font-medium">{{ issue.property.name }}</p>
+                    </div>
+                    {% if issue.room %}
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-1">Room</label>
+                        <p class="text-luxury-900 font-medium">Room {{ issue.room.room_number }}</p>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-1">Category</label>
+                        <p class="text-luxury-900 font-medium">{{ issue.get_category_display }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-1">Reported By</label>
+                        <p class="text-luxury-900 font-medium">{{ issue.reported_by.user.get_full_name|default:issue.reported_by.user.email }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-1">Reported Date</label>
+                        <p class="text-luxury-900 font-medium">{{ issue.reported_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                    {% if issue.assigned_to %}
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-1">Assigned To</label>
+                        <p class="text-luxury-900 font-medium">{{ issue.assigned_to.user.get_full_name|default:issue.assigned_to.user.email }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-luxury-700 mb-1">Description</label>
+                    <p class="text-luxury-900">{{ issue.description }}</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Status Update -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-luxury-800 mb-4">Update Status</h3>
+                    
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                        <select name="status" id="status" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent"
+                                required>
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if issue.status == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    {% if not is_maintenance_staff %}
+                    <div>
+                        <label for="priority" class="block text-sm font-medium text-luxury-700 mb-2">Priority</label>
+                        <select name="priority" id="priority" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            {% for value, label in priority_choices %}
+                            <option value="{{ value }}" {% if issue.priority == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% else %}
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">Priority</label>
+                        <div class="px-4 py-3 bg-luxury-100 rounded-xl">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                {% if issue.priority == 'urgent' %}bg-red-100 text-red-800
+                                {% elif issue.priority == 'high' %}bg-orange-100 text-orange-800
+                                {% elif issue.priority == 'medium' %}bg-yellow-100 text-yellow-800
+                                {% else %}bg-green-100 text-green-800{% endif %}">
+                                {{ issue.get_priority_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Current Status Display -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-luxury-800 mb-4">Current Status</h3>
+                    
+                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-luxury-700">Status</span>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                {% if issue.status == 'open' %}bg-blue-100 text-blue-800
+                                {% elif issue.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                                {% elif issue.status == 'resolved' %}bg-green-100 text-green-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ issue.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-luxury-700">Priority</span>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                {% if issue.priority == 'urgent' %}bg-red-100 text-red-800
+                                {% elif issue.priority == 'high' %}bg-orange-100 text-orange-800
+                                {% elif issue.priority == 'medium' %}bg-yellow-100 text-yellow-800
+                                {% else %}bg-green-100 text-green-800{% endif %}">
+                                {{ issue.get_priority_display }}
+                            </span>
+                        </div>
+                        
+                        {% if issue.resolved_at %}
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-luxury-700">Resolved</span>
+                            <span class="text-sm text-luxury-600">{{ issue.resolved_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resolution Notes -->
+            <div class="mt-6">
+                <label for="resolution_notes" class="block text-sm font-medium text-luxury-700 mb-2">
+                    {% if is_maintenance_staff %}Work Notes / Resolution Details{% else %}Resolution Notes{% endif %}
+                </label>
+                <textarea name="resolution_notes" id="resolution_notes" rows="6"
+                          class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                          placeholder="{% if is_maintenance_staff %}Describe the work performed, parts used, and resolution details...{% else %}Enter resolution notes...{% endif %}">{{ issue.resolution_notes }}</textarea>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-4 pt-6">
+                <button type="submit" 
+                        class="bg-royal-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-royal-600 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>Update Issue</span>
+                </button>
+                <a href="{% url 'maintenance:issue_list' %}" 
+                   class="bg-luxury-200 text-luxury-700 px-8 py-3 rounded-xl font-semibold hover:bg-luxury-300 transition-colors">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .luxury-shadow {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}

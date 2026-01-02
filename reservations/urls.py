@@ -1,10 +1,12 @@
 from django.urls import path
 from . import views
+from . import financial_views
 
 app_name = 'reservations'
 
 urlpatterns = [
     path('', views.reservation_list, name='list'),
+    path('financial-data/', financial_views.financial_data_view, name='financial_data'),
     path('new/', views.reservation_create, name='create'),
     path('booking/', views.booking_list, name='booking_list'),
     path('booking/new/', views.booking_create, name='booking_create'),

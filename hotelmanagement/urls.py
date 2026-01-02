@@ -19,6 +19,7 @@ urlpatterns = [
     path('front-desk/', include('front_desk.urls')),
     path('pos/', include('pos.urls')),
     path('inventory/', include('inventory.urls')),
+    path('finance/', include('finance.urls')),
     path('api/', include('api.urls')),
     path('configurations/', include('configurations.urls')),
     path('ckeditor5/', include('django_ckeditor_5.urls')),

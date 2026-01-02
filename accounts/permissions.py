@@ -125,17 +125,21 @@ def assign_default_permissions(user):
     # Assign default permissions
     for perm_codename in default_perms:
         try:
-            # Try to find existing permission
-            permission = Permission.objects.get(codename=perm_codename)
-        except Permission.DoesNotExist:
-            # Create custom permission if it doesn't exist
-            permission = Permission.objects.create(
-                codename=perm_codename,
-                name=perm_codename.replace('_', ' ').title(),
-                content_type=content_type
-            )
+            # Try to find existing permission, get first one if multiple exist
+            permission = Permission.objects.filter(codename=perm_codename).first()
+            if not permission:
+                # Create custom permission if it doesn't exist
+                permission = Permission.objects.create(
+                    codename=perm_codename,
+                    name=perm_codename.replace('_', ' ').title(),
+                    content_type=content_type
+                )
+        except Exception:
+            # Skip if there's any error with this permission
+            continue
         
-        user.user_permissions.add(permission)
+        if permission:
+            user.user_permissions.add(permission)
 
 def check_user_permission(user, permission_codename):
     """Check if user has specific permission"""

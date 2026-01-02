@@ -198,8 +198,9 @@ class PurchaseOrder(models.Model):
     
     def calculate_totals(self):
         """Calculate order totals"""
+        from decimal import Decimal
         self.subtotal = sum(item.total_amount for item in self.items.all())
-        self.tax_amount = self.subtotal * 0.10  # 10% tax
+        self.tax_amount = self.subtotal * Decimal('0.10')  # 10% tax
         self.total_amount = self.subtotal + self.tax_amount + self.shipping_cost
         self.save()
 

@@ -262,12 +262,16 @@ def navigation_context(request):
             'can_change_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_change_inventory', False),
             'can_delete_inventory': request.user.role == 'Owner' or getattr(request.user, 'can_delete_inventory', False),
             
-            'can_view_billing': request.user.role == 'Owner' or getattr(request.user, 'can_view_billing', False),
-            'can_add_billing': request.user.role == 'Owner' or getattr(request.user, 'can_add_billing', False),
-            'can_change_billing': request.user.role == 'Owner' or getattr(request.user, 'can_change_billing', False),
-            'can_view_payments': request.user.role == 'Owner' or getattr(request.user, 'can_view_payments', False),
-            'can_add_payments': request.user.role == 'Owner' or getattr(request.user, 'can_add_payments', False),
-            'can_view_reports': request.user.role == 'Owner' or getattr(request.user, 'can_view_reports', False),
+            'can_view_billing': request.user.role == 'Owner' or request.user.role == 'Accountant' or getattr(request.user, 'can_view_billing', False),
+            'can_add_billing': request.user.role == 'Owner' or request.user.role == 'Accountant' or getattr(request.user, 'can_add_billing', False),
+            'can_change_billing': request.user.role == 'Owner' or request.user.role == 'Accountant' or getattr(request.user, 'can_change_billing', False),
+            'can_view_payments': request.user.role == 'Owner' or request.user.role == 'Accountant' or getattr(request.user, 'can_view_payments', False),
+            'can_add_payments': request.user.role == 'Owner' or request.user.role == 'Accountant' or getattr(request.user, 'can_add_payments', False),
+            'can_view_reports': request.user.role == 'Owner' or request.user.role == 'Accountant' or getattr(request.user, 'can_view_reports', False),
+            'can_view_finance': request.user.role == 'Owner' or request.user.role == 'Accountant',
+            'can_manage_expenses': request.user.role == 'Owner' or request.user.role == 'Accountant',
+            'can_manage_payroll': request.user.role == 'Owner' or request.user.role == 'Accountant',
+            'can_international_finance': request.user.role == 'Owner' or request.user.role == 'Accountant',
             
             'can_view_companies': request.user.role == 'Owner' or getattr(request.user, 'can_view_companies', False),
             'can_add_companies': request.user.role == 'Owner' or getattr(request.user, 'can_add_companies', False),
@@ -718,14 +722,9 @@ def maintenance_dashboard(request):
 
 @login_required
 def accountant_dashboard(request):
-    """Accountant Dashboard"""
-    # Get accountant-specific data
-    context = {
-        'user_role': 'Accountant',
-        # 'navbar_items': [],
-        # 'dashboard_widgets': [],
-    }
-    return render(request, 'accounts/dashboards/accountant.html', context)
+    """Accountant Dashboard with comprehensive financial data"""
+    # Redirect to the new comprehensive finance dashboard
+    return redirect('finance:dashboard')
 
 @login_required
 @csrf_protect
