@@ -54,7 +54,7 @@ class Staff(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.role} at {self.property.name}"
+        return f"{self.user.get_full_name()} - {self.role or 'Staff'} ({self.department})"
     
     def get_permissions(self):
         """Get all permissions for this staff member"""

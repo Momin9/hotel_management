@@ -13,9 +13,9 @@
         <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-luxury-600">Active Requests</p>
-                    <p class="text-3xl font-bold text-luxury-900">15</p>
-                    <p class="text-sm text-red-600">5 urgent</p>
+                    <p class="text-sm font-medium text-luxury-600">Total Issues</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ total_issues }}</p>
+                    <p class="text-sm text-red-600">{{ urgent_issues }} urgent</p>
                 </div>
                 <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
                     <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
@@ -26,12 +26,12 @@
         <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-luxury-600">Priority Tasks</p>
-                    <p class="text-3xl font-bold text-luxury-900">8</p>
-                    <p class="text-sm text-yellow-600">high priority</p>
+                    <p class="text-sm font-medium text-luxury-600">Open Issues</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ open_issues }}</p>
+                    <p class="text-sm text-yellow-600">need attention</p>
                 </div>
                 <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-star text-yellow-600 text-xl"></i>
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -39,12 +39,12 @@
         <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-luxury-600">Inventory Alerts</p>
-                    <p class="text-3xl font-bold text-luxury-900">3</p>
-                    <p class="text-sm text-orange-600">low stock items</p>
+                    <p class="text-sm font-medium text-luxury-600">In Progress</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ in_progress_issues }}</p>
+                    <p class="text-sm text-blue-600">being worked on</p>
                 </div>
-                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-bell text-orange-600 text-xl"></i>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tools text-blue-600 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -52,9 +52,9 @@
         <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-luxury-600">Completed This Week</p>
-                    <p class="text-3xl font-bold text-luxury-900">42</p>
-                    <p class="text-sm text-green-600">↗ +12% from last week</p>
+                    <p class="text-sm font-medium text-luxury-600">Resolved</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ resolved_issues }}</p>
+                    <p class="text-sm text-green-600">completed</p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                     <i class="fas fa-check-circle text-green-600 text-xl"></i>
@@ -63,73 +63,40 @@
         </div>
     </div>
 
-    <!-- Priority Tasks -->
+    <!-- Recent Issues -->
     <div class="bg-white rounded-2xl p-8 luxury-shadow">
-        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Priority Maintenance Tasks</h2>
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Recent Maintenance Issues</h2>
+        {% if recent_issues %}
         <div class="space-y-4">
-            <div class="flex items-center justify-between p-6 bg-red-50 border-l-4 border-red-400 rounded-xl">
+            {% for issue in recent_issues %}
+            <div class="flex items-center justify-between p-6 bg-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-50 border-l-4 border-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-400 rounded-xl">
                 <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    <div class="w-12 h-12 bg-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-{% if issue.category == 'plumbing' %}tint{% elif issue.category == 'electrical' %}bolt{% elif issue.category == 'hvac' %}wind{% else %}wrench{% endif %} text-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-600 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-luxury-900">HVAC System Failure</h3>
-                        <p class="text-sm text-luxury-600">Room 205 • Reported 2 hours ago</p>
-                        <p class="text-sm text-red-600">Critical - Guest complaint</p>
+                        <h3 class="font-semibold text-luxury-900">{{ issue.title }}</h3>
+                        <p class="text-sm text-luxury-600">{% if issue.room %}{{ issue.room.room_number }}{% else %}{{ issue.property.name }}{% endif %} • {{ issue.reported_at|timesince }} ago</p>
+                        <p class="text-sm text-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-600">{{ issue.get_priority_display }} - {{ issue.get_category_display }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                        URGENT
+                    <span class="px-3 py-1 bg-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-100 text-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-800 rounded-full text-sm font-medium">
+                        {{ issue.get_status_display }}
                     </span>
-                    <button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
-                        Start Work
-                    </button>
+                    <a href="{% url 'maintenance:issue_list' %}" class="px-4 py-2 bg-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-500 text-white rounded-lg hover:bg-{% if issue.priority == 'urgent' %}red{% elif issue.priority == 'high' %}yellow{% else %}blue{% endif %}-600 transition-colors">
+                        View Details
+                    </a>
                 </div>
             </div>
-
-            <div class="flex items-center justify-between p-6 bg-yellow-50 border-l-4 border-yellow-400 rounded-xl">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-wrench text-yellow-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-luxury-900">Elevator Maintenance</h3>
-                        <p class="text-sm text-luxury-600">Main elevator • Scheduled maintenance</p>
-                        <p class="text-sm text-yellow-600">High priority - Safety check</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
-                        HIGH
-                    </span>
-                    <button class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                        Schedule
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between p-6 bg-blue-50 border-l-4 border-blue-400 rounded-xl">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-lightbulb text-blue-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-luxury-900">Lighting Issues</h3>
-                        <p class="text-sm text-luxury-600">Lobby area • Multiple bulbs out</p>
-                        <p class="text-sm text-blue-600">Medium priority</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                        MEDIUM
-                    </span>
-                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                        Assign
-                    </button>
-                </div>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-clipboard-check text-6xl text-luxury-300 mb-4"></i>
+            <p class="text-luxury-500">No maintenance issues found</p>
+        </div>
+        {% endif %}
     </div>
 
     <!-- Maintenance Navigation -->

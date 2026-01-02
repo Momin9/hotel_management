@@ -1,0 +1,346 @@
+{% extends 'base_luxury.html' %}
+{% load static %}
+
+{% block title %}Financial Management Dashboard - {{ user.get_full_name }}{% endblock %}
+
+{% block page_title %}Financial Management Dashboard{% endblock %}
+{% block page_subtitle %}Comprehensive financial operations and international transactions{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Financial Overview KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Revenue</p>
+                    <p class="text-3xl font-bold text-green-600">${{ total_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-green-600">All time</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Expenses</p>
+                    <p class="text-3xl font-bold text-red-600">${{ total_expenses|floatformat:2 }}</p>
+                    <p class="text-sm text-red-600">All time</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-bar text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Net Profit</p>
+                    <p class="text-3xl font-bold {% if net_profit >= 0 %}text-green-600{% else %}text-red-600{% endif %}">${{ net_profit|floatformat:2 }}</p>
+                    <p class="text-sm text-luxury-600">This month</p>
+                </div>
+                <div class="w-12 h-12 {% if net_profit >= 0 %}bg-green-100{% else %}bg-red-100{% endif %} rounded-xl flex items-center justify-center">
+                    <i class="fas fa-dollar-sign {% if net_profit >= 0 %}text-green-600{% else %}text-red-600{% endif %} text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Cash Balance</p>
+                    <p class="text-3xl font-bold text-blue-600">${{ cash_balance|floatformat:2 }}</p>
+                    <p class="text-sm text-blue-600">Available</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-wallet text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Pending Expenses</p>
+                    <p class="text-3xl font-bold text-yellow-600">${{ pending_expenses|floatformat:2 }}</p>
+                    <p class="text-sm text-yellow-600">Awaiting approval</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Payroll (Month)</p>
+                    <p class="text-3xl font-bold text-purple-600">${{ month_payroll|floatformat:2 }}</p>
+                    <p class="text-sm text-purple-600">{{ pending_payroll }} pending</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-users text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Alerts -->
+    {% if critical_alerts or high_alerts %}
+    <div class="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-6 luxury-shadow border-l-4 border-red-500">
+        <h2 class="text-xl font-bold text-red-800 mb-4">
+            <i class="fas fa-exclamation-triangle mr-2"></i>Financial Alerts
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% if critical_alerts %}
+            <div class="bg-red-100 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-red-800 font-medium">Critical Alerts</span>
+                    <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">{{ critical_alerts }}</span>
+                </div>
+            </div>
+            {% endif %}
+            {% if high_alerts %}
+            <div class="bg-orange-100 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-orange-800 font-medium">High Priority Alerts</span>
+                    <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">{{ high_alerts }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Quick Financial Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="{% url 'finance:payroll' %}" class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 hover:from-purple-100 hover:to-purple-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-money-check-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Process Payroll</h3>
+                    <p class="text-sm text-luxury-600">Salary processing</p>
+                </div>
+            </a>
+
+            <a href="{% url 'finance:expenses' %}" class="group bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 hover:from-red-100 hover:to-red-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-receipt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Approve Expenses</h3>
+                    <p class="text-sm text-luxury-600">Hotel expenses</p>
+                </div>
+            </a>
+
+            <a href="{% url 'billing:invoice_list' %}" class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-file-invoice text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Generate Invoices</h3>
+                    <p class="text-sm text-luxury-600">Billing management</p>
+                </div>
+            </a>
+
+            <a href="{% url 'finance:international' %}" class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 hover:from-green-100 hover:to-green-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-globe text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">International</h3>
+                    <p class="text-sm text-luxury-600">Forex & transfers</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Financial Navigation -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Financial Management Modules</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="{% url 'billing:payment_list' %}" class="group bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 hover:from-emerald-100 hover:to-emerald-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-credit-card text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Accounts Receivable</h3>
+                    <p class="text-sm text-luxury-600">Payment collections</p>
+                </div>
+            </a>
+
+            <a href="{% url 'finance:expenses' %}" class="group bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-6 hover:from-rose-100 hover:to-rose-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-rose-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-file-invoice-dollar text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Accounts Payable</h3>
+                    <p class="text-sm text-luxury-600">Vendor payments</p>
+                </div>
+            </a>
+
+            <a href="{% url 'finance:employee_expenses' %}" class="group bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 hover:from-amber-100 hover:to-amber-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-amber-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-user-tie text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Employee Expenses</h3>
+                    <p class="text-sm text-luxury-600">Reimbursements</p>
+                </div>
+            </a>
+
+            <a href="{% url 'pos:dashboard' %}" class="group bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl p-6 hover:from-cyan-100 hover:to-cyan-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-cash-register text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">POS Transactions</h3>
+                    <p class="text-sm text-luxury-600">Sales analytics</p>
+                </div>
+            </a>
+
+            <a href="{% url 'finance:reports' %}" class="group bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-chart-pie text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Financial Reports</h3>
+                    <p class="text-sm text-luxury-600">P&L, Balance Sheet</p>
+                </div>
+            </a>
+
+            <a href="{% url 'reservations:financial_data' %}" class="group bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 hover:from-teal-100 hover:to-teal-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-teal-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-bed text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Revenue Analytics</h3>
+                    <p class="text-sm text-luxury-600">Reservation revenue</p>
+                </div>
+            </a>
+
+            <a href="#" class="group bg-gradient-to-br from-violet-50 to-violet-100 rounded-xl p-6 hover:from-violet-100 hover:to-violet-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-violet-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-calculator text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Tax Management</h3>
+                    <p class="text-sm text-luxury-600">Tax calculations</p>
+                </div>
+            </a>
+
+            <a href="#" class="group bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 hover:from-pink-100 hover:to-pink-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-university text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Bank Reconciliation</h3>
+                    <p class="text-sm text-luxury-600">Account matching</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Expense Categories & Recent Transactions -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Expense Categories -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Expense Categories (This Month)</h3>
+            <div class="space-y-4">
+                {% for category in expense_categories %}
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-tag text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">{{ category.category__name }}</p>
+                            <p class="text-sm text-luxury-600">{{ category.category__category_type|title }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-luxury-900">${{ category.total|floatformat:2 }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <i class="fas fa-chart-pie text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No expense data available</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Recent Transactions</h3>
+            <div class="space-y-4">
+                {% for payment in recent_payments %}
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-arrow-down text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-luxury-900">{{ payment.method|title }} Payment</p>
+                            <p class="text-sm text-luxury-600">{{ payment.invoice.invoice_number|default:"Direct Payment" }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-green-600">+${{ payment.amount|floatformat:2 }}</p>
+                        <p class="text-xs text-luxury-500">{{ payment.timestamp|timesince }} ago</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <i class="fas fa-exchange-alt text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No recent transactions</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Payments -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <h3 class="text-xl font-bold text-luxury-900 mb-4">Upcoming Payments</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-luxury-200">
+                        <th class="text-left py-3 px-4 font-semibold text-luxury-700">Vendor</th>
+                        <th class="text-left py-3 px-4 font-semibold text-luxury-700">Category</th>
+                        <th class="text-right py-3 px-4 font-semibold text-luxury-700">Amount</th>
+                        <th class="text-left py-3 px-4 font-semibold text-luxury-700">Due Date</th>
+                        <th class="text-center py-3 px-4 font-semibold text-luxury-700">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in upcoming_expenses %}
+                    <tr class="border-b border-luxury-100 hover:bg-luxury-50">
+                        <td class="py-3 px-4">{{ expense.vendor_name }}</td>
+                        <td class="py-3 px-4">{{ expense.category.name }}</td>
+                        <td class="py-3 px-4 text-right font-semibold">${{ expense.amount|floatformat:2 }}</td>
+                        <td class="py-3 px-4">{{ expense.expense_date|date:"M d, Y" }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">{{ expense.status|title }}</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-luxury-600">No upcoming payments</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

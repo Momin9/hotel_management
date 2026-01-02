@@ -110,9 +110,10 @@ class POSOrder(models.Model):
     
     def calculate_totals(self):
         """Calculate order totals"""
+        from decimal import Decimal
         self.subtotal = sum(item.total_price for item in self.items.all())
-        self.tax_amount = self.subtotal * 0.10  # 10% tax
-        self.service_charge = self.subtotal * 0.05  # 5% service charge
+        self.tax_amount = self.subtotal * Decimal('0.10')  # 10% tax
+        self.service_charge = self.subtotal * Decimal('0.05')  # 5% service charge
         self.total_amount = self.subtotal + self.tax_amount + self.service_charge - self.discount_amount
         self.save()
 

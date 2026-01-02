@@ -11,7 +11,10 @@ from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Hotel, Room, Service, Floor, RoomCategory, Company
+from .activity_models import RoomActivityLog
 from .google_drive_forms import GoogleDriveConfigForm
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
 try:
     from crm.models import GuestProfile
@@ -331,7 +334,7 @@ def room_create(request, hotel_id):
 
 @owner_or_permission_required('view_room')
 def room_detail(request, hotel_id, room_id):
-    """Room detail view"""
+    """Room detail view with activity log"""
     hotel_obj = get_object_or_404(Hotel, hotel_id=hotel_id)
     
     # Check if user has access to this hotel
@@ -347,9 +350,14 @@ def room_detail(request, hotel_id, room_id):
         return redirect('hotels:hotel_list')
     
     room = get_object_or_404(Room, room_id=room_id, hotel=hotel_obj)
+    
+    # Get room activity logs
+    activities = room.activity_logs.all()[:20]  # Last 20 activities
+    
     return render(request, 'hotels/room_detail.html', {
         'hotel': hotel_obj,
-        'room': room
+        'room': room,
+        'activities': activities
     })
 
 @owner_or_permission_required('change_room')
@@ -948,3 +956,34 @@ def google_drive_config(request, hotel_id):
         'hotel': hotel_obj,
         'form': form
     })
+
+@login_required
+@require_POST
+def add_room_note(request, room_id):
+    """Add a note to room activity log"""
+    room = get_object_or_404(Room, room_id=room_id)
+    
+    # Check if user has access to this room's hotel
+    user_role = RoleManager.get_user_role(request.user)
+    has_access = (
+        user_role == 'SUPER_ADMIN' or 
+        room.hotel.owner == request.user or
+        (request.user.assigned_hotel and request.user.assigned_hotel.hotel_id == room.hotel.hotel_id)
+    )
+    
+    if not has_access:
+        return JsonResponse({'success': False, 'error': 'Access denied'})
+    
+    note = request.POST.get('note', '').strip()
+    if not note:
+        return JsonResponse({'success': False, 'error': 'Note cannot be empty'})
+    
+    # Create activity log entry
+    RoomActivityLog.log_activity(
+        room=room,
+        user=request.user,
+        action='note_added',
+        description=note
+    )
+    
+    return JsonResponse({'success': True})

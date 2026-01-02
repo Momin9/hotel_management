@@ -1,20 +1,348 @@
 {% extends 'base_luxury.html' %}
+{% load static %}
 
-{% block title %}Housekeeping Tasks{% endblock %}
+{% block title %}My Schedule - Housekeeping Tasks{% endblock %}
+
+{% block page_title %}My Housekeeping Schedule{% endblock %}
+{% block page_subtitle %}Manage your daily cleaning tasks and room assignments{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Housekeeping Tasks</h3>
+<div class="space-y-8">
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Tasks</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ total_tasks }}</p>
+                    <p class="text-sm text-blue-600">all assignments</p>
                 </div>
-                <div class="card-body">
-                    <p>Task management coming soon...</p>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tasks text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Pending</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ pending_tasks }}</p>
+                    <p class="text-sm text-yellow-600">to start</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">In Progress</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ in_progress_tasks }}</p>
+                    <p class="text-sm text-orange-600">working on</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-spinner text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Completed</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ completed_tasks }}</p>
+                    <p class="text-sm text-green-600">finished</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Dirty Rooms</p>
+                    <p class="text-3xl font-bold text-luxury-900">{{ dirty_rooms }}</p>
+                    <p class="text-sm text-red-600">need cleaning</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-broom text-red-600 text-xl"></i>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <h2 class="text-xl font-bold text-luxury-900 mb-4">Filter Tasks</h2>
+        <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
+                <select name="status" class="w-full px-4 py-2 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Status</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Task Type</label>
+                <select name="task_type" class="w-full px-4 py-2 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Types</option>
+                    {% for value, label in task_type_choices %}
+                        <option value="{{ value }}" {% if task_type_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Priority</label>
+                <select name="priority" class="w-full px-4 py-2 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Priorities</option>
+                    <option value="5" {% if priority_filter == '5' %}selected{% endif %}>High (5)</option>
+                    <option value="4" {% if priority_filter == '4' %}selected{% endif %}>Medium-High (4)</option>
+                    <option value="3" {% if priority_filter == '3' %}selected{% endif %}>Medium (3)</option>
+                    <option value="2" {% if priority_filter == '2' %}selected{% endif %}>Low-Medium (2)</option>
+                    <option value="1" {% if priority_filter == '1' %}selected{% endif %}>Low (1)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-luxury-700 mb-2">Date</label>
+                <select name="date" class="w-full px-4 py-2 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    <option value="">All Dates</option>
+                    <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
+                    <option value="week" {% if date_filter == 'week' %}selected{% endif %}>This Week</option>
+                </select>
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="w-full bg-royal-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-royal-600 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Task List -->
+    <div class="bg-white rounded-2xl p-6 luxury-shadow">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-luxury-900">My Tasks</h2>
+            {% if user_hotel %}
+                <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-xl font-medium">
+                    <i class="fas fa-building mr-2"></i>{{ user_hotel.name }}
+                </span>
+            {% endif %}
+        </div>
+
+        {% if tasks %}
+            <div class="space-y-4">
+                {% for task in tasks %}
+                <div class="border border-luxury-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-4 mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center
+                                        {% if task.status == 'completed' %}bg-green-100{% elif task.status == 'in_progress' %}bg-orange-100{% elif task.status == 'pending' %}bg-yellow-100{% else %}bg-gray-100{% endif %}">
+                                        <i class="fas 
+                                            {% if task.status == 'completed' %}fa-check text-green-600{% elif task.status == 'in_progress' %}fa-spinner text-orange-600{% elif task.status == 'pending' %}fa-clock text-yellow-600{% else %}fa-times text-gray-600{% endif %} text-sm"></i>
+                                    </div>
+                                    <span class="font-semibold text-luxury-900">Room {{ task.room.room_number }}</span>
+                                </div>
+                                
+                                <span class="px-3 py-1 rounded-full text-sm font-medium
+                                    {% if task.status == 'completed' %}bg-green-100 text-green-800{% elif task.status == 'in_progress' %}bg-orange-100 text-orange-800{% elif task.status == 'pending' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ task.get_status_display }}
+                                </span>
+                                
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                    {{ task.get_task_type_display }}
+                                </span>
+                                
+                                <div class="flex items-center space-x-1">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star text-sm {% if task.priority >= i|add:0 %}text-yellow-500{% else %}text-gray-300{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-luxury-600">
+                                <div>
+                                    <i class="fas fa-calendar mr-2"></i>
+                                    <strong>Created:</strong> {{ task.created_at|date:"M d, Y H:i" }}
+                                </div>
+                                {% if task.started_at %}
+                                <div>
+                                    <i class="fas fa-play mr-2"></i>
+                                    <strong>Started:</strong> {{ task.started_at|date:"M d, Y H:i" }}
+                                </div>
+                                {% endif %}
+                                {% if task.completed_at %}
+                                <div>
+                                    <i class="fas fa-check mr-2"></i>
+                                    <strong>Completed:</strong> {{ task.completed_at|date:"M d, Y H:i" }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if task.description %}
+                            <div class="mt-3">
+                                <p class="text-luxury-700"><strong>Description:</strong> {{ task.description }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if task.notes %}
+                            <div class="mt-3 p-3 bg-luxury-50 rounded-lg">
+                                <p class="text-luxury-700"><strong>Notes:</strong> {{ task.notes }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex flex-col space-y-2 ml-6">
+                            {% if task.status != 'completed' %}
+                                <form method="post" action="{% url 'housekeeping:update_task_status' task.id %}" class="inline">
+                                    {% csrf_token %}
+                                    {% if task.status == 'pending' %}
+                                        <input type="hidden" name="status" value="in_progress">
+                                        <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium">
+                                            <i class="fas fa-play mr-1"></i>Start Task
+                                        </button>
+                                    {% elif task.status == 'in_progress' %}
+                                        <input type="hidden" name="status" value="completed">
+                                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                                            <i class="fas fa-check mr-1"></i>Complete
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                            
+                            <button onclick="showMaintenanceModal('{{ task.room.room_id }}', '{{ task.room.room_number }}')" 
+                                    class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm font-medium">
+                                <i class="fas fa-tools mr-1"></i>Report Issue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="w-24 h-24 bg-luxury-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-tasks text-luxury-400 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-luxury-900 mb-2">No Tasks Found</h3>
+                <p class="text-luxury-600">No housekeeping tasks match your current filters.</p>
+                <a href="{% url 'housekeeping:task_list' %}" class="inline-block mt-4 px-6 py-3 bg-royal-500 text-white rounded-xl font-semibold hover:bg-royal-600 transition-colors">
+                    <i class="fas fa-refresh mr-2"></i>Clear Filters
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+<!-- Maintenance Request Modal -->
+<div id="maintenanceModal" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeMaintenanceModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl luxury-shadow max-w-md w-full transform transition-all scale-95 opacity-0" id="maintenanceModalContent">
+            <div class="p-6 border-b border-luxury-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-tools text-yellow-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-luxury-800">Report Maintenance Issue</h3>
+                    </div>
+                    <button onclick="closeMaintenanceModal()" class="text-luxury-400 hover:text-luxury-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form method="post" id="maintenanceForm" class="p-6">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Room</label>
+                    <input type="text" id="roomDisplay" class="w-full px-4 py-3 border border-luxury-200 rounded-xl bg-luxury-50" readonly>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Priority</label>
+                    <select name="priority" class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                        <option value="1">Low</option>
+                        <option value="2">Medium-Low</option>
+                        <option value="3" selected>Medium</option>
+                        <option value="4">Medium-High</option>
+                        <option value="5">High</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-luxury-700 mb-2">Issue Description</label>
+                    <textarea name="description" rows="4" class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" placeholder="Describe the maintenance issue..." required></textarea>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeMaintenanceModal()" class="flex-1 px-4 py-3 bg-luxury-100 hover:bg-luxury-200 text-luxury-700 rounded-2xl font-semibold transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-2xl font-semibold transition-colors">
+                        Report Issue
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showMaintenanceModal(roomId, roomNumber) {
+    const modal = document.getElementById('maintenanceModal');
+    const modalContent = document.getElementById('maintenanceModalContent');
+    const form = document.getElementById('maintenanceForm');
+    const roomDisplay = document.getElementById('roomDisplay');
+    
+    // Set form action and room display
+    form.action = `/maintenance/create-request/${roomId}/`;
+    roomDisplay.value = `Room ${roomNumber}`;
+    
+    // Show modal with animation
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeMaintenanceModal() {
+    const modal = document.getElementById('maintenanceModal');
+    const modalContent = document.getElementById('maintenanceModalContent');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+</script>
+
+<style>
+.luxury-shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+}
+</style>
 {% endblock %}

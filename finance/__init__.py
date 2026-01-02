@@ -1,0 +1,1 @@
+# Finance app for comprehensive financial management

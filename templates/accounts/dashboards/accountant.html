@@ -13,9 +13,9 @@
         <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-luxury-600">Daily Revenue</p>
-                    <p class="text-3xl font-bold text-luxury-900">$12,450</p>
-                    <p class="text-sm text-green-600">↗ +8.5% from yesterday</p>
+                    <p class="text-sm font-medium text-luxury-600">Today's Revenue</p>
+                    <p class="text-3xl font-bold text-luxury-900">${{ today_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-green-600">Daily collections</p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                     <i class="fas fa-chart-bar text-green-600 text-xl"></i>
@@ -26,12 +26,12 @@
         <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-luxury-600">Outstanding Payments</p>
-                    <p class="text-3xl font-bold text-luxury-900">$8,920</p>
-                    <p class="text-sm text-yellow-600">15 pending invoices</p>
+                    <p class="text-sm font-medium text-luxury-600">Weekly Revenue</p>
+                    <p class="text-3xl font-bold text-luxury-900">${{ week_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-blue-600">This week total</p>
                 </div>
-                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar-week text-blue-600 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -40,24 +40,11 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-luxury-600">Monthly Revenue</p>
-                    <p class="text-3xl font-bold text-luxury-900">$285K</p>
-                    <p class="text-sm text-blue-600">78% of target</p>
-                </div>
-                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-calendar-alt text-blue-600 text-xl"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-luxury-600">Tax Summary</p>
-                    <p class="text-3xl font-bold text-luxury-900">$42K</p>
-                    <p class="text-sm text-purple-600">Q4 2024</p>
+                    <p class="text-3xl font-bold text-luxury-900">${{ month_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-purple-600">This month total</p>
                 </div>
                 <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-file-alt text-purple-600 text-xl"></i>
+                    <i class="fas fa-calendar-alt text-purple-600 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -65,57 +52,111 @@
         <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-luxury-600">Collection Rate</p>
-                    <p class="text-3xl font-bold text-luxury-900">94%</p>
-                    <p class="text-sm text-indigo-600">↗ +2% this month</p>
+                    <p class="text-sm font-medium text-luxury-600">POS Sales Today</p>
+                    <p class="text-3xl font-bold text-luxury-900">${{ pos_today|floatformat:2 }}</p>
+                    <p class="text-sm text-orange-600">Restaurant & bar</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-cash-register text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow hover-lift">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Revenue</p>
+                    <p class="text-3xl font-bold text-luxury-900">${{ total_revenue|floatformat:2 }}</p>
+                    <p class="text-sm text-indigo-600">All time total</p>
                 </div>
                 <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-tachometer-alt text-indigo-600 text-xl"></i>
+                    <i class="fas fa-dollar-sign text-indigo-600 text-xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Payment Collection Chart -->
-    <div class="bg-white rounded-2xl p-8 luxury-shadow">
-        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Payment Collection Trends</h2>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
-                <div class="h-64 bg-luxury-50 rounded-xl flex items-center justify-center">
-                    <div class="text-center">
-                        <i class="fas fa-chart-line text-luxury-400 text-4xl mb-4"></i>
-                        <p class="text-luxury-600">Payment Collection Chart</p>
-                        <p class="text-sm text-luxury-500">Interactive chart would be displayed here</p>
-                    </div>
+    <!-- Invoice Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Total Invoices</p>
+                    <p class="text-2xl font-bold text-luxury-900">{{ total_invoices }}</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-invoice text-blue-600"></i>
                 </div>
             </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Paid Invoices</p>
+                    <p class="text-2xl font-bold text-green-600">{{ paid_invoices }}</p>
+                </div>
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Pending Invoices</p>
+                    <p class="text-2xl font-bold text-yellow-600">{{ pending_invoices }}</p>
+                </div>
+                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 luxury-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-luxury-600">Overdue Invoices</p>
+                    <p class="text-2xl font-bold text-red-600">{{ overdue_invoices }}</p>
+                </div>
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Methods Chart -->
+    <div class="bg-white rounded-2xl p-8 luxury-shadow">
+        <h2 class="text-2xl font-bold text-luxury-900 mb-6">Payment Methods (This Month)</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="space-y-4">
-                <div class="bg-green-50 rounded-xl p-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-luxury-700">Cash Payments</span>
-                        <span class="text-sm font-bold text-green-600">35%</span>
+                {% for method in payment_methods %}
+                <div class="bg-luxury-50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-luxury-700">{{ method.method|title }}</span>
+                        <span class="text-sm font-bold text-luxury-900">${{ method.total|floatformat:2 }}</span>
                     </div>
-                    <div class="w-full bg-green-200 rounded-full h-2 mt-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 35%"></div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-luxury-600">{{ method.count }} transactions</span>
+                        <div class="w-24 bg-luxury-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: {{ method.total|floatformat:0|add:0|mul:100|div:month_revenue|floatformat:0 }}%"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-blue-50 rounded-xl p-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-luxury-700">Card Payments</span>
-                        <span class="text-sm font-bold text-blue-600">55%</span>
-                    </div>
-                    <div class="w-full bg-blue-200 rounded-full h-2 mt-2">
-                        <div class="bg-blue-500 h-2 rounded-full" style="width: 55%"></div>
-                    </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <i class="fas fa-credit-card text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No payment data available</p>
                 </div>
-                <div class="bg-purple-50 rounded-xl p-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-luxury-700">Bank Transfers</span>
-                        <span class="text-sm font-bold text-purple-600">10%</span>
-                    </div>
-                    <div class="w-full bg-purple-200 rounded-full h-2 mt-2">
-                        <div class="bg-purple-500 h-2 rounded-full" style="width: 10%"></div>
-                    </div>
+                {% endfor %}
+            </div>
+            <div class="bg-luxury-50 rounded-xl p-6 flex items-center justify-center">
+                <div class="text-center">
+                    <i class="fas fa-chart-pie text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">Payment Distribution Chart</p>
+                    <p class="text-sm text-luxury-500">Visual chart would be displayed here</p>
                 </div>
             </div>
         </div>
@@ -173,13 +214,13 @@
             </a>
             {% endif %}
 
-            <a href="#" class="group bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 hover-lift">
+            <a href="{% url 'reservations:financial_data' %}" class="group bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 hover-lift">
                 <div class="text-center">
                     <div class="w-16 h-16 bg-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-file-alt text-white text-2xl"></i>
+                        <i class="fas fa-chart-bar text-white text-2xl"></i>
                     </div>
-                    <h3 class="font-semibold text-luxury-900 mb-2">Tax Records</h3>
-                    <p class="text-sm text-luxury-600">Tax documentation</p>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Financial Data</h3>
+                    <p class="text-sm text-luxury-600">Revenue analytics</p>
                 </div>
             </a>
 
@@ -193,125 +234,89 @@
                 </div>
             </a>
 
-            {% if can_view_reservations %}
-            <a href="{% url 'reservations:list' %}" class="group bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 hover:from-pink-100 hover:to-pink-200 transition-all duration-300 hover-lift">
+            <a href="#" class="group bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 hover:from-pink-100 hover:to-pink-200 transition-all duration-300 hover-lift">
                 <div class="text-center">
                     <div class="w-16 h-16 bg-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-calendar-check text-white text-2xl"></i>
+                        <i class="fas fa-file-alt text-white text-2xl"></i>
                     </div>
-                    <h3 class="font-semibold text-luxury-900 mb-2">Reservations</h3>
-                    <p class="text-sm text-luxury-600">Financial data only</p>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Tax Records</h3>
+                    <p class="text-sm text-luxury-600">Tax documentation</p>
                 </div>
             </a>
-            {% endif %}
+
+            <a href="{% url 'inventory:dashboard' %}" class="group bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 hover:from-orange-100 hover:to-orange-200 transition-all duration-300 hover-lift">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-boxes text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-luxury-900 mb-2">Inventory</h3>
+                    <p class="text-sm text-luxury-600">Stock & purchases</p>
+                </div>
+            </a>
         </div>
     </div>
 
-    <!-- Recent Transactions and Outstanding Payments -->
+    <!-- Recent Transactions and Invoices -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="bg-white rounded-2xl p-6 luxury-shadow">
-            <h3 class="text-xl font-bold text-luxury-900 mb-4">Recent Transactions</h3>
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Recent Payments</h3>
             <div class="space-y-4">
+                {% for payment in recent_payments %}
                 <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
                     <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-arrow-down text-green-600 text-sm"></i>
+                            {% if payment.method == 'cash' %}
+                                <i class="fas fa-money-bill text-green-600 text-sm"></i>
+                            {% elif payment.method == 'card' %}
+                                <i class="fas fa-credit-card text-green-600 text-sm"></i>
+                            {% else %}
+                                <i class="fas fa-payment text-green-600 text-sm"></i>
+                            {% endif %}
                         </div>
                         <div>
-                            <p class="font-medium text-luxury-900">Room Payment</p>
-                            <p class="text-sm text-luxury-600">John Doe • Room 205</p>
+                            <p class="font-medium text-luxury-900">{{ payment.method|title }} Payment</p>
+                            <p class="text-sm text-luxury-600">{{ payment.invoice.invoice_number|default:"Direct Payment" }}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="font-semibold text-green-600">+$450.00</p>
-                        <p class="text-xs text-luxury-500">2 hours ago</p>
+                        <p class="font-semibold text-green-600">${{ payment.amount|floatformat:2 }}</p>
+                        <p class="text-xs text-luxury-500">{{ payment.timestamp|timesince }} ago</p>
                     </div>
                 </div>
-                
-                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-utensils text-blue-600 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-luxury-900">Restaurant Bill</p>
-                            <p class="text-sm text-luxury-600">Table 12 • Dinner</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-green-600">+$125.50</p>
-                        <p class="text-xs text-luxury-500">4 hours ago</p>
-                    </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <i class="fas fa-credit-card text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No recent payments</p>
                 </div>
-
-                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-arrow-up text-red-600 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-luxury-900">Supplier Payment</p>
-                            <p class="text-sm text-luxury-600">Linen Supply Co.</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-red-600">-$2,340.00</p>
-                        <p class="text-xs text-luxury-500">1 day ago</p>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
 
         <div class="bg-white rounded-2xl p-6 luxury-shadow">
-            <h3 class="text-xl font-bold text-luxury-900 mb-4">Outstanding Payments</h3>
+            <h3 class="text-xl font-bold text-luxury-900 mb-4">Recent Paid Invoices</h3>
             <div class="space-y-4">
-                <div class="flex items-center justify-between p-4 bg-red-50 rounded-xl">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-exclamation-triangle text-red-600 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-luxury-900">Invoice #INV-2024-001</p>
-                            <p class="text-sm text-luxury-600">Corporate booking • 15 days overdue</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-red-600">$3,250.00</p>
-                        <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Overdue</span>
-                    </div>
-                </div>
-                
-                <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-clock text-yellow-600 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-luxury-900">Invoice #INV-2024-002</p>
-                            <p class="text-sm text-luxury-600">Event booking • Due in 3 days</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-yellow-600">$1,890.00</p>
-                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Due Soon</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                {% for invoice in recent_invoices %}
+                <div class="flex items-center justify-between p-4 bg-luxury-50 rounded-xl">
                     <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-calendar text-blue-600 text-sm"></i>
+                            <i class="fas fa-file-invoice text-blue-600 text-sm"></i>
                         </div>
                         <div>
-                            <p class="font-medium text-luxury-900">Invoice #INV-2024-003</p>
-                            <p class="text-sm text-luxury-600">Monthly contract • Due in 10 days</p>
+                            <p class="font-medium text-luxury-900">{{ invoice.invoice_number }}</p>
+                            <p class="text-sm text-luxury-600">{{ invoice.guest.full_name }}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="font-semibold text-blue-600">$5,500.00</p>
-                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Pending</span>
+                        <p class="font-semibold text-luxury-900">${{ invoice.total_amount|floatformat:2 }}</p>
+                        <p class="text-xs text-luxury-500">{{ invoice.paid_date|timesince }} ago</p>
                     </div>
                 </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <i class="fas fa-file-invoice text-luxury-400 text-4xl mb-4"></i>
+                    <p class="text-luxury-600">No recent invoices</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

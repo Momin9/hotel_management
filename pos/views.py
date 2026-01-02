@@ -6,21 +6,75 @@ from django.utils import timezone
 from django.db import models
 from .models import POSOrder, POSItem, POSCategory, POSShift
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.utils import timezone
+from django.db import models
+from django.db.models import Sum, Count, Q
+from datetime import date, timedelta
+from .models import POSOrder, POSItem, POSCategory, POSShift, POSPayment
+
 @login_required
 def pos_dashboard(request):
-    """POS main dashboard"""
+    """POS main dashboard with financial data for accountants"""
     today = timezone.now().date()
     
-    # Today's orders
-    # Mock data for demo
-    pending_orders = []
-    total_sales = 0
-    orders_count = 0
+    # Today's statistics
+    today_orders = POSOrder.objects.filter(order_time__date=today)
+    today_sales = today_orders.aggregate(total=Sum('total_amount'))['total'] or 0
+    today_orders_count = today_orders.count()
+    
+    # This week's statistics
+    week_start = today - timedelta(days=today.weekday())
+    week_orders = POSOrder.objects.filter(order_time__date__gte=week_start)
+    week_sales = week_orders.aggregate(total=Sum('total_amount'))['total'] or 0
+    
+    # This month's statistics
+    month_start = today.replace(day=1)
+    month_orders = POSOrder.objects.filter(order_time__date__gte=month_start)
+    month_sales = month_orders.aggregate(total=Sum('total_amount'))['total'] or 0
+    
+    # Payment method breakdown (today)
+    payment_breakdown = POSPayment.objects.filter(
+        order__order_time__date=today
+    ).values('payment_method').annotate(
+        total=Sum('amount'),
+        count=Count('id')
+    ).order_by('-total')
+    
+    # Recent orders
+    recent_orders = POSOrder.objects.all().order_by('-order_time')[:10]
+    
+    # Top selling items (this month)
+    top_items = POSOrder.objects.filter(
+        order_time__date__gte=month_start
+    ).values(
+        'items__item__name'
+    ).annotate(
+        total_quantity=Sum('items__quantity'),
+        total_revenue=Sum('items__total_price')
+    ).order_by('-total_revenue')[:5]
+    
+    # Order status breakdown (today)
+    status_breakdown = today_orders.values('status').annotate(
+        count=Count('id')
+    ).order_by('-count')
+    
+    # Average order value
+    avg_order_value = today_sales / today_orders_count if today_orders_count > 0 else 0
     
     context = {
-        'pending_orders': pending_orders,
-        'total_sales': total_sales,
-        'orders_count': orders_count,
+        'today_sales': today_sales,
+        'today_orders_count': today_orders_count,
+        'week_sales': week_sales,
+        'month_sales': month_sales,
+        'avg_order_value': avg_order_value,
+        'payment_breakdown': payment_breakdown,
+        'recent_orders': recent_orders,
+        'top_items': top_items,
+        'status_breakdown': status_breakdown,
     }
     
     return render(request, 'pos/dashboard.html', context)

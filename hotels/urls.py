@@ -40,4 +40,7 @@ urlpatterns = [
     
     # Google Drive Configuration
     path('hotels/<int:hotel_id>/google-drive-config/', views.google_drive_config, name='google_drive_config'),
+    
+    # Room Activity Log
+    path('rooms/<int:room_id>/add-note/', views.add_room_note, name='add_room_note'),
 ]

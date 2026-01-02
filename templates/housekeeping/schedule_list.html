@@ -1,0 +1,78 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}Housekeeping Schedules{% endblock %}
+
+{% block page_title %}Housekeeping Schedules{% endblock %}
+{% block page_subtitle %}View and manage housekeeping schedules{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex justify-between items-center">
+        <div class="flex space-x-4">
+            <a href="?date=today" class="px-4 py-2 bg-royal-100 text-royal-700 rounded-xl hover:bg-royal-200 transition-colors">
+                Today
+            </a>
+            <a href="?date=week" class="px-4 py-2 bg-royal-100 text-royal-700 rounded-xl hover:bg-royal-200 transition-colors">
+                This Week
+            </a>
+            <a href="?" class="px-4 py-2 bg-luxury-100 text-luxury-700 rounded-xl hover:bg-luxury-200 transition-colors">
+                All
+            </a>
+        </div>
+        
+        {% if user.role in 'Manager,Owner' or user.is_superuser %}
+        <a href="{% url 'housekeeping:create_schedule' %}" class="bg-gradient-to-r from-royal-500 to-royal-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-royal-600 hover:to-royal-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+            <i class="fas fa-plus mr-2"></i>
+            Create Schedule
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Schedules Grid -->
+    <div class="grid gap-6">
+        {% for schedule in schedules %}
+        <div class="bg-white rounded-2xl luxury-shadow p-6 hover-lift">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-luxury-800">{{ schedule.staff.get_full_name }}</h3>
+                    <p class="text-luxury-600">{{ schedule.date }} - {{ schedule.get_shift_display }}</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-sm font-medium
+                    {% if schedule.status == 'scheduled' %}bg-blue-100 text-blue-800
+                    {% elif schedule.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                    {% elif schedule.status == 'completed' %}bg-green-100 text-green-800
+                    {% else %}bg-red-100 text-red-800{% endif %}">
+                    {{ schedule.get_status_display }}
+                </span>
+            </div>
+            
+            {% if schedule.rooms.exists %}
+            <div class="mb-4">
+                <h4 class="font-semibold text-luxury-700 mb-2">Assigned Rooms:</h4>
+                <div class="flex flex-wrap gap-2">
+                    {% for room in schedule.rooms.all %}
+                    <span class="px-3 py-1 bg-luxury-100 text-luxury-700 rounded-lg text-sm">
+                        Room {{ room.room_number }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if schedule.notes %}
+            <div class="bg-luxury-50 rounded-xl p-4">
+                <p class="text-luxury-700">{{ schedule.notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="text-center py-12">
+            <i class="fas fa-calendar-times text-luxury-400 text-4xl mb-4"></i>
+            <h3 class="text-xl font-semibold text-luxury-600 mb-2">No Schedules Found</h3>
+            <p class="text-luxury-500">No housekeeping schedules available for the selected period.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

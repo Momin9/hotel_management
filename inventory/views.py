@@ -1,18 +1,24 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Sum, Q, F
+from django.db.models import Sum, Q, F, Count
 from django.db import models
-from .models import InventoryItem, StockMovement, PurchaseOrder, Supplier, StockTake
+from .models import InventoryItem, StockMovement, PurchaseOrder, Supplier, StockTake, InventoryCategory
 
 @login_required
 def inventory_dashboard(request):
     """Inventory main dashboard"""
-    # Low stock items
-    low_stock_items = InventoryItem.objects.filter(
+    # Total items count
+    total_items = InventoryItem.objects.filter(is_active=True).count()
+    
+    # Low stock items count
+    low_stock_count = InventoryItem.objects.filter(
         current_stock__lte=models.F('minimum_stock'),
         is_active=True
-    )
+    ).count()
+    
+    # Total categories count
+    total_categories = InventoryCategory.objects.filter(is_active=True).count()
     
     # Recent stock movements
     recent_movements = StockMovement.objects.all().order_by('-created_at')[:10]
@@ -25,11 +31,21 @@ def inventory_dashboard(request):
         total=Sum(models.F('current_stock') * models.F('cost_price'))
     )['total'] or 0
     
+    # Low stock items for display
+    low_stock_items = InventoryItem.objects.filter(
+        current_stock__lte=models.F('minimum_stock'),
+        is_active=True
+    )[:5]
+    
     context = {
-        'low_stock_items': low_stock_items,
+        'total_items': total_items,
+        'low_stock_items': low_stock_count,
+        'total_categories': total_categories,
+        'total_value': total_value,
+        'low_stock_items_list': low_stock_items,
         'recent_movements': recent_movements,
         'pending_pos': pending_pos,
-        'total_value': total_value,
+        'recent_activities': recent_movements[:5],  # Use recent movements as activities
     }
     
     return render(request, 'inventory/dashboard.html', context)
