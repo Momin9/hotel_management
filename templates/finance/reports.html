@@ -25,7 +25,7 @@
                     <i class="fas fa-file-alt mr-2"></i>
                     Generate Report
                 </button>
-                <button class="inline-flex items-center px-6 py-3 bg-luxury-100 hover:bg-luxury-200 text-luxury-700 font-semibold rounded-2xl transition-all duration-300">
+                <button onclick="exportAllData()" class="inline-flex items-center px-6 py-3 bg-luxury-100 hover:bg-luxury-200 text-luxury-700 font-semibold rounded-2xl transition-all duration-300">
                     <i class="fas fa-download mr-2"></i>
                     Export Data
                 </button>
@@ -107,15 +107,15 @@
                 <h3 class="text-lg font-semibold text-luxury-800">Revenue Reports</h3>
             </div>
             <div class="space-y-3">
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('daily_revenue')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Daily Revenue</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('monthly_summary')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Monthly Summary</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('revenue_by_source')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Revenue by Source</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
@@ -131,15 +131,15 @@
                 <h3 class="text-lg font-semibold text-luxury-800">Expense Reports</h3>
             </div>
             <div class="space-y-3">
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('expense_categories')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Expense Categories</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('department_costs')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Department Costs</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('budget_vs_actual')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Budget vs Actual</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
@@ -155,15 +155,15 @@
                 <h3 class="text-lg font-semibold text-luxury-800">Payroll Reports</h3>
             </div>
             <div class="space-y-3">
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('payroll_summary')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Payroll Summary</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('employee_costs')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Employee Costs</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
-                <button class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
+                <button onclick="generateQuickReport('tax_reports')" class="w-full flex items-center justify-between p-3 bg-luxury-50 hover:bg-luxury-100 rounded-xl transition-colors">
                     <span class="text-luxury-700">Tax Reports</span>
                     <i class="fas fa-arrow-right text-luxury-400"></i>
                 </button>
@@ -292,7 +292,7 @@
                 </div>
             </div>
             
-            <form method="post" class="p-6">
+            <form onsubmit="handleReportGeneration(event)" class="p-6">
                 {% csrf_token %}
                 <div class="space-y-6">
                     <div>
@@ -388,6 +388,279 @@ function showModal(modalId) {
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
+}
+
+function generateQuickReport(reportType) {
+    // Show loading state
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+    button.disabled = true;
+    
+    // Simulate report generation
+    setTimeout(() => {
+        // Reset button
+        button.innerHTML = originalContent;
+        button.disabled = false;
+        
+        // Show success message
+        showNotification(`${getReportTitle(reportType)} generated successfully!`, 'success');
+        
+        // Simulate download
+        downloadReport(reportType);
+    }, 2000);
+}
+
+function getReportTitle(reportType) {
+    const titles = {
+        'daily_revenue': 'Daily Revenue Report',
+        'monthly_summary': 'Monthly Summary Report',
+        'revenue_by_source': 'Revenue by Source Report',
+        'expense_categories': 'Expense Categories Report',
+        'department_costs': 'Department Costs Report',
+        'budget_vs_actual': 'Budget vs Actual Report',
+        'payroll_summary': 'Payroll Summary Report',
+        'employee_costs': 'Employee Costs Report',
+        'tax_reports': 'Tax Report'
+    };
+    return titles[reportType] || 'Financial Report';
+}
+
+function downloadReport(reportType) {
+    // Create a mock CSV content
+    const csvContent = generateMockCSV(reportType);
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${reportType}_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+function generateMockCSV(reportType) {
+    const today = new Date().toISOString().split('T')[0];
+    
+    switch(reportType) {
+        case 'daily_revenue':
+            return `Date,Room Revenue,F&B Revenue,Other Revenue,Total Revenue\n${today},$2500,$800,$200,$3500\n`;
+        case 'monthly_summary':
+            return `Month,Total Revenue,Total Expenses,Net Profit\nDecember 2024,$85000,$65000,$20000\n`;
+        case 'revenue_by_source':
+            return `Source,Amount,Percentage\nRoom Bookings,$65000,76.5%\nFood & Beverage,$15000,17.6%\nOther Services,$5000,5.9%\n`;
+        case 'expense_categories':
+            return `Category,Amount,Percentage\nStaff Salaries,$25000,38.5%\nUtilities,$8000,12.3%\nMaintenance,$5000,7.7%\nSupplies,$12000,18.5%\nOther,$15000,23.0%\n`;
+        case 'department_costs':
+            return `Department,Budget,Actual,Variance\nHousekeeping,$15000,$14500,$500\nFront Desk,$12000,$11800,$200\nMaintenance,$8000,$8200,-$200\n`;
+        case 'budget_vs_actual':
+            return `Item,Budget,Actual,Variance\nRevenue,$80000,$85000,$5000\nExpenses,$60000,$65000,-$5000\nNet Profit,$20000,$20000,$0\n`;
+        case 'payroll_summary':
+            return `Employee,Base Salary,Overtime,Total Pay\nJohn Doe,$3000,$200,$3200\nJane Smith,$2800,$150,$2950\nMike Johnson,$3200,$300,$3500\n`;
+        case 'employee_costs':
+            return `Department,Employees,Total Cost,Avg Cost\nHousekeeping,8,$24000,$3000\nFront Desk,5,$16000,$3200\nMaintenance,3,$10500,$3500\n`;
+        case 'tax_reports':
+            return `Tax Type,Base Amount,Rate,Tax Amount\nSales Tax,$85000,8.5%,$7225\nPayroll Tax,$54000,15.3%,$8262\nProperty Tax,$0,0%,$2500\n`;
+        default:
+            return `Report Type,Generated Date\n${reportType},${today}\n`;
+    }
+}
+
+function handleReportGeneration(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const reportType = formData.get('report_type');
+    const startDate = formData.get('start_date');
+    const endDate = formData.get('end_date');
+    const format = formData.get('format');
+    
+    // Validate form
+    if (!reportType || !startDate || !endDate) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        showNotification('Start date must be before end date', 'error');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+    submitBtn.disabled = true;
+    
+    // Simulate report generation
+    setTimeout(() => {
+        // Reset button
+        submitBtn.innerHTML = originalContent;
+        submitBtn.disabled = false;
+        
+        // Close modal
+        closeModal('generateReportModal');
+        
+        // Generate and download report
+        generateCustomReport(reportType, startDate, endDate, format);
+        
+        // Show success message
+        showNotification(`${getReportTitle(reportType)} generated successfully!`, 'success');
+        
+        // Reset form
+        form.reset();
+    }, 2500);
+}
+
+function generateCustomReport(reportType, startDate, endDate, format) {
+    let content, filename, mimeType;
+    
+    if (format === 'csv') {
+        content = generateCustomCSV(reportType, startDate, endDate);
+        filename = `${reportType}_report_${startDate}_to_${endDate}.csv`;
+        mimeType = 'text/csv';
+    } else if (format === 'excel') {
+        content = generateCustomCSV(reportType, startDate, endDate); // Simplified as CSV for demo
+        filename = `${reportType}_report_${startDate}_to_${endDate}.xlsx`;
+        mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    } else { // PDF
+        content = generateCustomPDF(reportType, startDate, endDate);
+        filename = `${reportType}_report_${startDate}_to_${endDate}.pdf`;
+        mimeType = 'application/pdf';
+    }
+    
+    const blob = new Blob([content], { type: mimeType });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+function generateCustomCSV(reportType, startDate, endDate) {
+    const header = `${getReportTitle(reportType)}\nPeriod: ${startDate} to ${endDate}\nGenerated: ${new Date().toLocaleString()}\n\n`;
+    
+    switch(reportType) {
+        case 'revenue':
+            return header + `Date,Room Revenue,F&B Revenue,Other Revenue,Total Revenue\n${startDate},$2500,$800,$200,$3500\n${endDate},$2800,$900,$250,$3950\n`;
+        case 'expense':
+            return header + `Date,Category,Amount,Description\n${startDate},Utilities,$500,Monthly electricity bill\n${startDate},Supplies,$300,Cleaning supplies\n${endDate},Maintenance,$200,Room repairs\n`;
+        case 'payroll':
+            return header + `Employee,Department,Base Salary,Overtime,Total Pay\nJohn Doe,Housekeeping,$3000,$200,$3200\nJane Smith,Front Desk,$2800,$150,$2950\n`;
+        case 'profit_loss':
+            return header + `Item,Amount\nTotal Revenue,$85000\nTotal Expenses,$65000\nGross Profit,$20000\nNet Profit,$18000\n`;
+        case 'balance_sheet':
+            return header + `Assets,Amount\nCash,$25000\nAccounts Receivable,$15000\nInventory,$8000\nProperty & Equipment,$200000\nTotal Assets,$248000\n`;
+        case 'cash_flow':
+            return header + `Category,Inflow,Outflow,Net Flow\nOperating Activities,$85000,$65000,$20000\nInvesting Activities,$0,$5000,-$5000\nFinancing Activities,$10000,$8000,$2000\n`;
+        default:
+            return header + `Report Type,Period,Status\n${reportType},${startDate} to ${endDate},Generated\n`;
+    }
+}
+
+function generateCustomPDF(reportType, startDate, endDate) {
+    // Simplified PDF content as text for demo
+    return `PDF Report: ${getReportTitle(reportType)}\nPeriod: ${startDate} to ${endDate}\nGenerated: ${new Date().toLocaleString()}\n\nThis is a sample PDF report content.`;
+}
+
+function exportAllData() {
+    // Show loading state
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Exporting...';
+    button.disabled = true;
+    
+    // Simulate export process
+    setTimeout(() => {
+        // Reset button
+        button.innerHTML = originalContent;
+        button.disabled = false;
+        
+        // Generate comprehensive financial export
+        const csvContent = generateComprehensiveExport();
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `financial_data_export_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        showNotification('Financial data exported successfully!', 'success');
+    }, 1500);
+}
+
+function generateComprehensiveExport() {
+    const today = new Date().toISOString().split('T')[0];
+    return `Financial Data Export - ${today}
+
+REVENUE SUMMARY
+Category,Amount,Percentage
+Room Revenue,$65000,76.5%
+Food & Beverage,$15000,17.6%
+Other Services,$5000,5.9%
+Total Revenue,$85000,100%
+
+EXPENSE SUMMARY
+Category,Amount,Percentage
+Staff Salaries,$25000,38.5%
+Utilities,$8000,12.3%
+Maintenance,$5000,7.7%
+Supplies,$12000,18.5%
+Other,$15000,23.0%
+Total Expenses,$65000,100%
+
+PROFIT & LOSS
+Item,Amount
+Total Revenue,$85000
+Total Expenses,$65000
+Net Profit,$20000
+Profit Margin,23.5%
+
+PAYROLL SUMMARY
+Department,Employees,Total Cost
+Housekeeping,8,$24000
+Front Desk,5,$16000
+Maintenance,3,$10500
+Total Payroll,16,$50500
+`;
+}
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform transition-all duration-300 translate-x-full`;
+    
+    if (type === 'success') {
+        notification.className += ' bg-green-500 text-white';
+        notification.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+    } else if (type === 'error') {
+        notification.className += ' bg-red-500 text-white';
+        notification.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${message}`;
+    } else {
+        notification.className += ' bg-blue-500 text-white';
+        notification.innerHTML = `<i class="fas fa-info-circle mr-2"></i>${message}`;
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
 }
 </script>
 {% endblock %}
