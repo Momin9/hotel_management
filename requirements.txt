@@ -1,13 +1,52 @@
-Django==4.2.7
-psycopg2-binary==2.9.7
+# Core Django
+Django==4.2.16
+psycopg2-binary==2.9.9
+
+# Image Processing
+Pillow==10.2.0
+
+# Forms & UI
+django-crispy-forms==2.1
+crispy-bootstrap5==0.7
+
+# Configuration
+python-decouple==3.8
+python-dotenv==1.0.0
+
+# API
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# Payment Processing
+stripe==8.7.0
+
+# Communication
+twilio==8.10.0
+requests==2.31.0
+
+# Reports & Data Export
+reportlab==4.1.0
+openpyxl==3.1.2
+
+# Production Server
 gunicorn==21.2.0
 whitenoise==6.6.0
-python-dotenv==1.0.0
-django-ckeditor-5==0.2.10
+
+# Development Tools
+django-extensions==3.2.3
+faker==20.1.0
+
+# Rich Text Editor
+django-ckeditor-5==0.2.12
+
+# Country & Phone Fields
 django-countries==7.5.1
-Pillow==10.1.0
-dj-database-url==2.1.0
-redis==5.0.1
-celery==5.3.4
-django-cors-headers==4.3.1
-requests==2.31.0
+
+# Timezone Support
+pytz==2023.4
+
+# Date/Time Utilities
+python-dateutil==2.8.2
+
+# HTTP Library
+urllib3==2.0.7
