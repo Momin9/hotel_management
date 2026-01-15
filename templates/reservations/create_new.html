@@ -276,7 +276,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!hotelSelect) errors.push('Please select a hotel.');
         if (!checkInDate) errors.push('Please select check-in date.');
         if (!checkOutDate) errors.push('Please select check-out date.');
-        if (!selectedRoom) errors.push('Please select a room.');
+        if (!selectedRoom) {
+            // Check if any room is visually selected
+            const visuallySelected = document.querySelector('.room-option.border-royal-500');
+            if (!visuallySelected) {
+                errors.push('Please select a room.');
+            }
+        }
         
         // Date validation
         if (checkInDate && checkOutDate && new Date(checkInDate) >= new Date(checkOutDate)) {
@@ -477,24 +483,21 @@ function selectRoom(roomId, roomNumber, roomType, price) {
     });
     
     // Select current room
-    event.currentTarget.classList.remove('border-luxury-200');
-    event.currentTarget.classList.add('border-royal-500', 'bg-royal-50');
+    const currentRoom = event.currentTarget;
+    currentRoom.classList.remove('border-luxury-200');
+    currentRoom.classList.add('border-royal-500', 'bg-royal-50');
     
-    // Set radio button
-    const radioButton = document.querySelector(`input[value="${roomId}"]`);
+    // Find and check the radio button inside this room
+    const radioButton = currentRoom.querySelector('input[name="room"]');
     if (radioButton) {
         radioButton.checked = true;
-        console.log('Room radio button checked:', radioButton.checked);
-        
-        // Enable submit button immediately
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = false;
-        console.log('Submit button enabled');
-        
-        // Trigger change event to notify other listeners
-        const changeEvent = new Event('change', { bubbles: true });
-        radioButton.dispatchEvent(changeEvent);
+        console.log('Room radio button checked:', radioButton.checked, 'Value:', radioButton.value);
     }
+    
+    // Enable submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = false;
+    console.log('Submit button enabled');
 }
 
 // Update checkout min date when checkin changes
