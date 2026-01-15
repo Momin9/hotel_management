@@ -535,9 +535,33 @@ document.addEventListener('DOMContentLoaded', function() {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
     
+    /* Advanced room selection styling */
+    .room-option {
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
     .room-option:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.2);
+        border-color: #3b82f6 !important;
+    }
+    
+    .room-option.selected-room {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 25px -8px rgba(59, 130, 246, 0.3);
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+        border: 2px solid #3b82f6 !important;
+    }
+    
+    .selected-indicator {
+        animation: checkmark 0.3s ease-in-out;
+    }
+    
+    @keyframes checkmark {
+        0% { transform: scale(0) rotate(0deg); }
+        50% { transform: scale(1.2) rotate(180deg); }
+        100% { transform: scale(1) rotate(360deg); }
     }
     
     /* Ensure filters are visible */
