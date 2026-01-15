@@ -253,11 +253,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form submission validation
     form.addEventListener('submit', function(e) {
+        console.log('Form submission started');
+        
         const selectedRoom = document.querySelector('input[name="room"]:checked');
         const guestSelect = document.getElementById('guestSelect').value;
         const hotelSelect = document.getElementById('hotelSelect').value;
         const checkInDate = document.getElementById('checkInDate').value;
         const checkOutDate = document.getElementById('checkOutDate').value;
+        
+        console.log('Form validation:', {
+            selectedRoom: selectedRoom ? selectedRoom.value : 'none',
+            guestSelect,
+            hotelSelect,
+            checkInDate,
+            checkOutDate
+        });
         
         let errors = [];
         
@@ -285,10 +295,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (errors.length > 0) {
+            console.log('Form validation errors:', errors);
             e.preventDefault();
             alert('Please fix the following errors:\n\n' + errors.join('\n'));
             return false;
         }
+        
+        console.log('Form validation passed, submitting...');
         
         // Show loading state
         submitBtn.disabled = true;
@@ -455,6 +468,8 @@ function clearFilters() {
 }
 
 function selectRoom(roomId, roomNumber, roomType, price) {
+    console.log('Selecting room:', roomId);
+    
     // Remove previous selections
     document.querySelectorAll('.room-option').forEach(el => {
         el.classList.remove('border-royal-500', 'bg-royal-50');
@@ -469,8 +484,16 @@ function selectRoom(roomId, roomNumber, roomType, price) {
     const radioButton = document.querySelector(`input[value="${roomId}"]`);
     if (radioButton) {
         radioButton.checked = true;
-        // Enable submit button
-        document.getElementById('submitBtn').disabled = false;
+        console.log('Room radio button checked:', radioButton.checked);
+        
+        // Enable submit button immediately
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = false;
+        console.log('Submit button enabled');
+        
+        // Trigger change event to notify other listeners
+        const changeEvent = new Event('change', { bubbles: true });
+        radioButton.dispatchEvent(changeEvent);
     }
 }
 
@@ -505,18 +528,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 // Remove the duplicate initialization
-// Initialize form state
-document.addEventListener('DOMContentLoaded', function() {
-    // Disable submit button initially
-    document.getElementById('submitBtn').disabled = true;
-    
-    // Enable submit button when room is selected
-    document.addEventListener('change', function(e) {
-        if (e.target.name === 'room') {
-            document.getElementById('submitBtn').disabled = false;
-        }
-    });
-});
 </script>
 
 <style>
