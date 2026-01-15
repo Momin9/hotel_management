@@ -7,8 +7,14 @@
 {% block content %}
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-3xl p-8 luxury-shadow">
-        <form method="post" id="reservationForm" class="space-y-6">
+        <form method="post" id="reservationForm" class="space-y-6 validate">
             {% csrf_token %}
+            
+            <!-- Validation Summary (will be populated by JavaScript) -->
+            <div class="validation-summary" style="display: none;">
+                <h4><i class="fas fa-exclamation-triangle"></i> Please correct the following errors:</h4>
+                <ul></ul>
+            </div>
             
             <!-- Guest Selection -->
             <div class="space-y-4">
@@ -18,8 +24,8 @@
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Select Guest</label>
+                    <div class="validation-container">
+                        <label for="guestSelect" class="block text-sm font-medium text-luxury-700 mb-2 required">Select Guest</label>
                         <select name="guest" id="guestSelect" required
                                 class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                             <option value="">Choose existing guest or create new</option>
@@ -41,24 +47,24 @@
                 
                 <!-- New Guest Form (Hidden by default) -->
                 <div id="newGuestForm" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-luxury-50 rounded-xl">
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">First Name</label>
-                        <input type="text" name="guest_first_name" 
+                    <div class="validation-container">
+                        <label for="guest_first_name" class="block text-sm font-medium text-luxury-700 mb-2 required">First Name</label>
+                        <input type="text" name="guest_first_name" id="guest_first_name"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Last Name</label>
-                        <input type="text" name="guest_last_name"
+                    <div class="validation-container">
+                        <label for="guest_last_name" class="block text-sm font-medium text-luxury-700 mb-2 required">Last Name</label>
+                        <input type="text" name="guest_last_name" id="guest_last_name"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Email</label>
-                        <input type="email" name="guest_email"
+                    <div class="validation-container">
+                        <label for="guest_email" class="block text-sm font-medium text-luxury-700 mb-2 required">Email</label>
+                        <input type="email" name="guest_email" id="guest_email"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Phone</label>
-                        <input type="tel" name="guest_phone"
+                    <div class="validation-container">
+                        <label for="guest_phone" class="block text-sm font-medium text-luxury-700 mb-2">Phone</label>
+                        <input type="tel" name="guest_phone" id="guest_phone"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
                 </div>
@@ -72,8 +78,8 @@
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Hotel</label>
+                    <div class="validation-container">
+                        <label for="hotelSelect" class="block text-sm font-medium text-luxury-700 mb-2 required">Hotel</label>
                         <select name="hotel" id="hotelSelect" required onchange="checkAvailability()"
                                 class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                             <option value="">Select Hotel</option>
@@ -83,9 +89,9 @@
                         </select>
                     </div>
                     
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Reservation Type</label>
-                        <select name="reservation_type" required
+                    <div class="validation-container">
+                        <label for="reservation_type" class="block text-sm font-medium text-luxury-700 mb-2 required">Reservation Type</label>
+                        <select name="reservation_type" id="reservation_type" required
                                 class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                             <option value="reservation">Reservation (Future booking)</option>
                             <option value="booking">Booking (Immediate check-in)</option>
@@ -94,29 +100,29 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Check-in Date</label>
-                        <input type="date" name="check_in" id="checkInDate" required onchange="checkAvailability()"
+                    <div class="validation-container">
+                        <label for="checkInDate" class="block text-sm font-medium text-luxury-700 mb-2 required">Check-in Date</label>
+                        <input type="date" name="check_in" id="checkInDate" required onchange="checkAvailability()" data-min-date="today"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
                     
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Check-out Date</label>
+                    <div class="validation-container">
+                        <label for="checkOutDate" class="block text-sm font-medium text-luxury-700 mb-2 required">Check-out Date</label>
                         <input type="date" name="check_out" id="checkOutDate" required onchange="checkAvailability()"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Adults</label>
-                        <input type="number" name="adults" value="1" min="1" required
+                    <div class="validation-container">
+                        <label for="adults" class="block text-sm font-medium text-luxury-700 mb-2 required">Adults</label>
+                        <input type="number" name="adults" id="adults" value="1" min="1" required
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
                     
-                    <div>
-                        <label class="block text-sm font-medium text-luxury-700 mb-2">Children</label>
-                        <input type="number" name="children" value="0" min="0"
+                    <div class="validation-container">
+                        <label for="children" class="block text-sm font-medium text-luxury-700 mb-2">Children</label>
+                        <input type="number" name="children" id="children" value="0" min="0"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
                 </div>
@@ -169,9 +175,9 @@
             </div>
             
             <!-- Special Requests -->
-            <div>
-                <label class="block text-sm font-medium text-luxury-700 mb-2">Special Requests</label>
-                <textarea name="special_requests" rows="3" placeholder="Any special requirements or requests..."
+            <div class="validation-container">
+                <label for="special_requests" class="block text-sm font-medium text-luxury-700 mb-2">Special Requests</label>
+                <textarea name="special_requests" id="special_requests" rows="3" placeholder="Any special requirements or requests..."
                           class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent"></textarea>
             </div>
             
