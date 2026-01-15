@@ -7,7 +7,7 @@
 {% block content %}
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-3xl p-8 luxury-shadow">
-        <form method="post" id="reservationForm" class="space-y-6 validate">
+        <form method="post" id="reservationForm" class="space-y-6">
             {% csrf_token %}
             
             <!-- Validation Summary (will be populated by JavaScript) -->
@@ -213,7 +213,7 @@
             </div>
             
             <div class="flex space-x-4">
-                <button type="submit" class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors">
+                <button type="submit" id="submitBtn" class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                     <i class="fas fa-calendar-check mr-2"></i>Create Reservation
                 </button>
                 <a href="{% url 'reservations:list' %}" class="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition-colors">
@@ -225,6 +225,70 @@
 </div>
 
 <script>
+<script>
+// Simple form submission handling without conflicts
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('reservationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Disable submit button initially
+    submitBtn.disabled = true;
+    
+    // Enable submit when room is selected
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'room') {
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        const selectedRoom = document.querySelector('input[name="room"]:checked');
+        const guestSelect = document.getElementById('guestSelect').value;
+        const hotelSelect = document.getElementById('hotelSelect').value;
+        const checkInDate = document.getElementById('checkInDate').value;
+        const checkOutDate = document.getElementById('checkOutDate').value;
+        
+        let errors = [];
+        
+        // Basic validation
+        if (!guestSelect) errors.push('Please select a guest.');
+        if (!hotelSelect) errors.push('Please select a hotel.');
+        if (!checkInDate) errors.push('Please select check-in date.');
+        if (!checkOutDate) errors.push('Please select check-out date.');
+        if (!selectedRoom) errors.push('Please select a room.');
+        
+        // Date validation
+        if (checkInDate && checkOutDate && new Date(checkInDate) >= new Date(checkOutDate)) {
+            errors.push('Check-out date must be after check-in date.');
+        }
+        
+        // New guest validation
+        if (guestSelect === 'new') {
+            const firstName = document.getElementById('guest_first_name').value.trim();
+            const lastName = document.getElementById('guest_last_name').value.trim();
+            const email = document.getElementById('guest_email').value.trim();
+            
+            if (!firstName) errors.push('Guest first name is required.');
+            if (!lastName) errors.push('Guest last name is required.');
+            if (!email) errors.push('Guest email is required.');
+        }
+        
+        if (errors.length > 0) {
+            e.preventDefault();
+            alert('Please fix the following errors:\n\n' + errors.join('\n'));
+            return false;
+        }
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Reservation...';
+        
+        return true;
+    });
+});
+
+// Guest selection handling
 document.getElementById('guestSelect').addEventListener('change', function() {
     const newGuestBtn = document.getElementById('newGuestBtn');
     const newGuestForm = document.getElementById('newGuestForm');
@@ -345,18 +409,51 @@ function selectRoom(roomId, roomNumber, roomType, price) {
     event.currentTarget.classList.add('border-royal-500', 'bg-royal-50');
     
     // Set radio button
-    document.querySelector(`input[value="${roomId}"]`).checked = true;
+    const radioButton = document.querySelector(`input[value="${roomId}"]`);
+    if (radioButton) {
+        radioButton.checked = true;
+        // Enable submit button
+        document.getElementById('submitBtn').disabled = false;
+    }
 }
 
 // Set minimum date to today
-document.getElementById('checkInDate').min = new Date().toISOString().split('T')[0];
-document.getElementById('checkOutDate').min = new Date().toISOString().split('T')[0];
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('checkInDate').min = today;
+document.getElementById('checkOutDate').min = today;
 
 // Update checkout min date when checkin changes
 document.getElementById('checkInDate').addEventListener('change', function() {
     const checkInDate = new Date(this.value);
     checkInDate.setDate(checkInDate.getDate() + 1);
     document.getElementById('checkOutDate').min = checkInDate.toISOString().split('T')[0];
+    
+    // Clear checkout date if it's before new checkin date
+    const checkOutInput = document.getElementById('checkOutDate');
+    if (checkOutInput.value && checkOutInput.value <= this.value) {
+        checkOutInput.value = '';
+    }
+});
+
+// Validate checkout date is after checkin date
+document.getElementById('checkOutDate').addEventListener('change', function() {
+    const checkInDate = document.getElementById('checkInDate').value;
+    if (checkInDate && this.value <= checkInDate) {
+        alert('Check-out date must be after check-in date.');
+        this.value = '';
+    }
+});
+// Initialize form state
+document.addEventListener('DOMContentLoaded', function() {
+    // Disable submit button initially
+    document.getElementById('submitBtn').disabled = true;
+    
+    // Enable submit button when room is selected
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'room') {
+            document.getElementById('submitBtn').disabled = false;
+        }
+    });
 });
 </script>
 

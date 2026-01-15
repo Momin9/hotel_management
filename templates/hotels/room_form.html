@@ -78,8 +78,8 @@
                             <option value="Available" {% if room and room.status == 'Available' %}selected{% endif %}>Available</option>
                             <option value="Occupied" {% if room and room.status == 'Occupied' %}selected{% endif %}>Occupied</option>
                             <option value="Reserved" {% if room and room.status == 'Reserved' %}selected{% endif %}>Reserved</option>
-                            <option value="Dirty" {% if room and room.status == 'Dirty' %}selected{% endif %}>Dirty</option>
-                            <option value="Cleaning" {% if room and room.status == 'Cleaning' %}selected{% endif %}>Cleaning</option>
+                            <option value="Vacant (Dirty)" {% if room and room.status == 'Dirty' %}selected{% endif %}>Dirty</option>
+                            <option value="Vacant (Cleaning)" {% if room and room.status == 'Cleaning' %}selected{% endif %}>Cleaning</option>
                             <option value="Maintenance" {% if room and room.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
                             <option value="Blocked" {% if room and room.status == 'Blocked' %}selected{% endif %}>Blocked</option>
                         </select>
