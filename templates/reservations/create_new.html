@@ -129,6 +129,37 @@
                     Available Rooms
                 </h3>
                 
+                <!-- Room Filters - Always Visible -->
+                <div style="background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); padding: 24px; border-radius: 16px; border: 2px solid #e2e8f0; margin-bottom: 16px;">
+                    <h4 style="font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 16px; display: flex; align-items: center;">
+                        <i class="fas fa-filter" style="margin-right: 8px; color: #3b82f6;"></i>
+                        Filter Available Rooms
+                    </h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 8px;">Room Type</label>
+                            <select id="roomTypeFilter" onchange="filterRooms()" style="width: 100%; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 12px; background: white; font-size: 14px;">
+                                <option value="">All Room Types</option>
+                                <option value="Standard">Standard Room</option>
+                                <option value="Deluxe">Deluxe Room</option>
+                                <option value="Suite">Suite</option>
+                                <option value="Executive">Executive Room</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 8px;">Bed Type</label>
+                            <select id="bedTypeFilter" onchange="filterRooms()" style="width: 100%; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 12px; background: white; font-size: 14px;">
+                                <option value="">All Bed Types</option>
+                                <option value="Single">Single Bed</option>
+                                <option value="Double">Double Bed</option>
+                                <option value="Queen">Queen Bed</option>
+                                <option value="King">King Bed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
                 <div id="availableRooms" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="text-center py-8 text-luxury-600">
                         <i class="fas fa-search text-4xl mb-4 text-luxury-300"></i>
@@ -174,6 +205,8 @@ function showNewGuestForm() {
     document.getElementById('newGuestForm').classList.remove('hidden');
 }
 
+let allRooms = [];
+
 function checkAvailability() {
     const hotel = document.getElementById('hotelSelect').value;
     const checkIn = document.getElementById('checkInDate').value;
@@ -190,22 +223,8 @@ function checkAvailability() {
         .then(response => response.json())
         .then(data => {
             if (data.rooms && data.rooms.length > 0) {
-                let roomsHtml = '';
-                data.rooms.forEach(room => {
-                    roomsHtml += `
-                        <div class="border border-luxury-200 rounded-xl p-4 hover:bg-luxury-50 transition-colors cursor-pointer room-option" 
-                             onclick="selectRoom(${room.id}, '${room.number}', '${room.type}', ${room.price})">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-luxury-800">Room ${room.number}</h4>
-                                <span class="text-lg font-bold text-royal-600">$${room.price}</span>
-                            </div>
-                            <p class="text-luxury-600 text-sm">${room.type} • ${room.category}</p>
-                            <p class="text-luxury-500 text-xs">${room.bed} • ${room.floor}</p>
-                            <input type="radio" name="room" value="${room.id}" class="hidden room-radio">
-                        </div>
-                    `;
-                });
-                availableRoomsDiv.innerHTML = roomsHtml;
+                allRooms = data.rooms;
+                displayRooms(allRooms);
             } else {
                 availableRoomsDiv.innerHTML = `
                     <div class="text-center py-8 text-luxury-600 col-span-2">
@@ -225,6 +244,56 @@ function checkAvailability() {
                 </div>
             `;
         });
+}
+
+function displayRooms(rooms) {
+    const availableRoomsDiv = document.getElementById('availableRooms');
+    let roomsHtml = '';
+    
+    rooms.forEach(room => {
+        roomsHtml += `
+            <div class="border border-luxury-200 rounded-xl p-4 hover:bg-luxury-50 transition-colors cursor-pointer room-option" 
+                 onclick="selectRoom(${room.id}, '${room.number}', '${room.type}', ${room.price})"
+                 data-room-type="${room.type}" data-bed-type="${room.bed}">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-luxury-800">Room ${room.number}</h4>
+                    <span class="text-lg font-bold text-royal-600">$${room.price}</span>
+                </div>
+                <p class="text-luxury-600 text-sm">${room.type} • ${room.category}</p>
+                <p class="text-luxury-500 text-xs">${room.bed} • ${room.floor}</p>
+                <input type="radio" name="room" value="${room.id}" class="hidden room-radio">
+            </div>
+        `;
+    });
+    
+    availableRoomsDiv.innerHTML = roomsHtml;
+}
+
+function filterRooms() {
+    const roomTypeFilter = document.getElementById('roomTypeFilter').value;
+    const bedTypeFilter = document.getElementById('bedTypeFilter').value;
+    
+    let filteredRooms = allRooms;
+    
+    if (roomTypeFilter) {
+        filteredRooms = filteredRooms.filter(room => room.type === roomTypeFilter);
+    }
+    
+    if (bedTypeFilter) {
+        filteredRooms = filteredRooms.filter(room => room.bed === bedTypeFilter);
+    }
+    
+    if (filteredRooms.length > 0) {
+        displayRooms(filteredRooms);
+    } else {
+        document.getElementById('availableRooms').innerHTML = `
+            <div class="text-center py-8 text-luxury-600 col-span-2">
+                <i class="fas fa-filter text-4xl mb-4 text-luxury-300"></i>
+                <p>No rooms match the selected filters</p>
+                <p class="text-sm">Try adjusting your filters</p>
+            </div>
+        `;
+    }
 }
 
 function selectRoom(roomId, roomNumber, roomType, price) {
@@ -263,5 +332,24 @@ document.getElementById('checkInDate').addEventListener('change', function() {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
     }
+    
+    /* Ensure filters are visible */
+    #roomTypeFilter, #bedTypeFilter {
+        appearance: auto;
+        -webkit-appearance: menulist;
+        -moz-appearance: menulist;
+    }
+    
+    /* Custom luxury colors */
+    .luxury-50 { background-color: #f8fafc; }
+    .luxury-100 { background-color: #f1f5f9; }
+    .luxury-200 { background-color: #e2e8f0; }
+    .luxury-300 { background-color: #cbd5e1; }
+    .luxury-600 { color: #475569; }
+    .luxury-700 { color: #334155; }
+    .luxury-800 { color: #1e293b; }
+    .royal-50 { background-color: #eff6ff; }
+    .royal-500 { color: #3b82f6; }
+    .royal-600 { color: #2563eb; }
 </style>
 {% endblock %}

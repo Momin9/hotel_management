@@ -104,15 +104,38 @@ def reservation_create(request):
         
         hotel_id = request.POST.get('hotel')
         room_id = request.POST.get('room')
-        check_in = request.POST.get('check_in')
-        check_out = request.POST.get('check_out')
+        check_in_str = request.POST.get('check_in')
+        check_out_str = request.POST.get('check_out')
         adults = request.POST.get('adults', 1)
         children = request.POST.get('children', 0)
         reservation_type = request.POST.get('reservation_type', 'reservation')
         special_requests = request.POST.get('special_requests', '')
         
-        hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
-        room = get_object_or_404(Room, room_id=room_id)
+        # Convert date strings to date objects
+        from datetime import datetime
+        try:
+            check_in = datetime.strptime(check_in_str, '%Y-%m-%d').date()
+            check_out = datetime.strptime(check_out_str, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, 'Invalid date format. Please use YYYY-MM-DD format.')
+            return redirect('reservations:create')
+        
+        try:
+            hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
+        except Hotel.DoesNotExist:
+            messages.error(request, f'Hotel with ID {hotel_id} not found.')
+            return redirect('reservations:create')
+        
+        try:
+            # Debug: Print the room_id being searched
+            print(f"Looking for room with room_id: {room_id}")
+            room = Room.objects.get(room_id=room_id)
+        except Room.DoesNotExist:
+            # Debug: Show available rooms
+            available_rooms = Room.objects.filter(hotel=hotel)
+            print(f"Available rooms for hotel {hotel.name}: {[r.room_id for r in available_rooms]}")
+            messages.error(request, f'Room with ID {room_id} not found. Please ensure rooms are created for this hotel.')
+            return redirect('reservations:create')
         
         # Determine status based on reservation type
         status = 'checked_in' if reservation_type == 'booking' else 'confirmed'
