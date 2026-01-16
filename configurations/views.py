@@ -333,6 +333,7 @@ def bed_type_create(request):
             bed_type = BedType.objects.create(
                 name=request.POST.get('name'),
                 description=request.POST.get('description', ''),
+                usage=request.POST.get('usage', ''),
                 is_active=request.POST.get('is_active') == 'on'
             )
             
@@ -400,6 +401,7 @@ def bed_type_edit(request, pk):
         else:
             bed_type.name = request.POST.get('name')
             bed_type.description = request.POST.get('description', '')
+            bed_type.usage = request.POST.get('usage', '')
             bed_type.is_active = request.POST.get('is_active') == 'on'
             bed_type.save()
             

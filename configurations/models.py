@@ -36,6 +36,7 @@ class BedType(models.Model):
     hotels = models.ManyToManyField('hotels.Hotel', related_name='config_bed_types')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    usage = models.CharField(max_length=100, blank=True, help_text="How this bed type is typically used (e.g., Single occupancy, Double occupancy, Kids bed)")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     

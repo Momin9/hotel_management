@@ -26,10 +26,11 @@ class RoomCategoryForm(forms.ModelForm):
 class BedTypeForm(forms.ModelForm):
     class Meta:
         model = BedType
-        fields = ['name', 'description', 'is_active']
+        fields = ['name', 'description', 'usage', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent'}),
             'description': forms.Textarea(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent', 'rows': 3}),
+            'usage': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'w-5 h-5 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500'}),
         }
 
