@@ -127,21 +127,21 @@
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 gap-3">
                             <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
-                                <input type="checkbox" name="has_wifi" {% if room and room.has_wifi or not room %}checked{% endif %}
+                                <input type="checkbox" name="has_wifi" {% if room and room.has_wifi %}checked{% endif %}
                                        class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
                                 <i class="fas fa-wifi text-luxury-500"></i>
                                 <span class="text-sm font-medium text-luxury-700">Free Wi-Fi</span>
                             </label>
                             
                             <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
-                                <input type="checkbox" name="has_ac" {% if room and room.has_ac or not room %}checked{% endif %}
+                                <input type="checkbox" name="has_ac" {% if room and room.has_ac %}checked{% endif %}
                                        class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
                                 <i class="fas fa-snowflake text-luxury-500"></i>
                                 <span class="text-sm font-medium text-luxury-700">Air Conditioning</span>
                             </label>
                             
                             <label class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
-                                <input type="checkbox" name="has_tv" {% if room and room.has_tv or not room %}checked{% endif %}
+                                <input type="checkbox" name="has_tv" {% if room and room.has_tv %}checked{% endif %}
                                        class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
                                 <i class="fas fa-tv text-luxury-500"></i>
                                 <span class="text-sm font-medium text-luxury-700">TV</span>

@@ -7,7 +7,7 @@ class RoomType(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     max_occupancy = models.IntegerField(default=2)
-    bed_configuration = models.CharField(max_length=200, blank=True)
+
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     

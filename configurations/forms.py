@@ -5,12 +5,11 @@ from hotels.models import Hotel
 class RoomTypeForm(forms.ModelForm):
     class Meta:
         model = RoomType
-        fields = ['name', 'description', 'max_occupancy', 'bed_configuration', 'is_active']
+        fields = ['name', 'description', 'max_occupancy', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent'}),
             'description': forms.Textarea(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'rows': 3}),
             'max_occupancy': forms.NumberInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'min': '1'}),
-            'bed_configuration': forms.TextInput(attrs={'class': 'w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'}),
         }
 

@@ -147,12 +147,7 @@
                     </div>
                 </div>
                 
-                {% if room_type.bed_configuration %}
-                <div class="mb-6">
-                    <h4 class="text-sm font-semibold text-luxury-700 mb-2">Bed Configuration</h4>
-                    <p class="text-luxury-600 text-sm">{{ room_type.bed_configuration }}</p>
-                </div>
-                {% endif %}
+
                 
 
                 
@@ -214,9 +209,6 @@
                                 </div>
                                 <div>
                                     <p class="font-semibold text-luxury-800">{{ room_type.name }}</p>
-                                    {% if room_type.bed_configuration %}
-                                    <p class="text-sm text-luxury-600">{{ room_type.bed_configuration }}</p>
-                                    {% endif %}
                                 </div>
                             </div>
                         </td>
