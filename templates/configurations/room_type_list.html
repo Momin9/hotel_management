@@ -131,14 +131,7 @@
                 {% endif %}
                 
                 <!-- Details -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="text-center p-3 bg-luxury-50 rounded-xl">
-                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <i class="fas fa-users text-blue-600 text-sm"></i>
-                        </div>
-                        <p class="text-sm font-medium text-luxury-700">{{ room_type.max_occupancy }} Guest{{ room_type.max_occupancy|pluralize }}</p>
-                    </div>
-                    
+                <div class="grid grid-cols-1 gap-4 mb-6">
                     <div class="text-center p-3 bg-luxury-50 rounded-xl">
                         <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <i class="fas fa-calendar text-green-600 text-sm"></i>
@@ -193,7 +186,6 @@
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Room Type</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Hotel</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Description</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Max Occupancy</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Created</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Actions</th>
@@ -214,7 +206,6 @@
                         </td>
                         <td class="px-6 py-4 text-luxury-700">{{ room_type.hotels.first.name }}</td>
                         <td class="px-6 py-4 text-luxury-600">{{ room_type.description|truncatechars:50 }}</td>
-                        <td class="px-6 py-4 text-luxury-700">{{ room_type.max_occupancy }} Guest{{ room_type.max_occupancy|pluralize }}</td>
                         <td class="px-6 py-4">
                             <span class="px-3 py-1 rounded-full text-sm font-medium
                                   {% if room_type.is_active %}bg-green-100 text-green-800

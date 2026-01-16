@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import RoomType, BedType, Floor, Amenity
-from .forms import RoomTypeForm, BedTypeForm, FloorForm, AmenityForm
+from .models import RoomType, RoomCategory, BedType, Floor, Amenity
+from .forms import RoomTypeForm, RoomCategoryForm, BedTypeForm, FloorForm, AmenityForm
 from hotels.models import Hotel
 from accounts.decorators import owner_or_permission_required
 
@@ -173,6 +173,106 @@ def room_type_delete(request, pk):
         messages.success(request, 'Room type deleted successfully!')
         return redirect('configurations:room_type_list')
     return render(request, 'configurations/confirm_delete.html', {'object': room_type, 'type': 'Room Type'})
+
+# Room Category Views
+@login_required
+def room_category_list(request):
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_view_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to view configurations.')
+        return redirect('accounts:dashboard')
+    
+    if request.user.is_superuser:
+        room_categories = RoomCategory.objects.all().distinct()
+        hotels = Hotel.objects.all()
+    elif request.user.role == 'Owner':
+        hotels = Hotel.objects.filter(owner=request.user)
+        room_categories = RoomCategory.objects.filter(hotels__in=hotels).distinct()
+    else:
+        hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+        room_categories = RoomCategory.objects.filter(hotels=request.user.assigned_hotel).distinct() if request.user.assigned_hotel else RoomCategory.objects.none()
+    
+    context = {'room_categories': room_categories, 'hotels': hotels}
+    return render(request, 'configurations/room_category_list.html', context)
+
+@login_required
+def room_category_create(request):
+    if not (request.user.is_superuser or 
+            (hasattr(request.user, 'employee_profile') and request.user.employee_profile.can_add_configurations) or
+            request.user.role == 'Owner'):
+        messages.error(request, 'You do not have permission to create configurations.')
+        return redirect('configurations:room_category_list')
+    
+    if request.method == 'POST':
+        form = RoomCategoryForm(request.POST)
+        hotel_ids = request.POST.getlist('hotels')
+        
+        if not hotel_ids:
+            messages.error(request, 'Please select at least one hotel.')
+        elif form.is_valid():
+            room_category = form.save()
+            for hotel_id in hotel_ids:
+                hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
+                room_category.hotels.add(hotel)
+            messages.success(request, f'Room category "{room_category.name}" created!')
+            return redirect('configurations:room_category_list')
+    else:
+        form = RoomCategoryForm()
+    
+    if request.user.is_superuser:
+        hotels = Hotel.objects.all()
+    elif request.user.role == 'Owner':
+        hotels = Hotel.objects.filter(owner=request.user)
+    else:
+        hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+    
+    return render(request, 'configurations/room_category_form.html', {'form': form, 'hotels': hotels})
+
+@login_required
+def room_category_detail(request, pk):
+    room_category = get_object_or_404(RoomCategory, pk=pk)
+    return render(request, 'configurations/room_category_detail.html', {'room_category': room_category})
+
+@login_required
+def room_category_edit(request, pk):
+    room_category = get_object_or_404(RoomCategory, pk=pk)
+    
+    if request.method == 'POST':
+        form = RoomCategoryForm(request.POST, instance=room_category)
+        hotel_ids = request.POST.getlist('hotels')
+        
+        if not hotel_ids:
+            messages.error(request, 'Please select at least one hotel.')
+        elif form.is_valid():
+            room_category = form.save()
+            room_category.hotels.clear()
+            for hotel_id in hotel_ids:
+                hotel = get_object_or_404(Hotel, hotel_id=hotel_id)
+                room_category.hotels.add(hotel)
+            messages.success(request, f'Room category "{room_category.name}" updated!')
+            return redirect('configurations:room_category_list')
+    else:
+        form = RoomCategoryForm(instance=room_category)
+    
+    if request.user.is_superuser:
+        hotels = Hotel.objects.all()
+    elif request.user.role == 'Owner':
+        hotels = Hotel.objects.filter(owner=request.user)
+    else:
+        hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+    
+    return render(request, 'configurations/room_category_form.html', {'form': form, 'room_category': room_category, 'hotels': hotels})
+
+@login_required
+def room_category_delete(request, pk):
+    room_category = get_object_or_404(RoomCategory, pk=pk)
+    
+    if request.method == 'POST':
+        room_category.delete()
+        messages.success(request, 'Room category deleted successfully!')
+        return redirect('configurations:room_category_list')
+    return render(request, 'configurations/confirm_delete.html', {'object': room_category, 'type': 'Room Category'})
 
 # Bed Type Views
 @login_required

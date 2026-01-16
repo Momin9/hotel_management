@@ -11,6 +11,13 @@ urlpatterns = [
     path('room-types/<uuid:pk>/edit/', views.room_type_edit, name='room_type_edit'),
     path('room-types/<uuid:pk>/delete/', views.room_type_delete, name='room_type_delete'),
     
+    # Room Category URLs
+    path('room-categories/', views.room_category_list, name='room_category_list'),
+    path('room-categories/create/', views.room_category_create, name='room_category_create'),
+    path('room-categories/<uuid:pk>/', views.room_category_detail, name='room_category_detail'),
+    path('room-categories/<uuid:pk>/edit/', views.room_category_edit, name='room_category_edit'),
+    path('room-categories/<uuid:pk>/delete/', views.room_category_delete, name='room_category_delete'),
+    
     # Bed Type URLs
     path('bed-types/', views.bed_type_list, name='bed_type_list'),
     path('bed-types/create/', views.bed_type_create, name='bed_type_create'),

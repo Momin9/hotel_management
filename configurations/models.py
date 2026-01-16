@@ -6,8 +6,6 @@ class RoomType(models.Model):
     hotels = models.ManyToManyField('hotels.Hotel', related_name='config_room_types')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    max_occupancy = models.IntegerField(default=2)
-
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -16,6 +14,22 @@ class RoomType(models.Model):
     
     class Meta:
         ordering = ['name']
+
+class RoomCategory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    hotels = models.ManyToManyField('hotels.Hotel', related_name='config_room_categories')
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    max_occupancy = models.IntegerField(default=2)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = "Room Categories"
 
 class BedType(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
