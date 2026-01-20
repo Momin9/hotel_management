@@ -316,9 +316,10 @@ def room_create(request, hotel_id):
         return redirect('hotels:room_list', hotel_id=hotel_id)
 
     # Get configuration data for the hotel
-    from configurations.models import Amenity, RoomType, BedType, Floor
+    from configurations.models import Amenity, RoomType, RoomCategory, BedType, Floor
     amenities = Amenity.objects.filter(hotels=hotel_obj, is_active=True)
     room_types = RoomType.objects.filter(hotels=hotel_obj)
+    room_categories = RoomCategory.objects.filter(hotels=hotel_obj)
     bed_types = BedType.objects.filter(hotels=hotel_obj)
     floors = Floor.objects.filter(hotels=hotel_obj)
     services = hotel_obj.services.all()
@@ -327,6 +328,7 @@ def room_create(request, hotel_id):
         'hotel': hotel_obj,
         'amenities': amenities,
         'room_types': room_types,
+        'room_categories': room_categories,
         'bed_types': bed_types,
         'floors': floors,
         'services': services

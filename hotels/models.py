@@ -311,6 +311,7 @@ class Room(models.Model):
     
     # Basic Details - using configuration models
     room_type = models.ForeignKey('configurations.RoomType', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
+    room_category = models.ForeignKey('configurations.RoomCategory', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
     bed_type = models.ForeignKey('configurations.BedType', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
     max_guests = models.PositiveIntegerField(default=2, help_text='Maximum number of guests')
     room_size = models.PositiveIntegerField(default=250, help_text='Room size in square feet')
