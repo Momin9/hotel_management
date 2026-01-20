@@ -38,7 +38,7 @@
                                 {% for hotel in hotels %}
                                 <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-white transition-colors">
                                     <input type="checkbox" name="hotels" value="{{ hotel.hotel_id }}" id="hotel_{{ hotel.hotel_id }}"
-                                           {% if room_category and hotel in room_category.hotels.all %}checked{% endif %}
+                                           {% if room_category and hotel in room_category.hotels.all %}checked{% elif not room_category and default_hotel and hotel.hotel_id == default_hotel.hotel_id %}checked{% endif %}
                                            class="rounded border-luxury-300 text-indigo-600 focus:ring-indigo-500">
                                     <label for="hotel_{{ hotel.hotel_id }}" class="flex-1 cursor-pointer">
                                         <div class="font-medium text-luxury-800 flex items-center">

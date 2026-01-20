@@ -85,12 +85,15 @@ def room_type_create(request):
     # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
+        default_hotel = None
     elif request.user.role == 'Owner':
         hotels = Hotel.objects.filter(owner=request.user)
+        default_hotel = hotels.first()
     else:
         hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+        default_hotel = request.user.assigned_hotel
     
-    return render(request, 'configurations/room_type_form.html', {'form': form, 'hotels': hotels})
+    return render(request, 'configurations/room_type_form.html', {'form': form, 'hotels': hotels, 'default_hotel': default_hotel})
 
 @login_required
 def room_type_detail(request, pk):
@@ -220,14 +223,18 @@ def room_category_create(request):
     else:
         form = RoomCategoryForm()
     
+    # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
+        default_hotel = None
     elif request.user.role == 'Owner':
         hotels = Hotel.objects.filter(owner=request.user)
+        default_hotel = hotels.first()
     else:
         hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+        default_hotel = request.user.assigned_hotel
     
-    return render(request, 'configurations/room_category_form.html', {'form': form, 'hotels': hotels})
+    return render(request, 'configurations/room_category_form.html', {'form': form, 'hotels': hotels, 'default_hotel': default_hotel})
 
 @login_required
 def room_category_detail(request, pk):
@@ -347,12 +354,15 @@ def bed_type_create(request):
     # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
+        default_hotel = None
     elif request.user.role == 'Owner':
         hotels = Hotel.objects.filter(owner=request.user)
+        default_hotel = hotels.first()
     else:
         hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+        default_hotel = request.user.assigned_hotel
     
-    return render(request, 'configurations/bed_type_form.html', {'hotels': hotels})
+    return render(request, 'configurations/bed_type_form.html', {'hotels': hotels, 'default_hotel': default_hotel})
 
 @login_required
 def bed_type_detail(request, pk):
@@ -533,12 +543,15 @@ def floor_create(request):
     # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
+        default_hotel = None
     elif request.user.role == 'Owner':
         hotels = Hotel.objects.filter(owner=request.user)
+        default_hotel = hotels.first()
     else:
         hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+        default_hotel = request.user.assigned_hotel
     
-    return render(request, 'configurations/floor_form.html', {'hotels': hotels})
+    return render(request, 'configurations/floor_form.html', {'hotels': hotels, 'default_hotel': default_hotel})
 
 @login_required
 def floor_detail(request, pk):
@@ -697,12 +710,15 @@ def amenity_create(request):
     # Get available hotels
     if request.user.is_superuser:
         hotels = Hotel.objects.all()
+        default_hotel = None
     elif request.user.role == 'Owner':
         hotels = Hotel.objects.filter(owner=request.user)
+        default_hotel = hotels.first()
     else:
         hotels = [request.user.assigned_hotel] if request.user.assigned_hotel else []
+        default_hotel = request.user.assigned_hotel
     
-    return render(request, 'configurations/amenity_form.html', {'hotels': hotels})
+    return render(request, 'configurations/amenity_form.html', {'hotels': hotels, 'default_hotel': default_hotel})
 
 @login_required
 def amenity_detail(request, pk):
