@@ -8,7 +8,7 @@ class RoomForm(forms.ModelForm):
     class Meta:
         model = Room
         fields = [
-            'room_number', 'floor', 'room_type', 'bed_type', 'max_guests', 
+            'room_number', 'floor', 'room_type', 'room_category', 'bed_type', 'max_guests', 
             'room_size', 'view_type', 'price', 'status', 'has_wifi', 'has_ac', 
             'has_tv', 'has_minibar', 'has_balcony', 'has_work_desk', 
             'has_seating_area', 'has_kitchenette', 'has_living_room', 

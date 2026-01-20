@@ -324,9 +324,9 @@ class Room(models.Model):
     status = models.CharField(max_length=20, choices=ROOM_STATUS_CHOICES, default='Available')
     
     # Features & Amenities (Boolean fields for common amenities)
-    has_wifi = models.BooleanField(default=True, verbose_name='Free Wi-Fi')
-    has_ac = models.BooleanField(default=True, verbose_name='Air Conditioning')
-    has_tv = models.BooleanField(default=True, verbose_name='TV')
+    has_wifi = models.BooleanField(default=False, verbose_name='Free Wi-Fi')
+    has_ac = models.BooleanField(default=False, verbose_name='Air Conditioning')
+    has_tv = models.BooleanField(default=False, verbose_name='TV')
     has_minibar = models.BooleanField(default=False, verbose_name='Mini Bar')
     has_balcony = models.BooleanField(default=False, verbose_name='Balcony')
     has_work_desk = models.BooleanField(default=False, verbose_name='Work Desk')
