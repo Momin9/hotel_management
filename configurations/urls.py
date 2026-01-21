@@ -38,4 +38,8 @@ urlpatterns = [
     path('amenities/<uuid:pk>/', views.amenity_detail, name='amenity_detail'),
     path('amenities/<uuid:pk>/edit/', views.amenity_edit, name='amenity_edit'),
     path('amenities/<uuid:pk>/delete/', views.amenity_delete, name='amenity_delete'),
+    
+    # Bulk Import
+    path('bulk-import/', views.bulk_import, name='bulk_import'),
+    path('download-template/', views.download_template, name='download_template'),
 ]

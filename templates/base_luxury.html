@@ -353,6 +353,11 @@
                                     <i class="fas fa-star mr-3 text-luxury-500"></i>
                                     Amenities
                                 </a>
+                                <div class="border-t border-luxury-200 my-2"></div>
+                                <a href="{% url 'configurations:bulk_import' %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
+                                    <i class="fas fa-upload mr-3 text-luxury-500"></i>
+                                    Bulk Import
+                                </a>
                                 {% if user.owned_hotels.first %}
                                 <a href="{% url 'hotels:service_list' user.owned_hotels.first.hotel_id %}" class="flex items-center px-4 py-3 text-luxury-700 hover:bg-luxury-50 transition-colors">
                                     <i class="fas fa-concierge-bell mr-3 text-luxury-500"></i>

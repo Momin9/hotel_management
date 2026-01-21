@@ -39,7 +39,7 @@
                         {% for available_hotel in available_hotels %}
                         <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
                             <input type="checkbox" name="hotels" value="{{ available_hotel.hotel_id }}" id="hotel_{{ available_hotel.hotel_id }}"
-                                   {% if service and available_hotel in service.hotels.all %}checked{% endif %}
+                                   {% if service and available_hotel in service.hotels.all %}checked{% elif not service and available_hotel.hotel_id == hotel.hotel_id %}checked{% endif %}
                                    class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
                             <label for="hotel_{{ available_hotel.hotel_id }}" class="flex-1 cursor-pointer">
                                 <div class="font-medium text-luxury-800 flex items-center">
@@ -108,7 +108,7 @@
                     Service Status
                 </label>
                 <div class="flex items-center space-x-3">
-                    <input type="checkbox" name="is_active" id="is_active" {% if not service or service.is_active %}checked{% endif %}
+                    <input type="checkbox" name="is_active" id="is_active" {% if not service %}checked{% elif service.is_active %}checked{% endif %}
                            class="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500">
                     <label for="is_active" class="text-luxury-700 font-medium cursor-pointer">
                         Active (Service available for booking)
