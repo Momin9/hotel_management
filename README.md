@@ -28,6 +28,8 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
 - **Guest CRM**: Complete guest profile and history management
 - **Financial Reports**: Revenue tracking, occupancy rates, and analytics
 - **Inventory Control**: Stock management for hotel supplies
+- **Configuration Management**: Room types, categories, bed types, floors, and amenities
+- **Bulk Import**: CSV-based bulk import for configurations
 
 ### 👥 Employee Dashboards
 
@@ -40,10 +42,11 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
 
 #### 🧹 **Housekeeping**
 - Room cleaning task assignments
-- Room status updates (Clean, Dirty, Maintenance)
+- Room status updates (Clean, Dirty, Maintenance, Out of Order)
 - Inventory usage tracking
 - Maintenance issue reporting
 - Task scheduling and completion tracking
+- Kanban and list view for room management
 
 #### 🔧 **Maintenance**
 - Work order management
@@ -52,7 +55,7 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
 - Equipment and asset management
 - Vendor coordination
 
-#### 👨‍🍳 **Kitchen/Restaurant (Chef)**
+#### 👨🍳 **Kitchen/Restaurant (Chef)**
 - Menu management and pricing
 - Order processing and tracking
 - Inventory management for food items
@@ -74,19 +77,24 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
 - **Font Awesome** - Icon library
 - **Inter Font** - Modern typography
 
+### Data Processing & Export
+- **Pandas 2.0.3** - Data analysis and manipulation
+- **OpenPyXL 3.1.2** - Excel file processing
+- **XlsxWriter 3.1.9** - Excel file generation
+- **ReportLab 4.1.0** - PDF generation
+
 ### Integrations
-- **Stripe** - Payment processing
-- **Twilio** - SMS notifications
-- **SendGrid** - Email services
-- **AWS S3** - File storage (via django-storages)
-- **ReportLab** - PDF generation
+- **Stripe 8.7.0** - Payment processing
+- **Twilio 8.10.0** - SMS notifications
+- **Django Countries 7.5.1** - Country and phone field support
+- **Django CKEditor 5** - Rich text editing
 
 ### Development Tools
-- **Django REST Framework** - API development
-- **Django Debug Toolbar** - Development debugging
-- **Faker** - Test data generation
-- **Gunicorn** - WSGI server for production
-- **WhiteNoise** - Static file serving
+- **Django REST Framework 3.14.0** - API development
+- **Django Extensions 3.2.3** - Development utilities
+- **Faker 20.1.0** - Test data generation
+- **Gunicorn 21.2.0** - WSGI server for production
+- **WhiteNoise 6.6.0** - Static file serving
 
 ## 🚀 Quick Start
 
@@ -126,20 +134,19 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
    # Edit .env with your database and service credentials
    ```
 
-6. **Run Development Setup**
+6. **Run Migrations**
    ```bash
-   chmod +x setup_dev.sh
-   ./setup_dev.sh
+   python manage.py migrate
    ```
 
-7. **Run Migrations**
-   ```bash
-   python manage.py migrate_schemas
-   ```
-
-8. **Create Superuser**
+7. **Create Superuser**
    ```bash
    python manage.py createsuperuser
+   ```
+
+8. **Generate CSV Template (Optional)**
+   ```bash
+   python create_excel_template.py
    ```
 
 9. **Start Development Server**
@@ -153,6 +160,7 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
 - **Super Admin Panel**: http://localhost:8000/admin
 - **Hotel Dashboard**: http://localhost:8000/dashboard
 - **API Documentation**: http://localhost:8000/api/docs
+- **Bulk Import**: http://localhost:8000/configurations/bulk-import/
 
 ## 🏗️ Architecture
 
@@ -179,19 +187,36 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
 
 | Module | Description | Key Features |
 |--------|-------------|-------------|
-| **Accounts** | User management and authentication | Multi-role support, profile management |
-| **Hotels** | Property and room management | Multi-property, room types, pricing |
-| **Reservations** | Booking and reservation system | Calendar view, availability checking |
-| **Front Desk** | Check-in/out operations | Guest services, folio management |
-| **Housekeeping** | Room maintenance and cleaning | Task assignment, status tracking |
-| **CRM** | Guest relationship management | Guest profiles, history, preferences |
-| **Billing** | Financial management | Invoicing, payments, reporting |
-| **Inventory** | Stock and supply management | Item tracking, usage monitoring |
-| **POS** | Point of sale system | Menu management, order processing |
-| **Reporting** | Analytics and insights | Revenue reports, occupancy analytics |
-| **Maintenance** | Facility management | Work orders, asset tracking |
-| **Staff** | Employee management | Scheduling, performance tracking |
-| **Notifications** | Communication system | Real-time alerts, messaging |
+| **Accounts** | User management and authentication | Multi-role support, profile management, permissions |
+| **Hotels** | Property and room management | Multi-property, room types, pricing, activity logs |
+| **Configurations** | System configuration management | Room types, categories, bed types, floors, amenities, bulk import |
+| **Reservations** | Booking and reservation system | Calendar view, availability checking, expense tracking |
+| **Front Desk** | Check-in/out operations | Guest services, folio management, room assignments |
+| **Housekeeping** | Room maintenance and cleaning | Task assignment, status tracking, scheduling, kanban view |
+| **CRM** | Guest relationship management | Guest profiles, history, preferences, company contracts |
+| **Billing** | Financial management | Invoicing, payments, reporting, tax configuration |
+| **Inventory** | Stock and supply management | Item tracking, usage monitoring, categories |
+| **POS** | Point of sale system | Menu management, order processing, minibar items |
+| **Reporting** | Analytics and insights | Revenue reports, occupancy analytics, custom dashboards |
+| **Maintenance** | Facility management | Work orders, asset tracking, issue resolution |
+| **Staff** | Employee management | Scheduling, performance tracking, role management |
+| **Notifications** | Communication system | Real-time alerts, messaging, system notifications |
+
+## 🔧 Configuration Management
+
+### Bulk Import System
+- **CSV Format**: Unified CSV format for all configuration types
+- **Template Download**: Built-in template generator with sample data
+- **Duplicate Handling**: Automatically skips existing configurations
+- **Error Handling**: Comprehensive validation and error reporting
+- **Supported Types**: Room Types, Room Categories, Bed Types, Floors, Amenities
+
+### Configuration Types
+- **Room Types**: Standard Room, Deluxe, Suite, Presidential Suite, etc.
+- **Room Categories**: Economy, Business, Premium, Luxury with occupancy limits
+- **Bed Types**: Single, Double, Queen, King, Twin, Bunk, Sofa Bed, etc.
+- **Floors**: Ground Floor, numbered floors, Mezzanine, Penthouse, Basement
+- **Amenities**: Wi-Fi, AC, TV, Mini Bar, Balcony, Safe, etc. with FontAwesome icons
 
 ## 🚀 Deployment
 
@@ -211,7 +236,7 @@ AuraStay is a modern, cloud-based hotel management platform designed to streamli
 
 3. **Database Migration**
    ```bash
-   python manage.py migrate_schemas --shared
+   python manage.py migrate
    ```
 
 4. **Web Server (Gunicorn + Nginx)**
@@ -232,6 +257,18 @@ docker-compose up -d
 | **Premium** | $79/month | Up to 100 | Advanced analytics, priority support |
 | **Enterprise** | $199/month | Unlimited | All features, custom integrations |
 
+## 🆕 Recent Updates
+
+### Version 2.1.0 - Configuration Management Enhancement
+- ✅ **CSV Bulk Import System**: Replace Excel with CSV format for better compatibility
+- ✅ **Room Category Model**: New model with max occupancy field
+- ✅ **Bed Type Usage Field**: Added usage descriptions for bed types
+- ✅ **Dynamic Amenity Selection**: Interactive amenity selection in room forms
+- ✅ **Room Activity Logging**: Comprehensive room activity tracking
+- ✅ **Luxury UI Components**: Beautiful modals and enhanced user interface
+- ✅ **Alphabetical Ordering**: Consistent alphabetical sorting across all lists
+- ✅ **Navigation Integration**: Bulk import accessible from configurations dropdown
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -244,7 +281,7 @@ docker-compose up -d
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Credits
+## 👨💻 Credits
 
 **Design**: MA Qureshi  
 **Development**: Momin Ali
@@ -254,9 +291,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For support and inquiries:
-- 📧 Email: support@aurastay.com
-- 📱 Phone: +1 (555) 123-4567
-- 🌐 Website: https://aurastay.com
+- 📧 Email: mominalikhoker589@gmail.com
+- 📱 Phone: +923144506620
+- 🌐 Website: 
 
 ---
 
