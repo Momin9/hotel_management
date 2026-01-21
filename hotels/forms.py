@@ -1,14 +1,14 @@
 from django import forms
 from django_countries.widgets import CountrySelectWidget
 from .models import Room, Company, CompanyRoomRate
-from configurations.models import RoomType, BedType, Floor, Amenity
+from configurations.models import RoomType, RoomCategory, BedType, Floor, Amenity
 from crm.models import GuestProfile
 
 class RoomForm(forms.ModelForm):
     class Meta:
         model = Room
         fields = [
-            'room_number', 'floor', 'room_type', 'bed_type', 'max_guests', 
+            'room_number', 'floor', 'room_type', 'room_category', 'bed_type', 'max_guests', 
             'room_size', 'view_type', 'price', 'status', 'has_wifi', 'has_ac', 
             'has_tv', 'has_minibar', 'has_balcony', 'has_work_desk', 
             'has_seating_area', 'has_kitchenette', 'has_living_room', 
@@ -43,6 +43,9 @@ class RoomForm(forms.ModelForm):
             'room_type': forms.Select(attrs={
                 'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
             }),
+            'room_category': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
+            }),
             'bed_type': forms.Select(attrs={
                 'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white appearance-none cursor-pointer'
             }),
@@ -73,6 +76,7 @@ class RoomForm(forms.ModelForm):
             # Filter choices based on hotel
             self.fields['floor'].queryset = Floor.objects.filter(hotels=hotel)
             self.fields['room_type'].queryset = RoomType.objects.filter(hotels=hotel)
+            self.fields['room_category'].queryset = hotel.config_room_categories.all()
             self.fields['bed_type'].queryset = BedType.objects.filter(hotels=hotel)
             self.fields['amenities'].queryset = Amenity.objects.filter(hotels=hotel)
 

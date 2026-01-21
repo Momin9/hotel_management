@@ -7,7 +7,7 @@
 {% block content %}
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-3xl p-8 luxury-shadow">
-        <form method="post" id="reservationForm" class="space-y-6 validate">
+        <form method="post" id="reservationForm" class="space-y-6">
             {% csrf_token %}
             
             <!-- Validation Summary (will be populated by JavaScript) -->
@@ -15,7 +15,7 @@
                 <h4><i class="fas fa-exclamation-triangle"></i> Please correct the following errors:</h4>
                 <ul></ul>
             </div>
-            
+
             <!-- Guest Selection -->
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-luxury-800 flex items-center">
@@ -65,6 +65,37 @@
                     <div class="validation-container">
                         <label for="guest_phone" class="block text-sm font-medium text-luxury-700 mb-2">Phone</label>
                         <input type="tel" name="guest_phone" id="guest_phone"
+                               class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-luxury-800 flex items-center">
+                    <i class="fas fa-car mr-3 text-royal-500"></i>
+                    Vehicle Information
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="validation-container">
+                        <label for="vehicle_type" class="block text-sm font-medium text-luxury-700 mb-2">Vehicle Type</label>
+                        <select name="vehicle_type" id="vehicle_type"
+                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="">Select Vehicle Type</option>
+                            <option value="Car">Car</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                            <option value="Van">Van</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Bus">Bus</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="validation-container">
+                        <label for="vehicle_registration" class="block text-sm font-medium text-luxury-700 mb-2">Vehicle Registration Number</label>
+                        <input type="text" name="vehicle_registration" id="vehicle_registration" placeholder="e.g., ABC-123 or ABC1234"
                                class="w-full px-4 py-3 border border-luxury-300 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
                     </div>
                 </div>
@@ -152,7 +183,7 @@
                                 <option value="Executive">Executive Room</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label style="display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 8px;">Bed Type</label>
                             <select id="bedTypeFilter" onchange="filterRooms()" style="width: 100%; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 12px; background: white; font-size: 14px;">
@@ -165,7 +196,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="availableRooms" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="text-center py-8 text-luxury-600">
                         <i class="fas fa-search text-4xl mb-4 text-luxury-300"></i>
@@ -182,7 +213,7 @@
             </div>
             
             <div class="flex space-x-4">
-                <button type="submit" class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors">
+                <button type="submit" id="submitBtn" class="bg-royal-500 text-white px-6 py-3 rounded-xl hover:bg-royal-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                     <i class="fas fa-calendar-check mr-2"></i>Create Reservation
                 </button>
                 <a href="{% url 'reservations:list' %}" class="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition-colors">
@@ -194,6 +225,99 @@
 </div>
 
 <script>
+// Initialize form and room availability checking
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('reservationForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Disable submit button initially
+    submitBtn.disabled = true;
+
+    // Set minimum dates
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('checkInDate').min = today;
+    document.getElementById('checkOutDate').min = today;
+
+    // Auto-check availability if hotel is pre-selected
+    const hotelSelect = document.getElementById('hotelSelect');
+    if (hotelSelect.value) {
+        setTimeout(checkAvailability, 100);
+    }
+
+    // Enable submit when room is selected
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'room') {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        console.log('Form submission started');
+
+        const selectedRoom = document.querySelector('input[name="room"]:checked');
+        const guestSelect = document.getElementById('guestSelect').value;
+        const hotelSelect = document.getElementById('hotelSelect').value;
+        const checkInDate = document.getElementById('checkInDate').value;
+        const checkOutDate = document.getElementById('checkOutDate').value;
+
+        console.log('Form validation:', {
+            selectedRoom: selectedRoom ? selectedRoom.value : 'none',
+            guestSelect,
+            hotelSelect,
+            checkInDate,
+            checkOutDate
+        });
+
+        let errors = [];
+
+        // Basic validation
+        if (!guestSelect) errors.push('Please select a guest.');
+        if (!hotelSelect) errors.push('Please select a hotel.');
+        if (!checkInDate) errors.push('Please select check-in date.');
+        if (!checkOutDate) errors.push('Please select check-out date.');
+        if (!selectedRoom) {
+            // Check if any room is visually selected
+            const visuallySelected = document.querySelector('.room-option.border-royal-500');
+            if (!visuallySelected) {
+                errors.push('Please select a room.');
+            }
+        }
+
+        // Date validation
+        if (checkInDate && checkOutDate && new Date(checkInDate) >= new Date(checkOutDate)) {
+            errors.push('Check-out date must be after check-in date.');
+        }
+
+        // New guest validation
+        if (guestSelect === 'new') {
+            const firstName = document.getElementById('guest_first_name').value.trim();
+            const lastName = document.getElementById('guest_last_name').value.trim();
+            const email = document.getElementById('guest_email').value.trim();
+
+            if (!firstName) errors.push('Guest first name is required.');
+            if (!lastName) errors.push('Guest last name is required.');
+            if (!email) errors.push('Guest email is required.');
+        }
+
+        if (errors.length > 0) {
+            console.log('Form validation errors:', errors);
+            e.preventDefault();
+            alert('Please fix the following errors:\n\n' + errors.join('\n'));
+            return false;
+        }
+
+        console.log('Form validation passed, submitting...');
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Reservation...';
+
+        return true;
+    });
+});
+
+// Guest selection handling
 document.getElementById('guestSelect').addEventListener('change', function() {
     const newGuestBtn = document.getElementById('newGuestBtn');
     const newGuestForm = document.getElementById('newGuestForm');
@@ -218,47 +342,68 @@ function checkAvailability() {
     const checkIn = document.getElementById('checkInDate').value;
     const checkOut = document.getElementById('checkOutDate').value;
     
+    console.log('Checking availability:', { hotel, checkIn, checkOut });
+
     if (!hotel || !checkIn || !checkOut) {
+        console.log('Missing required fields for availability check');
         return;
     }
     
     const availableRoomsDiv = document.getElementById('availableRooms');
-    availableRoomsDiv.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-royal-500"></i><p class="mt-2 text-luxury-600">Checking availability...</p></div>';
+    availableRoomsDiv.innerHTML = '<div class="text-center py-8 col-span-2"><i class="fas fa-spinner fa-spin text-2xl text-royal-500"></i><p class="mt-2 text-luxury-600">Checking availability...</p></div>';
     
-    fetch(`{% url 'reservations:check_availability' %}?hotel_id=${hotel}&check_in=${checkIn}&check_out=${checkOut}`)
-        .then(response => response.json())
+    const url = `{% url 'reservations:check_availability' %}?hotel_id=${encodeURIComponent(hotel)}&check_in=${encodeURIComponent(checkIn)}&check_out=${encodeURIComponent(checkOut)}`;
+    console.log('Fetching:', url);
+
+    fetch(url)
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Availability data:', data);
             if (data.rooms && data.rooms.length > 0) {
                 allRooms = data.rooms;
                 displayRooms(allRooms);
+                // Reset filters
+                document.getElementById('roomTypeFilter').value = '';
+                document.getElementById('bedTypeFilter').value = '';
             } else {
                 availableRoomsDiv.innerHTML = `
                     <div class="text-center py-8 text-luxury-600 col-span-2">
                         <i class="fas fa-exclamation-triangle text-4xl mb-4 text-yellow-500"></i>
-                        <p>No rooms available for selected dates</p>
-                        <p class="text-sm">Please try different dates</p>
+                        <p class="font-semibold">No rooms available for selected dates</p>
+                        <p class="text-sm mt-2">Please try different dates or contact reception</p>
+                        ${data.debug ? `<p class="text-xs mt-2 text-gray-500">Hotel: ${data.debug.hotel_name}, Total rooms: ${data.debug.all_room_numbers?.length || 0}</p>` : ''}
                     </div>
                 `;
+                allRooms = [];
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Availability check error:', error);
             availableRoomsDiv.innerHTML = `
                 <div class="text-center py-8 text-red-600 col-span-2">
                     <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
-                    <p>Error checking availability</p>
+                    <p class="font-semibold">Error checking availability</p>
+                    <p class="text-sm mt-2">Please try again or contact support</p>
+                    <p class="text-xs mt-2 text-gray-500">${error.message}</p>
                 </div>
             `;
+            allRooms = [];
         });
 }
 
 function displayRooms(rooms) {
     const availableRoomsDiv = document.getElementById('availableRooms');
     let roomsHtml = '';
-    
+
     rooms.forEach(room => {
         roomsHtml += `
-            <div class="border border-luxury-200 rounded-xl p-4 hover:bg-luxury-50 transition-colors cursor-pointer room-option" 
+            <div class="border border-luxury-200 rounded-xl p-4 hover:bg-luxury-50 transition-colors cursor-pointer room-option"
                  onclick="selectRoom(${room.id}, '${room.number}', '${room.type}', ${room.price})"
                  data-room-type="${room.type}" data-bed-type="${room.bed}">
                 <div class="flex items-center justify-between mb-2">
@@ -271,38 +416,66 @@ function displayRooms(rooms) {
             </div>
         `;
     });
-    
+
     availableRoomsDiv.innerHTML = roomsHtml;
 }
 
 function filterRooms() {
     const roomTypeFilter = document.getElementById('roomTypeFilter').value;
     const bedTypeFilter = document.getElementById('bedTypeFilter').value;
-    
-    let filteredRooms = allRooms;
-    
+
+    console.log('Filtering rooms:', { roomTypeFilter, bedTypeFilter, totalRooms: allRooms.length });
+
+    if (!allRooms || allRooms.length === 0) {
+        console.log('No rooms to filter');
+        return;
+    }
+
+    let filteredRooms = [...allRooms]; // Create a copy
+
     if (roomTypeFilter) {
-        filteredRooms = filteredRooms.filter(room => room.type === roomTypeFilter);
+        filteredRooms = filteredRooms.filter(room => {
+            const roomType = room.type || room.category || '';
+            return roomType.toLowerCase().includes(roomTypeFilter.toLowerCase());
+        });
+        console.log('After room type filter:', filteredRooms.length);
     }
-    
+
     if (bedTypeFilter) {
-        filteredRooms = filteredRooms.filter(room => room.bed === bedTypeFilter);
+        filteredRooms = filteredRooms.filter(room => {
+            const bedType = room.bed || '';
+            return bedType.toLowerCase().includes(bedTypeFilter.toLowerCase());
+        });
+        console.log('After bed type filter:', filteredRooms.length);
     }
-    
+
     if (filteredRooms.length > 0) {
         displayRooms(filteredRooms);
     } else {
         document.getElementById('availableRooms').innerHTML = `
             <div class="text-center py-8 text-luxury-600 col-span-2">
                 <i class="fas fa-filter text-4xl mb-4 text-luxury-300"></i>
-                <p>No rooms match the selected filters</p>
-                <p class="text-sm">Try adjusting your filters</p>
+                <p class="font-semibold">No rooms match the selected filters</p>
+                <p class="text-sm mt-2">Try adjusting your filters or clearing them</p>
+                <button onclick="clearFilters()" class="mt-3 px-4 py-2 bg-royal-500 text-white rounded-lg hover:bg-royal-600 transition-colors">
+                    Clear Filters
+                </button>
             </div>
         `;
     }
 }
 
+function clearFilters() {
+    document.getElementById('roomTypeFilter').value = '';
+    document.getElementById('bedTypeFilter').value = '';
+    if (allRooms && allRooms.length > 0) {
+        displayRooms(allRooms);
+    }
+}
+
 function selectRoom(roomId, roomNumber, roomType, price) {
+    console.log('Selecting room:', roomId);
+
     // Remove previous selections
     document.querySelectorAll('.room-option').forEach(el => {
         el.classList.remove('border-royal-500', 'bg-royal-50');
@@ -310,22 +483,52 @@ function selectRoom(roomId, roomNumber, roomType, price) {
     });
     
     // Select current room
-    event.currentTarget.classList.remove('border-luxury-200');
-    event.currentTarget.classList.add('border-royal-500', 'bg-royal-50');
+    const currentRoom = event.currentTarget;
+    currentRoom.classList.remove('border-luxury-200');
+    currentRoom.classList.add('border-royal-500', 'bg-royal-50');
     
-    // Set radio button
-    document.querySelector(`input[value="${roomId}"]`).checked = true;
+    // Find and check the radio button inside this room
+    const radioButton = currentRoom.querySelector('input[name="room"]');
+    if (radioButton) {
+        radioButton.checked = true;
+        console.log('Room radio button checked:', radioButton.checked, 'Value:', radioButton.value);
+    }
+
+    // Enable submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = false;
+    console.log('Submit button enabled');
 }
 
-// Set minimum date to today
-document.getElementById('checkInDate').min = new Date().toISOString().split('T')[0];
-document.getElementById('checkOutDate').min = new Date().toISOString().split('T')[0];
-
 // Update checkout min date when checkin changes
-document.getElementById('checkInDate').addEventListener('change', function() {
-    const checkInDate = new Date(this.value);
-    checkInDate.setDate(checkInDate.getDate() + 1);
-    document.getElementById('checkOutDate').min = checkInDate.toISOString().split('T')[0];
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('checkInDate').addEventListener('change', function() {
+        const checkInDate = new Date(this.value);
+        checkInDate.setDate(checkInDate.getDate() + 1);
+        document.getElementById('checkOutDate').min = checkInDate.toISOString().split('T')[0];
+
+        // Clear checkout date if it's before new checkin date
+        const checkOutInput = document.getElementById('checkOutDate');
+        if (checkOutInput.value && checkOutInput.value <= this.value) {
+            checkOutInput.value = '';
+        }
+
+        // Trigger availability check
+        checkAvailability();
+    });
+
+    // Validate checkout date is after checkin date
+    document.getElementById('checkOutDate').addEventListener('change', function() {
+        const checkInDate = document.getElementById('checkInDate').value;
+        if (checkInDate && this.value <= checkInDate) {
+            alert('Check-out date must be after check-in date.');
+            this.value = '';
+            return;
+        }
+
+        // Trigger availability check
+        checkAvailability();
+    });
 });
 </script>
 
@@ -334,18 +537,42 @@ document.getElementById('checkInDate').addEventListener('change', function() {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
     
-    .room-option:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+    /* Advanced room selection styling */
+    .room-option {
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
+    .room-option:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.2);
+        border-color: #3b82f6 !important;
+    }
+
+    .room-option.selected-room {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px -8px rgba(59, 130, 246, 0.3);
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+        border: 2px solid #3b82f6 !important;
+    }
+
+    .selected-indicator {
+        animation: checkmark 0.3s ease-in-out;
+    }
+
+    @keyframes checkmark {
+        0% { transform: scale(0) rotate(0deg); }
+        50% { transform: scale(1.2) rotate(180deg); }
+        100% { transform: scale(1) rotate(360deg); }
+    }
+
     /* Ensure filters are visible */
     #roomTypeFilter, #bedTypeFilter {
         appearance: auto;
         -webkit-appearance: menulist;
         -moz-appearance: menulist;
     }
-    
+
     /* Custom luxury colors */
     .luxury-50 { background-color: #f8fafc; }
     .luxury-100 { background-color: #f1f5f9; }

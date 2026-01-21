@@ -89,175 +89,12 @@
                 
                 <!-- Permissions -->
                 <div class="space-y-6">
-                    <h3 class="text-lg font-semibold text-luxury-800 mb-4">Staff Permissions</h3>
+                    <h3 class="text-lg font-semibold text-luxury-800 mb-4">Role Permissions</h3>
                     
-                    <!-- Hotel Management -->
-                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
-                        <h4 class="font-semibold text-luxury-800 mb-3">Hotel Management</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_hotels" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Hotel Information
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_change_hotels" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Edit Hotel Settings
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Rooms
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Add New Rooms
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_change_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Edit Room Details
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_delete_rooms" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Delete Rooms
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- Reservations -->
-                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
-                        <h4 class="font-semibold text-luxury-800 mb-3">Reservations</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Reservations
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Create Reservations
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_change_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Edit Reservations
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_delete_reservations" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Cancel Reservations
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_checkins" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Check-ins
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_checkins" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Process Check-ins
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- Guest Management -->
-                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
-                        <h4 class="font-semibold text-luxury-800 mb-3">Guest Management</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Guest Profiles
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Add New Guests
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_change_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Edit Guest Information
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_delete_guests" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Delete Guest Profiles
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- Staff Management -->
-                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
-                        <h4 class="font-semibold text-luxury-800 mb-3">Staff Management</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Staff List
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Add New Staff
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_change_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Edit Staff Details
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_delete_staff" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Remove Staff
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- Operations -->
-                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
-                        <h4 class="font-semibold text-luxury-800 mb-3">Operations</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_housekeeping" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Housekeeping Tasks
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_housekeeping" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Create Housekeeping Tasks
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_maintenance" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Maintenance Issues
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_maintenance" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Report New Issues
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_pos" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View POS Orders
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_pos" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Create Orders
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- Financial -->
-                    <div class="bg-white border border-luxury-200 rounded-xl p-4">
-                        <h4 class="font-semibold text-luxury-800 mb-3">Financial</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_billing" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Billing Information
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_billing" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Create Invoices
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_payments" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Payments
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_add_payments" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                Process Payments
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_reports" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Financial Reports
-                            </label>
-                            <label class="flex items-center text-sm">
-                                <input type="checkbox" name="can_view_inventory" class="w-4 h-4 text-royal-600 rounded mr-2">
-                                View Inventory
-                            </label>
+                    <div id="rolePermissions" class="bg-luxury-50 border border-luxury-200 rounded-xl p-6">
+                        <div class="text-center text-luxury-500 py-8">
+                            <i class="fas fa-shield-alt text-4xl mb-4 text-luxury-300"></i>
+                            <p>Select a role to see available permissions</p>
                         </div>
                     </div>
                 </div>
@@ -279,9 +116,138 @@
     </div>
 </div>
 
+<script>
+// Role permissions mapping based on backend definitions
+const rolePermissions = {
+    'Manager': [
+        'View Properties',
+        'Change Property Settings',
+        'View Staff',
+        'Add Staff',
+        'Change Staff',
+        'View Reservations',
+        'Add Reservation',
+        'Change Reservation',
+        'View Guests',
+        'Add Guest',
+        'Change Guest',
+        'View Housekeeping',
+        'Manage Housekeeping',
+        'View Maintenance',
+        'Manage Maintenance',
+        'View Billing',
+        'View Reports'
+    ],
+    'Staff': [
+        'View Reservations',
+        'Add Reservation',
+        'Change Reservation',
+        'View Guests',
+        'Add Guest',
+        'Change Guest',
+        'View Rooms',
+        'Change Room Status'
+    ],
+    'Receptionist': [
+        'View Reservations',
+        'Add Reservation',
+        'Change Reservation',
+        'View Guests',
+        'Add Guest',
+        'Change Guest',
+        'Check-in Guest',
+        'Check-out Guest',
+        'View Billing',
+        'Process Payment',
+        'View Rooms',
+        'Change Room Status'
+    ],
+    'Housekeeper': [
+        'View Housekeeping Tasks',
+        'Change Housekeeping Task',
+        'View Rooms',
+        'Change Room Status',
+        'Add Maintenance Issue'
+    ],
+    'Maintenance': [
+        'View Maintenance Issues',
+        'Change Maintenance Issue',
+        'View Rooms',
+        'View Inventory',
+        'Change Inventory'
+    ],
+    'Kitchen': [
+        'View POS Orders',
+        'Change POS Order',
+        'View POS Items',
+        'Add POS Order',
+        'View Inventory',
+        'Change Inventory'
+    ],
+    'Accountant': [
+        'View Billing',
+        'Manage Billing',
+        'View Payments',
+        'Manage Payments',
+        'View Reports',
+        'Generate Reports'
+    ]
+};
+
+// Handle role selection change
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const permissionsContainer = document.getElementById('rolePermissions');
+    
+    if (roleSelect && permissionsContainer) {
+        roleSelect.addEventListener('change', function() {
+            const selectedRole = this.value;
+            
+            if (!selectedRole || !rolePermissions[selectedRole]) {
+                permissionsContainer.innerHTML = `
+                    <div class="text-center text-luxury-500 py-8">
+                        <i class="fas fa-shield-alt text-4xl mb-4 text-luxury-300"></i>
+                        <p>Select a role to see available permissions</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const permissions = rolePermissions[selectedRole];
+            let permissionsHtml = `
+                <div class="mb-4">
+                    <h4 class="font-semibold text-luxury-800 mb-2 flex items-center">
+                        <i class="fas fa-user-shield mr-2 text-royal-500"></i>
+                        ${selectedRole} Permissions
+                    </h4>
+                    <p class="text-sm text-luxury-600 mb-4">This role will automatically have the following permissions:</p>
+                </div>
+                <div class="grid grid-cols-1 gap-2">
+            `;
+            
+            permissions.forEach(permission => {
+                permissionsHtml += `
+                    <div class="flex items-center p-2 bg-white border border-luxury-200 rounded-lg">
+                        <i class="fas fa-check-circle text-green-500 mr-3 text-sm"></i>
+                        <span class="text-sm font-medium text-luxury-700">${permission}</span>
+                    </div>
+                `;
+            });
+            
+            permissionsHtml += '</div>';
+            permissionsContainer.innerHTML = permissionsHtml;
+        });
+    }
+});
+</script>
+
 <style>
     .luxury-shadow {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .luxury-50 {
+        background-color: #f8fafc;
     }
 </style>
 {% endblock %}

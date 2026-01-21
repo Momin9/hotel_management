@@ -241,8 +241,8 @@ def room_list(request, hotel_id):
     
     # Get filter options
     from configurations.models import RoomType, Floor as ConfigFloor
-    room_types = RoomType.objects.filter(hotels=hotel_obj)
-    floors = ConfigFloor.objects.filter(hotels=hotel_obj)
+    room_types = RoomType.objects.filter(hotels=hotel_obj).order_by('name')
+    floors = ConfigFloor.objects.filter(hotels=hotel_obj).order_by('name')
     
     # Check permissions for room management
     can_add_room = request.user.role == 'Owner' or request.user.can_add_rooms
@@ -316,17 +316,19 @@ def room_create(request, hotel_id):
         return redirect('hotels:room_list', hotel_id=hotel_id)
 
     # Get configuration data for the hotel
-    from configurations.models import Amenity, RoomType, BedType, Floor
-    amenities = Amenity.objects.filter(hotels=hotel_obj, is_active=True)
-    room_types = RoomType.objects.filter(hotels=hotel_obj)
-    bed_types = BedType.objects.filter(hotels=hotel_obj)
-    floors = Floor.objects.filter(hotels=hotel_obj)
-    services = hotel_obj.services.all()
+    from configurations.models import Amenity, RoomType, RoomCategory, BedType, Floor
+    amenities = Amenity.objects.filter(hotels=hotel_obj, is_active=True).order_by('name')
+    room_types = RoomType.objects.filter(hotels=hotel_obj).order_by('name')
+    room_categories = RoomCategory.objects.filter(hotels=hotel_obj).order_by('name')
+    bed_types = BedType.objects.filter(hotels=hotel_obj).order_by('name')
+    floors = Floor.objects.filter(hotels=hotel_obj).order_by('name')
+    services = hotel_obj.services.all().order_by('name')
     
     return render(request, 'hotels/room_form.html', {
         'hotel': hotel_obj,
         'amenities': amenities,
         'room_types': room_types,
+        'room_categories': room_categories,
         'bed_types': bed_types,
         'floors': floors,
         'services': services
@@ -416,11 +418,11 @@ def room_edit(request, hotel_id, room_id):
     
     # Get configuration data for the hotel
     from configurations.models import Amenity, RoomType, BedType, Floor
-    amenities = Amenity.objects.filter(hotels=hotel_obj, is_active=True)
-    room_types = RoomType.objects.filter(hotels=hotel_obj)
-    bed_types = BedType.objects.filter(hotels=hotel_obj)
-    floors = Floor.objects.filter(hotels=hotel_obj)
-    services = hotel_obj.services.all()
+    amenities = Amenity.objects.filter(hotels=hotel_obj, is_active=True).order_by('name')
+    room_types = RoomType.objects.filter(hotels=hotel_obj).order_by('name')
+    bed_types = BedType.objects.filter(hotels=hotel_obj).order_by('name')
+    floors = Floor.objects.filter(hotels=hotel_obj).order_by('name')
+    services = hotel_obj.services.all().order_by('name')
     
     return render(request, 'hotels/room_form.html', {
         'hotel': hotel_obj,

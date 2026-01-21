@@ -126,6 +126,14 @@
                 </div>
                 {% endif %}
                 
+                <!-- Usage -->
+                {% if bed_type.usage %}
+                <div class="mb-6">
+                    <h4 class="text-sm font-semibold text-luxury-700 mb-2">Usage</h4>
+                    <p class="text-luxury-600 text-sm leading-relaxed">{{ bed_type.usage }}</p>
+                </div>
+                {% endif %}
+                
                 <!-- Details -->
                 <div class="grid grid-cols-1 gap-4 mb-6">
                     <div class="text-center p-3 bg-luxury-50 rounded-xl">
@@ -177,7 +185,7 @@
                     <tr>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Bed Type</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Hotel</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Description</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Usage</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Status</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Created</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-luxury-700">Actions</th>
@@ -193,11 +201,14 @@
                                 </div>
                                 <div>
                                     <p class="font-semibold text-luxury-800">{{ bed_type.name }}</p>
+                                    {% if bed_type.usage %}
+                                    <p class="text-sm text-luxury-600">{{ bed_type.usage }}</p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-luxury-700">{{ bed_type.hotels.first.name }}</td>
-                        <td class="px-6 py-4 text-luxury-600">{{ bed_type.description|truncatechars:50 }}</td>
+                        <td class="px-6 py-4 text-luxury-600">{{ bed_type.usage|default:"-" }}</td>
                         <td class="px-6 py-4">
                             <span class="px-3 py-1 rounded-full text-sm font-medium
                                   {% if bed_type.is_active %}bg-green-100 text-green-800

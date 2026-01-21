@@ -154,6 +154,14 @@ def reservation_create(request):
             special_requests=special_requests
         )
         
+        # Create stay record if it's an immediate booking
+        if reservation_type == 'booking':
+            Stay.objects.create(
+                reservation=reservation,
+                room=room,
+                actual_check_in=timezone.now()
+            )
+        
         # Update room status
         if reservation_type == 'booking':
             room.status = 'Occupied'
@@ -311,6 +319,14 @@ def reservation_edit(request, reservation_id):
     if reservation.status == 'checked_out':
         messages.error(request, 'Cannot edit reservation after guest has been checked out.')
         return redirect('reservations:detail', reservation_id=reservation.id)
+    
+    # Ensure stay record exists for checked-in reservations
+    if reservation.status == 'checked_in' and not hasattr(reservation, 'stay'):
+        Stay.objects.create(
+            reservation=reservation,
+            room=reservation.room,
+            actual_check_in=timezone.now()
+        )
     
     if request.method == 'POST':
         action = request.POST.get('action')

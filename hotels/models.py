@@ -311,6 +311,7 @@ class Room(models.Model):
     
     # Basic Details - using configuration models
     room_type = models.ForeignKey('configurations.RoomType', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
+    room_category = models.ForeignKey('configurations.RoomCategory', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
     bed_type = models.ForeignKey('configurations.BedType', on_delete=models.SET_NULL, related_name='rooms', null=True, blank=True)
     max_guests = models.PositiveIntegerField(default=2, help_text='Maximum number of guests')
     room_size = models.PositiveIntegerField(default=250, help_text='Room size in square feet')
@@ -323,9 +324,9 @@ class Room(models.Model):
     status = models.CharField(max_length=20, choices=ROOM_STATUS_CHOICES, default='Available')
     
     # Features & Amenities (Boolean fields for common amenities)
-    has_wifi = models.BooleanField(default=True, verbose_name='Free Wi-Fi')
-    has_ac = models.BooleanField(default=True, verbose_name='Air Conditioning')
-    has_tv = models.BooleanField(default=True, verbose_name='TV')
+    has_wifi = models.BooleanField(default=False, verbose_name='Free Wi-Fi')
+    has_ac = models.BooleanField(default=False, verbose_name='Air Conditioning')
+    has_tv = models.BooleanField(default=False, verbose_name='TV')
     has_minibar = models.BooleanField(default=False, verbose_name='Mini Bar')
     has_balcony = models.BooleanField(default=False, verbose_name='Balcony')
     has_work_desk = models.BooleanField(default=False, verbose_name='Work Desk')

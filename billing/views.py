@@ -442,12 +442,31 @@ def download_invoice_pdf(request, invoice_id):
 @login_required
 def checkout_guest(request, stay_id):
     """Checkout guest and create invoice"""
-    from reservations.models import Stay
+    from reservations.models import Stay, Reservation
     from .models import TaxConfiguration, ChargeItem
     from datetime import date, timedelta
     import random
     
-    stay = get_object_or_404(Stay, id=stay_id)
+    try:
+        stay = Stay.objects.get(id=stay_id)
+    except Stay.DoesNotExist:
+        # Try to find reservation by stay_id (might be reservation_id passed by mistake)
+        try:
+            reservation = Reservation.objects.get(id=stay_id)
+            if reservation.status == 'checked_in':
+                # Create missing stay record
+                stay = Stay.objects.create(
+                    reservation=reservation,
+                    room=reservation.room,
+                    actual_check_in=timezone.now()
+                )
+                messages.info(request, 'Stay record created for checkout.')
+            else:
+                messages.error(request, 'Guest must be checked in before checkout.')
+                return redirect('reservations:list')
+        except Reservation.DoesNotExist:
+            messages.error(request, 'Error: Unable to find stay record for checkout.')
+            return redirect('reservations:list')
     
     if request.method == 'POST':
         # Check if invoice already exists

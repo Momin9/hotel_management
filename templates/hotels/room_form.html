@@ -35,6 +35,17 @@
                     </div>
                     
                     <div>
+                        <label for="room_category" class="block text-sm font-medium text-luxury-700 mb-2">Room Category</label>
+                        <select name="room_category" id="room_category" 
+                                class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
+                            <option value="">Select Room Category</option>
+                            {% for room_category in room_categories %}
+                            <option value="{{ room_category.id }}" {% if room and room.room_category_id == room_category.id %}selected{% endif %}>{{ room_category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
                         <label for="floor" class="block text-sm font-medium text-luxury-700 mb-2">Floor</label>
                         <select name="floor" id="floor" 
                                 class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent">
@@ -70,6 +81,14 @@
                     </div>
                     
                     <div>
+                        <label for="room_size" class="block text-sm font-medium text-luxury-700 mb-2">Room Size (sq ft)</label>
+                        <input type="number" name="room_size" id="room_size" min="100"
+                               value="{% if room %}{{ room.room_size }}{% endif %}"
+                               class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    
+                    <div>
                         <label for="status" class="block text-sm font-medium text-luxury-700 mb-2">Status</label>
                         <select name="status" id="status" 
                                 class="w-full px-4 py-3 border border-luxury-200 rounded-xl focus:ring-2 focus:ring-royal-500 focus:border-transparent" 
@@ -78,8 +97,8 @@
                             <option value="Available" {% if room and room.status == 'Available' %}selected{% endif %}>Available</option>
                             <option value="Occupied" {% if room and room.status == 'Occupied' %}selected{% endif %}>Occupied</option>
                             <option value="Reserved" {% if room and room.status == 'Reserved' %}selected{% endif %}>Reserved</option>
-                            <option value="Dirty" {% if room and room.status == 'Dirty' %}selected{% endif %}>Dirty</option>
-                            <option value="Cleaning" {% if room and room.status == 'Cleaning' %}selected{% endif %}>Cleaning</option>
+                            <option value="Vacant (Dirty)" {% if room and room.status == 'Dirty' %}selected{% endif %}>Dirty</option>
+                            <option value="Vacant (Cleaning)" {% if room and room.status == 'Cleaning' %}selected{% endif %}>Cleaning</option>
                             <option value="Maintenance" {% if room and room.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
                             <option value="Blocked" {% if room and room.status == 'Blocked' %}selected{% endif %}>Blocked</option>
                         </select>
@@ -88,7 +107,6 @@
             </div>
             
             <!-- Amenities Section -->
-            {% if amenities %}
             <div class="mt-8">
                 <h3 class="text-lg font-semibold text-luxury-800 mb-4">Room Amenities</h3>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -96,18 +114,29 @@
                     <div>
                         <h4 class="text-md font-medium text-luxury-700 mb-3">Available Amenities</h4>
                         <div class="space-y-2 max-h-64 overflow-y-auto border border-luxury-200 rounded-xl p-4">
-                            {% for amenity in amenities %}
-                            <div class="flex items-center space-x-3 p-2 hover:bg-luxury-50 rounded-lg transition-colors cursor-pointer" 
-                                 onclick="addAmenity('{{ amenity.pk }}', '{{ amenity.name }}', '{{ amenity.icon|default:'fas fa-star' }}')">
-                                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <i class="{{ amenity.icon|default:'fas fa-star' }} text-orange-600 text-sm"></i>
+                            {% if amenities %}
+                                {% for amenity in amenities %}
+                                <div class="available-amenity flex items-center space-x-3 p-2 hover:bg-luxury-50 rounded-lg transition-colors cursor-pointer" 
+                                     data-amenity-id="{{ amenity.pk }}"
+                                     onclick="addAmenity('{{ amenity.pk }}', '{{ amenity.name }}', '{{ amenity.icon|default:'fas fa-star' }}')">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="{{ amenity.icon|default:'fas fa-star' }} text-orange-600 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-luxury-800">{{ amenity.name }}</span>
+                                    {% if amenity.description %}
+                                    <span class="text-sm text-luxury-600 ml-auto">{{ amenity.description|truncatechars:30 }}</span>
+                                    {% endif %}
                                 </div>
-                                <span class="font-medium text-luxury-800">{{ amenity.name }}</span>
-                                {% if amenity.description %}
-                                <span class="text-sm text-luxury-600 ml-auto">{{ amenity.description|truncatechars:30 }}</span>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="flex items-center space-x-3 p-2 hover:bg-luxury-50 rounded-lg transition-colors cursor-pointer" 
+                                     onclick="addAmenity('wifi', 'Free Wi-Fi', 'fas fa-wifi')">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-wifi text-orange-600 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-luxury-800">Free Wi-Fi</span>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     
@@ -141,30 +170,35 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
             
             <!-- Services Section -->
-            {% if services %}
             <div class="mt-8">
                 <h3 class="text-lg font-semibold text-luxury-800 mb-4">Room Services</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {% for service in services %}
-                    <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
-                        <input type="checkbox" name="services" value="{{ service.service_id }}" id="service_{{ service.service_id }}"
-                               {% if room and service in room.services.all %}checked{% endif %}
-                               class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
-                        <label for="service_{{ service.service_id }}" class="flex-1 cursor-pointer">
-                            <div class="font-medium text-luxury-800">{{ service.name }}</div>
-                            {% if service.description %}
-                            <div class="text-sm text-luxury-600">{{ service.description }}</div>
-                            {% endif %}
-                            <div class="text-sm font-semibold text-royal-600">{{ hotel.currency }} {{ service.price }}</div>
-                        </label>
-                    </div>
-                    {% endfor %}
+                    {% if services %}
+                        {% for service in services %}
+                        <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-luxury-50 transition-colors">
+                            <input type="checkbox" name="services" value="{{ service.service_id }}" id="service_{{ service.service_id }}"
+                                   {% if room and service in room.services.all %}checked{% endif %}
+                                   class="rounded border-luxury-300 text-royal-600 focus:ring-royal-500">
+                            <label for="service_{{ service.service_id }}" class="flex-1 cursor-pointer">
+                                <div class="font-medium text-luxury-800">{{ service.name }}</div>
+                                {% if service.description %}
+                                <div class="text-sm text-luxury-600">{{ service.description }}</div>
+                                {% endif %}
+                                <div class="text-sm font-semibold text-royal-600">{{ hotel.currency }} {{ service.price }}</div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-luxury-500 py-8">
+                            <i class="fas fa-concierge-bell text-luxury-300 text-2xl mb-2"></i>
+                            <p>No services configured</p>
+                            <p class="text-sm">Contact administrator to add services</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-            {% endif %}
             
             <!-- Action Buttons -->
             <div class="flex space-x-4 pt-6">
@@ -185,12 +219,18 @@
 <script>
 function addAmenity(amenityId, amenityName, amenityIcon) {
     // Check if already selected
-    if (document.querySelector(`[data-amenity-id="${amenityId}"]`)) {
+    if (document.querySelector(`.selected-amenity[data-amenity-id="${amenityId}"]`)) {
         return;
     }
     
     const selectedContainer = document.getElementById('selectedAmenities');
     const emptyMessage = document.getElementById('emptyAmenitiesMessage');
+    const availableAmenity = document.querySelector(`.available-amenity[data-amenity-id="${amenityId}"]`);
+    
+    // Hide from available amenities
+    if (availableAmenity) {
+        availableAmenity.style.display = 'none';
+    }
     
     // Hide empty message
     emptyMessage.classList.add('hidden');
@@ -218,9 +258,16 @@ function addAmenity(amenityId, amenityName, amenityIcon) {
 }
 
 function removeAmenity(amenityId) {
-    const amenityElement = document.querySelector(`[data-amenity-id="${amenityId}"]`);
-    if (amenityElement) {
-        amenityElement.remove();
+    const selectedAmenity = document.querySelector(`.selected-amenity[data-amenity-id="${amenityId}"]`);
+    const availableAmenity = document.querySelector(`.available-amenity[data-amenity-id="${amenityId}"]`);
+    
+    if (selectedAmenity) {
+        selectedAmenity.remove();
+    }
+    
+    // Show back in available amenities
+    if (availableAmenity) {
+        availableAmenity.style.display = 'flex';
     }
     
     // Show empty message if no amenities selected
@@ -231,6 +278,18 @@ function removeAmenity(amenityId) {
         emptyMessage.classList.remove('hidden');
     }
 }
+
+// Hide already selected amenities on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedAmenities = document.querySelectorAll('.selected-amenity');
+    selectedAmenities.forEach(function(selected) {
+        const amenityId = selected.getAttribute('data-amenity-id');
+        const availableAmenity = document.querySelector(`.available-amenity[data-amenity-id="${amenityId}"]`);
+        if (availableAmenity) {
+            availableAmenity.style.display = 'none';
+        }
+    });
+});
 </script>
 
 <style>

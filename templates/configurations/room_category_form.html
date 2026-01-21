@@ -1,0 +1,130 @@
+{% extends 'base_luxury.html' %}
+
+{% block title %}{% if room_category %}Edit Room Category{% else %}Create Room Category{% endif %}{% endblock %}
+{% block page_title %}{% if room_category %}Edit Room Category{% else %}Create Room Category{% endif %}{% endblock %}
+{% block page_subtitle %}Configure room categories with occupancy settings{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 luxury-shadow">
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4">
+                <i class="fas fa-layer-group text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-luxury-800">{% if room_category %}Edit Room Category{% else %}Create New Room Category{% endif %}</h2>
+                <p class="text-luxury-600">{% if room_category %}Update room category information{% else %}Add a new room category to your hotel{% endif %}</p>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Basic Information -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                        <i class="fas fa-info-circle mr-3 text-indigo-500"></i>
+                        Basic Information
+                    </h3>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-building mr-2 text-indigo-500"></i>Hotels
+                        </label>
+                        <div class="bg-luxury-50 p-4 rounded-xl border border-luxury-200 max-h-48 overflow-y-auto">
+                            <div class="grid grid-cols-1 gap-3">
+                                {% for hotel in hotels %}
+                                <div class="flex items-center space-x-3 p-3 border border-luxury-200 rounded-xl hover:bg-white transition-colors">
+                                    <input type="checkbox" name="hotels" value="{{ hotel.hotel_id }}" id="hotel_{{ hotel.hotel_id }}"
+                                           {% if room_category and hotel in room_category.hotels.all %}checked{% elif not room_category and default_hotel and hotel.hotel_id == default_hotel.hotel_id %}checked{% endif %}
+                                           class="rounded border-luxury-300 text-indigo-600 focus:ring-indigo-500">
+                                    <label for="hotel_{{ hotel.hotel_id }}" class="flex-1 cursor-pointer">
+                                        <div class="font-medium text-luxury-800 flex items-center">
+                                            <i class="fas fa-hotel mr-2 text-indigo-600"></i>
+                                            {{ hotel.name }}
+                                        </div>
+                                    </label>
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-4 text-luxury-500">
+                                    <i class="fas fa-info-circle text-xl mb-2"></i>
+                                    <p>No hotels available</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-tag mr-2 text-indigo-500"></i>Category Name
+                        </label>
+                        <input type="text" id="name" name="name" value="{{ room_category.name|default:'' }}" required
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                               placeholder="🏷️ Enter category name (e.g., Standard, Deluxe, Suite)">
+                    </div>
+                    
+                    <div>
+                        <label for="max_occupancy" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-users mr-2 text-indigo-500"></i>Maximum Occupancy
+                        </label>
+                        <input type="number" id="max_occupancy" name="max_occupancy" value="{{ room_category.max_occupancy|default:'2' }}" min="1" max="10"
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white"
+                               placeholder="👥 Maximum number of guests">
+                    </div>
+                </div>
+                
+                <!-- Description & Details -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-luxury-800 mb-6 flex items-center">
+                        <i class="fas fa-align-left mr-3 text-indigo-500"></i>
+                        Description & Details
+                    </h3>
+                    
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-luxury-700 mb-2">
+                            <i class="fas fa-file-alt mr-2 text-indigo-500"></i>Description
+                        </label>
+                        <textarea id="description" name="description" rows="6"
+                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all duration-300 shadow-sm hover:shadow-md bg-white resize-none"
+                                  placeholder="📝 Describe the room category features and occupancy details...">{{ room_category.description|default:'' }}</textarea>
+                    </div>
+                    
+                    <!-- Status Toggle -->
+                    <div class="bg-gray-50 p-6 rounded-2xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-lg font-semibold text-luxury-800 flex items-center">
+                                    <i class="fas fa-toggle-on mr-2 text-green-500"></i>Status
+                                </h4>
+                                <p class="text-sm text-luxury-600 mt-1">Enable or disable this room category</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_active" class="sr-only peer" {% if room_category.is_active or not room_category %}checked{% endif %}>
+                                <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
+                                <span class="ml-3 text-sm font-medium text-luxury-700">Active</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-4 pt-8 border-t border-luxury-200">
+                <button type="submit" 
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-save"></i>
+                    <span>{% if room_category %}Update Room Category{% else %}Create Room Category{% endif %}</span>
+                </button>
+                <a href="{% url 'configurations:room_category_list' %}" 
+                   class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-semibold hover:bg-gray-300 transition-all duration-300 flex items-center space-x-2">
+                    <i class="fas fa-times"></i>
+                    <span>Cancel</span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
